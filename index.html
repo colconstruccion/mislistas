@@ -7,43 +7,45 @@
   <link rel="stylesheet" href="listasStyle.css">
 </head>
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h3>Quick Lists</h3>
-    <ul>
-      <li><a href="#" data-count="5">Lista 5 items</a></li>
-      <li><a href="#" data-count="10">Lista 10 articulos</a></li>
-      <li><a href="#" data-count="15">Lista 15 vainas</a></li>
-      <li><a href="#" data-count="20">Lista 20 visajes</a></li>
-      <li><a href="#" data-count="25">Lista 25 acciones</a></li>
-      <li><a href="#" data-count="30">Lista 30 movidas</a></li>
-    </ul>
-  </aside>
-
-  <!-- Main content -->
-  <div class="main">
-    <div class="form-container">
-      <h2>Haga una Lista</h2>
-      <form id="listForm">
-        <label for="title">Nombre de la Lista</label>
-        <input type="text" id="title" name="title" placeholder="Dele un nombre">
-        <div id="itemsContainer"></div>
-      </form>
-
-      <button type="button" id="addItemBtn">+ Otro renglon</button>
-      <button type="button" onclick="window.print()">Imprimir o Guardar</button>
-    </div>
-
-    <div class="preview-container">
-      <h2>Asi va quedando</h2>
-      <h3 id="previewTitle">El nombre de su lista...</h3>
-      <ul id="previewItems">
-        <li>Item 1...</li>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Quick Lists</h3>
+      <ul>
+        <li><a href="#" data-count="5">Lista 5 items</a></li>
+        <li><a href="#" data-count="10">Lista 10 articulos</a></li>
+        <li><a href="#" data-count="15">Lista 15 vainas</a></li>
+        <li><a href="#" data-count="20">Lista 20 visajes</a></li>
+        <li><a href="#" data-count="25">Lista 25 acciones</a></li>
+        <li><a href="#" data-count="30">Lista 30 movidas</a></li>
       </ul>
+    </aside>
+  
+    <!-- Main content -->
+    <div class="main">
+      <div class="form-container">
+        <h2>Haga una Lista</h2>
+        <form id="listForm">
+          <label for="title">Nombre de la Lista</label>
+          <input type="text" id="title" name="title" placeholder="Dele un nombre">
+          <div id="itemsContainer"></div>
+        </form>
+  
+        <button type="button" id="addItemBtn">+ Otro renglon</button>
+        <button type="button" onclick="window.print()">Imprimir o Guardar</button>
+      </div>
+  
+      <div class="preview-container">
+        <h2>Asi va quedando</h2>
+        <h3 id="previewTitle">El nombre de su lista...</h3>
+        <ul id="previewItems">
+          <li>Item 1...</li>
+        </ul>
+      </div>
     </div>
+  
+    <script src="listasScript.js"></script>
   </div>
-
-  <script src="listasScript.js"></script>
 </body>
 </html>
 
