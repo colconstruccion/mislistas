@@ -1,0 +1,142 @@
+ * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 180px;
+      background-color: #ffffff;
+      padding: 30px 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+      height: 100vh;
+    }
+
+    .sidebar h3 {
+      margin-top: 60px;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar li {
+      margin-bottom: 12px;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #4a90e2;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .sidebar a:hover {
+      color: #357ab8;
+    }
+
+    .main {
+      display: flex;
+      gap: 40px;
+      padding: 40px;
+      flex-grow: 1;
+    }
+
+    .form-container,
+    .preview-container {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      flex: 1;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: #fafafa;
+    }
+
+    .list-item {
+      font-size: 16px;
+      padding: 12px 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background-color: #4a90e2;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    .preview-container h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    ul {
+      padding-left: 20px;
+      line-height: 1.6;
+    }
+
+    li {
+      color: #333;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .preview-container, .preview-container * {
+        visibility: visible;
+      }
+
+      .preview-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 40px;
+        box-shadow: none;
+        background: white;
+      }
+    }
