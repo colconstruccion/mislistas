@@ -136,35 +136,57 @@
 
     /* ✅ Make layout responsive on small screens */
     @media (max-width: 768px) {
-      .layout {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        box-shadow: none;
-        border-bottom: 1px solid #eee;
-      }
-
-      .main {
-        flex-direction: column;
-        padding: 20px;
-      }
-
-      .form-container,
-      .preview-container {
-        width: 100%;
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 18px;
-      }
-
-      button {
-        font-size: 15px;
-      }
-    }
+  .layout {
+    flex-direction: column;
+     }
+   
+     .sidebar {
+       width: 100%;
+       box-shadow: none;
+       border-bottom: 1px solid #eee;
+     }
+   
+     .main {
+       flex-direction: column;
+       padding: 20px;
+     }
+   
+     .form-container,
+     .preview-container {
+       width: 100%;
+       padding: 24px;
+     }
+   
+     h2 {
+       font-size: 22px;
+     }
+   
+     .sidebar h3 {
+       font-size: 20px;
+     }
+   
+     label {
+       font-size: 16px;
+     }
+   
+     input[type="text"] {
+       font-size: 18px;
+       padding: 14px 12px;
+     }
+   
+     button {
+       font-size: 18px;
+       padding: 14px;
+     }
+   
+     .preview-container h3 {
+       font-size: 18px;
+     }
+   
+     ul {
+       font-size: 16px;
+     }
+   }
 
     @media print {
       body * {
