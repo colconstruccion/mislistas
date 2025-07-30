@@ -1,63 +1,90 @@
-    const titleInput = document.getElementById('title');
+const titleInput = document.getElementById('title');
     const itemsContainer = document.getElementById('itemsContainer');
     const previewTitle = document.getElementById('previewTitle');
     const previewItems = document.getElementById('previewItems');
-    const addItemBtn = document.getElementById('addItemBtn');
 
-    // Add new item input
-    let itemCount = 0;
-    function addItemInput() {
-      itemCount++;
-      const label = document.createElement('label');
-      label.textContent = `Item ${itemCount}`;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.name = 'item';
-      input.className = 'list-item';
-      input.placeholder = 'Escriba el item de la lista';
-      itemsContainer.appendChild(label);
-      itemsContainer.appendChild(input);
-      input.addEventListener('input', updatePreview);
-    }
+    let currentColumns = 1; // Track column layout
 
-    // Create multiple item inputs
-    function createItemInputs(count) {
-      itemsContainer.innerHTML = '';
-      itemCount = 0;
-      for (let i = 0; i < count; i++) {
-        addItemInput();
-      }
-      updatePreview();
-    }
-
-    // Update preview
     function updatePreview() {
-      previewTitle.textContent = titleInput.value.trim() || 'Nombre de su lista...';
-      previewItems.innerHTML = '';
-      const allItems = itemsContainer.querySelectorAll('input[name="item"]');
-      allItems.forEach(input => {
-        const value = input.value.trim();
-        const li = document.createElement('li');
-        li.textContent = value || '...';
-        previewItems.appendChild(li);
-      });
+        previewTitle.textContent = titleInput.value.trim() || 'Your list title...';
+        previewItems.innerHTML = '';
+        const allItems = Array.from(itemsContainer.querySelectorAll('input[name="item"]'));
+
+        if (currentColumns === 2) {
+            for (let i = 0; i < allItems.length; i += 2) {
+            const row = document.createElement('li');
+            row.className = 'preview-row';
+
+            const col1 = document.createElement('div');
+            const col2 = document.createElement('div');
+
+            col1.textContent = allItems[i]?.value.trim() || '...';
+            col2.textContent = allItems[i + 1]?.value.trim() || '...';
+
+            row.appendChild(col1);
+            row.appendChild(col2);
+            previewItems.appendChild(row);
+            }
+        } else {
+            allItems.forEach(input => {
+            const li = document.createElement('li');
+            li.textContent = input.value.trim() || '...';
+            previewItems.appendChild(li);
+            });
+        }
     }
 
-    // Event listeners
+
+    function createItemInputs(count, columns = 1) {
+        itemsContainer.innerHTML = '';
+        currentColumns = columns;
+
+        for (let i = 1; i <= count; i++) {
+        const label = document.createElement('label');
+        label.textContent = `Item ${i}`;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'item';
+        input.className = 'list-item';
+        input.placeholder = 'Enter list item';
+        input.addEventListener('input', updatePreview);
+
+        if (columns === 2) {
+            let lastRow = itemsContainer.lastElementChild;
+            if (!lastRow || lastRow.childElementCount >= 2) {
+            lastRow = document.createElement('div');
+            lastRow.className = 'inputs-row';
+            itemsContainer.appendChild(lastRow);
+            }
+            const wrapper = document.createElement('div');
+            wrapper.style.flex = '1';
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            lastRow.appendChild(wrapper);
+        } else {
+            itemsContainer.appendChild(label);
+            itemsContainer.appendChild(input);
+        }
+        }
+
+        updatePreview();
+    }
+
+    function toggleSection(id) {
+        document.getElementById(id).classList.toggle('active');
+    }
+
     titleInput.addEventListener('input', updatePreview);
-    addItemBtn.addEventListener('click', () => {
-      addItemInput();
-      updatePreview();
-    });
 
-    // Sidebar link clicks
-    document.querySelectorAll('.sidebar a[data-count]').forEach(link => {
-      link.addEventListener('click', e => {
+    document.querySelectorAll('.sidebar a.option').forEach(link => {
+        link.addEventListener('click', function (e) {
         e.preventDefault();
-        const count = parseInt(link.getAttribute('data-count'), 10);
-        createItemInputs(count);
-      });
+        const count = parseInt(this.dataset.count, 10);
+        const columns = parseInt(this.dataset.columns, 10);
+        const totalInputs = columns === 2 ? count * 2 : count;
+        createItemInputs(totalInputs, columns);
+        });
     });
 
-    // Initial 1 item
-    createItemInputs(1);
+    // Initial load: single-column 5 items
+    createItemInputs(5);

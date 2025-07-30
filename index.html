@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Create a List</title>
-  <style></style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive List Builder</title>
   <link rel="stylesheet" href="listasStyle.css">
+  <style></style>
 </head>
 <body>
   <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
       <h3>Quick Lists</h3>
-      <ul>
-        <li><a href="#" data-count="5">Lista 5 items</a></li>
-        <li><a href="#" data-count="10">Lista 10 articulos</a></li>
-        <li><a href="#" data-count="15">Lista 15 vainas</a></li>
-        <li><a href="#" data-count="20">Lista 20 visajes</a></li>
-        <li><a href="#" data-count="25">Lista 25 acciones</a></li>
-        <li><a href="#" data-count="30">Lista 30 movidas</a></li>
+      <a class="toggle-link" onclick="toggleSection('one-column-list')">One Column Lists</a>
+      <ul id="one-column-list" class="active">
+        <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
+        <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
+        <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
+        <li><a href="#" class="option" data-count="20" data-columns="1">List 20 items</a></li>
+        <li><a href="#" class="option" data-count="25" data-columns="1">List 25 items</a></li>
+        <li><a href="#" class="option" data-count="30" data-columns="1">List 30 items</a></li>
+      </ul>
+
+      <a class="toggle-link" onclick="toggleSection('two-column-list')">Two Column Lists</a>
+      <ul id="two-column-list">
+        <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
+        <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
+        <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
+        <li><a href="#" class="option" data-count="20" data-columns="2">20 rows</a></li>
+        <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
+        <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
       </ul>
     </aside>
-  
-    <!-- Main content -->
+
+    <!-- Main -->
     <div class="main">
       <div class="form-container">
-        <h2>Haga una Lista</h2>
+        <h2>Create a List</h2>
         <form id="listForm">
-          <label for="title">Nombre de la Lista</label>
-          <input type="text" id="title" name="title" placeholder="Dele un nombre">
+          <label for="title">List Title</label>
+          <input type="text" id="title" name="title" placeholder="Enter list title">
           <div id="itemsContainer"></div>
         </form>
-  
-        <button type="button" id="addItemBtn">+ Otro renglon</button>
-        <button type="button" onclick="window.print()">Imprimir o Guardar</button>
+        <button type="button" onclick="window.print()">Save List</button>
       </div>
-  
+
       <div class="preview-container">
-        <h2>Asi va quedando</h2>
-        <h3 id="previewTitle">El nombre de su lista...</h3>
-        <ul id="previewItems">
+        <h2>Live Preview</h2>
+        <h3 id="previewTitle">Your list title...</h3>
+        <ul class="preview" id="previewItems">
           <li>Item 1...</li>
         </ul>
       </div>
     </div>
-  
-    <script src="listasScript.js"></script>
   </div>
+
+  <script src="listasScript.js"></script>
 </body>
 </html>
-
