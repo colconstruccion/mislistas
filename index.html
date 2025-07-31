@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Responsive List Builder</title>
-  <link rel="stylesheet" href="listasStyle.css">
+  <title>List Builder Workspace</title>
   <style></style>
+  <link rel="stylesheet" href="listasStyle.css">
 </head>
 <body>
   <div class="layout">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <h3>Quick Lists</h3>
+      <a class="toggle-link" onclick="openWorkspace()">My Workspace</a>
+      <div id="workspace" style="margin-top: 20px; font-size: 14px; color: #333;"></div>
+      
       <a class="toggle-link" onclick="toggleSection('one-column-list')">One Column Lists</a>
       <ul id="one-column-list" class="active">
         <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
@@ -31,9 +33,9 @@
         <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
         <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
       </ul>
+
     </aside>
 
-    <!-- Main -->
     <div class="main">
       <div class="form-container">
         <h2>Create a List</h2>
@@ -42,15 +44,17 @@
           <input type="text" id="title" name="title" placeholder="Enter list title">
           <div id="itemsContainer"></div>
         </form>
-        <button type="button" onclick="window.print()">Save List</button>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="saveList()">Save List</button>
+          <button type="button" onclick="window.print()">Print List</button>
+        </div>
       </div>
 
       <div class="preview-container">
         <h2>Live Preview</h2>
         <h3 id="previewTitle">Your list title...</h3>
-        <ul class="preview" id="previewItems">
-          <li>Item 1...</li>
-        </ul>
+        <ul class="preview" id="previewItems"></ul>
       </div>
     </div>
   </div>
@@ -58,3 +62,4 @@
   <script src="listasScript.js"></script>
 </body>
 </html>
+
