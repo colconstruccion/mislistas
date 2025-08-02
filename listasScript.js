@@ -1,4 +1,4 @@
- let sessionId = sessionStorage.getItem("sessionId") || crypto.randomUUID();
+    let sessionId = sessionStorage.getItem("sessionId") || crypto.randomUUID();
     sessionStorage.setItem("sessionId", sessionId);
 
     let currentColumns = 1;
@@ -7,10 +7,12 @@
       const title = document.getElementById("title").value.trim() || `Untitled List`;
       const inputs = Array.from(document.querySelectorAll("input[name='item']"));
       const values = inputs.map(input => input.value.trim());
+      const note = document.getElementById("form-note")?.value.trim() || "";
+
       let saved = JSON.parse(sessionStorage.getItem("savedLists") || "{}");
 
       if (!saved[sessionId]) saved[sessionId] = [];
-      saved[sessionId].push({ title, values });
+      saved[sessionId].push({ title, values, note });
       sessionStorage.setItem("savedLists", JSON.stringify(saved));
       alert("List saved to session.");
     }
@@ -49,7 +51,17 @@
       createItemInputs(list.values.length, currentColumns);
       const inputs = document.querySelectorAll("input[name='item']");
       list.values.forEach((val, i) => inputs[i] && (inputs[i].value = val));
-      updatePreview();
+      //text area
+      // Restore note
+      if (list.note !== undefined) {
+        let noteBox = document.getElementById("form-note");
+        if (!noteBox) {
+            appendFlexibleNoteArea();
+            noteBox = document.getElementById("form-note");
+        }
+        noteBox.value = list.note;
+        }
+        updatePreview();
     }
 
   function deleteList(index) {
@@ -127,6 +139,12 @@
           previewItems.appendChild(li);
         });
       }
+      // ✅ Update note preview if textarea exists
+      const noteTextarea = document.getElementById('form-note');
+      const notePreview = document.getElementById('notePreview');
+      if (noteTextarea && notePreview) {
+            notePreview.textContent = noteTextarea.value.trim();
+        }
     }
 
     const titleInput = document.getElementById("title");
@@ -144,5 +162,52 @@
       });
     });
 
+    // para formularios
+    document.querySelectorAll(".sidebar a.form-option").forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const rows = parseInt(this.dataset.rows, 10);
+            createItemInputs(rows, 1); // one-column inputs
+            appendFlexibleNoteArea(); // add flexible textarea
+        });
+    });
+
+    document.querySelectorAll(".sidebar a.form2-option").forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const rows = parseInt(this.dataset.rows, 10);
+        const totalInputs = rows * 2; // Two columns per row
+        createItemInputs(totalInputs, 2);
+        appendFlexibleNoteArea();
+      });
+    });
+
+
+
     // Initialize default list
     createItemInputs(5);
+    //Create form
+    function appendFlexibleNoteArea() {
+        const noteWrapper = document.createElement('div');
+        noteWrapper.style.marginTop = '20px';
+
+        const noteLabel = document.createElement('label');
+        noteLabel.textContent = "Notes";
+        noteLabel.setAttribute('for', 'form-note');
+
+        const textarea = document.createElement('textarea');
+        textarea.id = 'form-note';
+        textarea.style.width = '100%';
+        textarea.style.minHeight = '100px';
+        textarea.style.padding = '10px';
+        textarea.style.fontSize = '16px';
+        textarea.style.border = '1px solid #ccc';
+        textarea.style.borderRadius = '6px';
+        textarea.style.backgroundColor = '#fafafa';
+        textarea.addEventListener('input', updatePreview);
+
+
+        noteWrapper.appendChild(noteLabel);
+        noteWrapper.appendChild(textarea);
+        itemsContainer.appendChild(noteWrapper);
+    }

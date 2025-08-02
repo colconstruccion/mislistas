@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>List Builder Workspace</title>
-  <style></style>
   <link rel="stylesheet" href="listasStyle.css">
+  <style></style>
 </head>
 <body>
   <div class="layout">
@@ -34,6 +34,26 @@
         <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
       </ul>
 
+      <a class="toggle-link" onclick="toggleSection('form-templates-list')">One Column Forms</a>
+      <ul id="form-templates-list">
+        <li><a href="#" class="form-option" data-rows="1">One row</a></li>
+        <li><a href="#" class="form-option" data-rows="2">Two rows</a></li>
+        <li><a href="#" class="form-option" data-rows="3">Three rows</a></li>
+        <li><a href="#" class="form-option" data-rows="4">Four rows</a></li>
+        <li><a href="#" class="form-option" data-rows="5">Five rows</a></li>
+      </ul>
+
+      <a class="toggle-link" onclick="toggleSection('form-templates-two-col')">Two Columns Forms</a>
+      <ul id="form-templates-two-col">
+        <li><a href="#" class="form2-option" data-rows="1">One row</a></li>
+        <li><a href="#" class="form2-option" data-rows="2">Two rows</a></li>
+        <li><a href="#" class="form2-option" data-rows="3">Three rows</a></li>
+        <li><a href="#" class="form2-option" data-rows="4">Four rows</a></li>
+        <li><a href="#" class="form2-option" data-rows="5">Five rows</a></li>
+      </ul>
+
+
+
     </aside>
 
     <div class="main">
@@ -55,6 +75,8 @@
         <h2>Live Preview</h2>
         <h3 id="previewTitle">Your list title...</h3>
         <ul class="preview" id="previewItems"></ul>
+        <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
+
       </div>
     </div>
   </div>

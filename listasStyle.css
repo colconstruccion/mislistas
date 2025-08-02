@@ -1,4 +1,4 @@
- * {
+* {
       box-sizing: border-box;
     }
 
@@ -62,6 +62,16 @@
       cursor: pointer;
     }
 
+    .sidebar a.option,
+    .sidebar a.form-option,
+    .sidebar a.form2-option {
+      text-decoration: none;
+      color: #4a90e2;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+
     .main {
       display: flex;
       flex: 1;
@@ -80,6 +90,11 @@
       min-width: 280px;
     }
 
+    .inputs-row {
+      display: flex;
+      gap: 16px;
+    }
+
     h2 {
       text-align: center;
       margin-bottom: 20px;
@@ -93,11 +108,6 @@
       display: block;
     }
 
-    .inputs-row {
-      display: flex;
-      gap: 16px;
-    }
-
     input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -108,13 +118,8 @@
       background-color: #fafafa;
     }
 
-    .list-item {
-      font-size: 16px;
-    }
-
     button {
       margin-top: 10px;
-      width: 100%;
       padding: 12px;
       border: none;
       background-color: #4a90e2;
@@ -122,6 +127,7 @@
       font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
+      flex: 1;
     }
 
     button:hover {
@@ -133,17 +139,16 @@
       color: #2c3e50;
     }
 
+    ul.preview {
+      padding-left: 20px;
+      font-size: 16px;
+    }
+
     ul.preview .preview-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
       margin-bottom: 6px;
-    }
-
-
-    ul.preview {
-      padding-left: 20px;
-      font-size: 16px;
     }
 
     @media (max-width: 768px) {
@@ -200,4 +205,11 @@
         box-shadow: none;
         background: white;
       }
+
+      #notePreview {
+        margin-top: 30px;
+        font-style: italic;
+        color: #000;
+      }
+
     }
