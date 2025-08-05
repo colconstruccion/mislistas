@@ -64,7 +64,8 @@
 
     .sidebar a.option,
     .sidebar a.form-option,
-    .sidebar a.form2-option {
+    .sidebar a.form2-option,
+    .sidebar a.option-3col {
       text-decoration: none;
       color: #4a90e2;
       font-size: 14px;
@@ -146,10 +147,17 @@
 
     ul.preview .preview-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin-bottom: 6px;
     }
+
+    ul.preview .preview-row.col-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    ul.preview .preview-row.col-3 {
+      grid-template-columns: 2fr 1fr 1fr; /* 50%, 25%, 25% */
+    }
+
 
     @media (max-width: 768px) {
       .layout {

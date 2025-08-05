@@ -81,6 +81,8 @@
       itemsContainer.innerHTML = '';
       currentColumns = columns;
 
+      let row;
+
       for (let i = 1; i <= count; i++) {
         const label = document.createElement('label');
         label.textContent = `Item ${i}`;
@@ -91,61 +93,78 @@
         input.placeholder = 'Enter list item';
         input.addEventListener('input', updatePreview);
 
-        if (columns === 2) {
-          let lastRow = itemsContainer.lastElementChild;
-          if (!lastRow || lastRow.childElementCount >= 2) {
-            lastRow = document.createElement('div');
-            lastRow.className = 'inputs-row';
-            itemsContainer.appendChild(lastRow);
-          }
-          const wrapper = document.createElement('div');
-          wrapper.style.flex = '1';
-          wrapper.appendChild(label);
-          wrapper.appendChild(input);
-          lastRow.appendChild(wrapper);
-        } else {
+        if (columns === 1) {
+          // Single-column layout
           itemsContainer.appendChild(label);
           itemsContainer.appendChild(input);
+
+        } else {
+          // Start a new row every N items
+          if ((i - 1) % columns === 0) {
+            row = document.createElement('div');
+            row.className = 'inputs-row';
+            itemsContainer.appendChild(row);
+          }
+
+          const wrapper = document.createElement('div');
+          wrapper.appendChild(label);
+          wrapper.appendChild(input);
+
+          // Adjust column widths
+          if (columns === 2) {
+            wrapper.style.flex = '1';
+          } else if (columns === 3) {
+            if ((i - 1) % 3 === 0) {
+              wrapper.style.flex = '2'; // first input of row (½ row)
+            } else {
+              wrapper.style.flex = '1'; // second and third input (¼ each)
+            }
+          }
+
+          row.appendChild(wrapper);
         }
       }
 
-      updatePreview();
+      updatePreview();  
     }
+
 
     function updatePreview() {
       previewTitle.textContent = titleInput.value.trim() || 'Your list title...';
       previewItems.innerHTML = '';
       const allItems = Array.from(document.querySelectorAll("input[name='item']"));
 
-      if (currentColumns === 2) {
-        for (let i = 0; i < allItems.length; i += 2) {
+      if (currentColumns === 2 || currentColumns === 3) {
+        for (let i = 0; i < allItems.length; i += currentColumns) {
           const row = document.createElement('li');
           row.className = 'preview-row';
+          row.classList.add(`col-${currentColumns}`);
 
-          const col1 = document.createElement('div');
-          const col2 = document.createElement('div');
+          for (let j = 0; j < currentColumns; j++) {
+            const col = document.createElement('div');
+            col.textContent = allItems[i + j]?.value.trim() || '...';
+            row.appendChild(col);
+          }
 
-          col1.textContent = allItems[i]?.value.trim() || '...';
-          col2.textContent = allItems[i + 1]?.value.trim() || '...';
-
-          row.appendChild(col1);
-          row.appendChild(col2);
           previewItems.appendChild(row);
         }
       } else {
+        // Single-column layout
         allItems.forEach(input => {
           const li = document.createElement('li');
           li.textContent = input.value.trim() || '...';
           previewItems.appendChild(li);
         });
       }
-      // ✅ Update note preview if textarea exists
+
+      // ✅ Show note content if present
       const noteTextarea = document.getElementById('form-note');
       const notePreview = document.getElementById('notePreview');
       if (noteTextarea && notePreview) {
-            notePreview.textContent = noteTextarea.value.trim();
-        }
+        notePreview.textContent = noteTextarea.value.trim();
+      }
     }
+
 
     const titleInput = document.getElementById("title");
     const previewItems = document.getElementById("previewItems");
@@ -182,6 +201,14 @@
       });
     });
 
+    document.querySelectorAll(".sidebar a.option-3col").forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const rows = parseInt(this.dataset.count, 10);
+        const totalInputs = rows * 3;
+        createItemInputs(totalInputs, 3);
+      });
+    });
 
 
     // Initialize default list
