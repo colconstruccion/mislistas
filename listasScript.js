@@ -210,6 +210,16 @@
       });
     });
 
+    document.querySelectorAll(".sidebar a.form3-option").forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const rows = parseInt(this.dataset.rows, 10);
+        const totalInputs = rows * 3;
+        createItemInputs(totalInputs, 3);
+        appendFlexibleNoteArea();
+      });
+    });
+
 
     // Initialize default list
     createItemInputs(5);

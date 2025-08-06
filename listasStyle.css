@@ -65,12 +65,24 @@
     .sidebar a.option,
     .sidebar a.form-option,
     .sidebar a.form2-option,
-    .sidebar a.option-3col {
+    .sidebar a.option-3col,
+    .sidebar a.form3-option {
       text-decoration: none;
       color: #4a90e2;
       font-size: 14px;
       cursor: pointer;
     }
+
+    .sidebar a.option:hover,
+    .sidebar a.form-option:hover,
+    .sidebar a.form2-option:hover,
+    .sidebar a.option-3col:hover,
+    .sidebar a.form3-option:hover {
+      color: #357ab8;
+      text-decoration: underline;
+    }
+
+
 
 
     .main {
