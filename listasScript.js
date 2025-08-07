@@ -125,7 +125,8 @@
         }
       }
 
-      updatePreview();  
+      updatePreview(); 
+      updateRowControls(); 
     }
 
 
@@ -225,26 +226,106 @@
     createItemInputs(5);
     //Create form
     function appendFlexibleNoteArea() {
-        const noteWrapper = document.createElement('div');
-        noteWrapper.style.marginTop = '20px';
+      const noteWrapper = document.createElement('div');
+      noteWrapper.className = 'form-note-area'; // 🔁 Add class for detection
+      noteWrapper.style.marginTop = '20px';
 
-        const noteLabel = document.createElement('label');
-        noteLabel.textContent = "Notes";
-        noteLabel.setAttribute('for', 'form-note');
+      const noteLabel = document.createElement('label');
+      noteLabel.textContent = "Notes";
+      noteLabel.setAttribute('for', 'form-note');
 
-        const textarea = document.createElement('textarea');
-        textarea.id = 'form-note';
-        textarea.style.width = '100%';
-        textarea.style.minHeight = '100px';
-        textarea.style.padding = '10px';
-        textarea.style.fontSize = '16px';
-        textarea.style.border = '1px solid #ccc';
-        textarea.style.borderRadius = '6px';
-        textarea.style.backgroundColor = '#fafafa';
-        textarea.addEventListener('input', updatePreview);
+      const textarea = document.createElement('textarea');
+      textarea.id = 'form-note';
+      textarea.style.width = '100%';
+      textarea.style.minHeight = '100px';
+      textarea.style.padding = '10px';
+      textarea.style.fontSize = '16px';
+      textarea.style.border = '1px solid #ccc';
+      textarea.style.borderRadius = '6px';
+      textarea.style.backgroundColor = '#fafafa';
+      textarea.addEventListener('input', updatePreview);
 
-
-        noteWrapper.appendChild(noteLabel);
-        noteWrapper.appendChild(textarea);
-        itemsContainer.appendChild(noteWrapper);
+      noteWrapper.appendChild(noteLabel);
+      noteWrapper.appendChild(textarea);
+      itemsContainer.appendChild(noteWrapper);
     }
+
+
+    // Add rows
+    function addRow() {
+      const inputsPerRow = currentColumns;
+      const currentInputs = Array.from(document.querySelectorAll("input[name='item']"));
+      const newTotal = currentInputs.length + inputsPerRow;
+
+      const existingValues = currentInputs.map(input => input.value.trim());
+
+      // ✅ Detect if a form note area exists
+      const noteElement = document.querySelector('.form-note-area');
+      const noteContent = document.getElementById('form-note')?.value.trim() || "";
+
+      createItemInputs(newTotal, currentColumns);
+
+      const allInputs = document.querySelectorAll("input[name='item']");
+      existingValues.forEach((val, i) => allInputs[i].value = val);
+
+      // ✅ Re-append note if it existed
+      if (noteElement) {
+        appendFlexibleNoteArea();
+        document.getElementById('form-note').value = noteContent;
+      }
+
+      allInputs[newTotal - 1]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+      updatePreview();
+      updateRowControls();
+    }
+
+    function deleteRow() {
+      const inputsPerRow = currentColumns;
+      const currentInputs = Array.from(document.querySelectorAll("input[name='item']"));
+      if (currentInputs.length <= inputsPerRow) return;
+
+      const newTotal = currentInputs.length - inputsPerRow;
+      const remainingValues = currentInputs.slice(0, newTotal).map(input => input.value.trim());
+
+      // ✅ Detect note before regeneration
+      const noteElement = document.querySelector('.form-note-area');
+      const noteContent = document.getElementById('form-note')?.value.trim() || "";
+
+      createItemInputs(newTotal, currentColumns);
+
+      const allInputs = document.querySelectorAll("input[name='item']");
+      remainingValues.forEach((val, i) => allInputs[i].value = val);
+
+      // ✅ Re-append note if it existed
+      if (noteElement) {
+        appendFlexibleNoteArea();
+        document.getElementById('form-note').value = noteContent;
+      }
+
+      updatePreview();
+      updateRowControls();
+    }
+    
+
+    //checks if this is a form to add the text area after adding or deleting row
+    function isFormMode() {
+      return (
+        document.querySelector(".sidebar a.form-option.active") ||
+        document.querySelector(".sidebar a.form2-option.active") ||
+        document.querySelector(".sidebar a.form3-option.active")
+      );
+    }
+
+
+    // do not delete las input row
+    function updateRowControls() {
+      const inputs = document.querySelectorAll("input[name='item']");
+      const deleteButton = document.querySelector("button[onclick='deleteRow()']");
+      const inputsPerRow = currentColumns;
+
+      if (deleteButton) {
+        deleteButton.disabled = inputs.length <= inputsPerRow;
+      }
+    }
+

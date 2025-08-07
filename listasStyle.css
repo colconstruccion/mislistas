@@ -233,3 +233,11 @@
       }
 
     }
+
+    .inputs-row {
+      transition: all 0.3s ease;
+    }
+  
+    #livePreviewHeader {
+      visibility: hidden;
+    }

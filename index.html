@@ -83,6 +83,11 @@
           <div id="itemsContainer"></div>
         </form>
 
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <button type="button" onclick="addRow()">Add Row</button>
+          <button type="button" onclick="deleteRow()">Delete Row</button>
+        </div>
+
         <div style="display: flex; gap: 10px;">
           <button type="button" onclick="saveList()">Save List</button>
           <button type="button" onclick="window.print()">Print List</button>
@@ -90,7 +95,7 @@
       </div>
 
       <div class="preview-container">
-        <h2>Live Preview</h2>
+        <h2 id="livePreviewHeader">Live Preview</h2>
         <h3 id="previewTitle">Your list title...</h3>
         <ul class="preview" id="previewItems"></ul>
         <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
