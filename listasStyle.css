@@ -234,10 +234,55 @@
 
     }
 
+    #richTextContainer {
+      display: none;
+    }
+
+    #richTextContainer.form-note-area {
+      display: block;
+    }
+
+
     .inputs-row {
       transition: all 0.3s ease;
     }
   
     #livePreviewHeader {
       visibility: hidden;
+    }
+
+   #toolbar button, #toolbar select {
+      background-color: #f0f0f0;
+      border: 1px solid #bbb;
+      margin: 2px;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #toolbar button:hover, #toolbar select:hover {
+      background-color: #ddd;
+    }
+
+    #editor {
+      min-height: 100px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #toolbar button, #toolbar select {
+      background-color: #f0f0f0;
+      color: #333; /* <-- This changes the text/icon color */
+      border: 1px solid #ccc;
+      padding: 5px 8px;
+      margin: 2px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    #toolbar button:hover,
+    #toolbar select:hover {
+      background-color: #ddd;
     }

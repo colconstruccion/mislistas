@@ -51,6 +51,7 @@
       createItemInputs(list.values.length, currentColumns);
       const inputs = document.querySelectorAll("input[name='item']");
       list.values.forEach((val, i) => inputs[i] && (inputs[i].value = val));
+      updatePreview();
       //text area
       // Restore note
       if (list.note !== undefined) {
@@ -61,7 +62,7 @@
         }
         noteBox.value = list.note;
         }
-        updatePreview();
+        
     }
 
   function deleteList(index) {
@@ -80,6 +81,9 @@
     function createItemInputs(count, columns = 1) {
       itemsContainer.innerHTML = '';
       currentColumns = columns;
+       // ✅ HIDE the rich text editor if it's visible
+      const container = document.getElementById('richTextContainer');
+      container.classList.remove('form-note-area');
 
       let row;
 
@@ -129,6 +133,29 @@
       updateRowControls(); 
     }
 
+    //Create form - unhides the div for the text area
+    function appendFlexibleNoteArea() {
+      console.log("appendFlexibleNoteArea was called");
+
+      const container = document.getElementById('richTextContainer');
+      const editor = document.getElementById('editor');
+
+      // Unhide using class
+      container.classList.add('form-note-area');
+
+      // Apply styles
+      editor.style.width = '100%';
+      editor.style.minHeight = '100px';
+      editor.style.padding = '10px';
+      editor.style.fontSize = '16px';
+      editor.style.border = '1px solid #ccc';
+      editor.style.borderRadius = '6px';
+      editor.style.backgroundColor = '#fafafa';
+
+      // Set up preview update listener
+      editor.removeEventListener('keyup', updatePreview);
+      editor.addEventListener('keyup', updatePreview);
+    }
 
     function updatePreview() {
       previewTitle.textContent = titleInput.value.trim() || 'Your list title...';
@@ -159,10 +186,10 @@
       }
 
       // ✅ Show note content if present
-      const noteTextarea = document.getElementById('form-note');
+      const noteTextarea = document.getElementById('editor');
       const notePreview = document.getElementById('notePreview');
       if (noteTextarea && notePreview) {
-        notePreview.textContent = noteTextarea.value.trim();
+        notePreview.innerHTML = noteTextarea.innerHTML.trim();
       }
     }
 
@@ -221,34 +248,8 @@
       });
     });
 
-
     // Initialize default list
     createItemInputs(5);
-    //Create form
-    function appendFlexibleNoteArea() {
-      const noteWrapper = document.createElement('div');
-      noteWrapper.className = 'form-note-area'; // 🔁 Add class for detection
-      noteWrapper.style.marginTop = '20px';
-
-      const noteLabel = document.createElement('label');
-      noteLabel.textContent = "Notes";
-      noteLabel.setAttribute('for', 'form-note');
-
-      const textarea = document.createElement('textarea');
-      textarea.id = 'form-note';
-      textarea.style.width = '100%';
-      textarea.style.minHeight = '100px';
-      textarea.style.padding = '10px';
-      textarea.style.fontSize = '16px';
-      textarea.style.border = '1px solid #ccc';
-      textarea.style.borderRadius = '6px';
-      textarea.style.backgroundColor = '#fafafa';
-      textarea.addEventListener('input', updatePreview);
-
-      noteWrapper.appendChild(noteLabel);
-      noteWrapper.appendChild(textarea);
-      itemsContainer.appendChild(noteWrapper);
-    }
 
 
     // Add rows
@@ -328,4 +329,11 @@
         deleteButton.disabled = inputs.length <= inputsPerRow;
       }
     }
+
+    //text area editor
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+    }
+  
+
 

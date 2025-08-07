@@ -81,6 +81,43 @@
           <label for="title">List Title</label>
           <input type="text" id="title" name="title" placeholder="Enter list title">
           <div id="itemsContainer"></div>
+          <!-- text editor; hidden at first-->
+          <div id="richTextContainer">
+            <div id="toolbar">
+              <button type="button" onclick="execCmd('bold')"><b>B</b></button>
+              <button type="button" onclick="execCmd('italic')"><i>I</i></button>
+              <button type="button" onclick="execCmd('underline')"><u>U</u></button>
+              <button type="button" onclick="execCmd('justifyLeft')">🡸</button>
+              <button type="button" onclick="execCmd('justifyCenter')">⇔</button>
+              <button type="button" onclick="execCmd('justifyRight')">🡺</button>
+              <button type="button" onclick="execCmd('insertUnorderedList')">• List</button>
+
+              <!-- Font Size -->
+              <select onchange="execCmd('fontSize', this.value)">
+                <option value="3">Font Size</option>
+                <option value="1">Very Small</option>
+                <option value="2">Small</option>
+                <option value="3">Normal</option>
+                <option value="4">Large</option>
+                <option value="5">Very Large</option>
+                <option value="6">Huge</option>
+                <option value="7">Maximum</option>
+              </select>
+
+              <!-- Font Family -->
+              <select onchange="execCmd('fontName', this.value)">
+                <option value="">Font Family</option>
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+              </select>
+            </div>
+            <div id="editor" contenteditable="true" style="min-height: 100px; border: 1px solid #ccc; padding: 10px;"></div>
+          </div>
+
         </form>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -99,7 +136,7 @@
         <h3 id="previewTitle">Your list title...</h3>
         <ul class="preview" id="previewItems"></ul>
         <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
-
+        
       </div>
     </div>
   </div>
