@@ -1,0 +1,84 @@
+/* Row layout (works for both 1-col and multi-col) */
+.inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Left checkbox cell ~1/8 width */
+.inputs-row .row-checkbox {
+  flex: 0 0 12.5%;
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* The actual checkbox */
+.inputs-row .row-checkbox input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  accent-color: #111; /* minimalist dark accent */
+}
+
+/* Hide/show control */
+/* Hide the whole cell when checkboxes are disabled */
+.hidden-checkbox {
+  display: none !important;
+}
+
+
+/* 1-column: content wrapper (label+input) takes the remaining space */
+.inputs-row .row-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Completed row: red strike-through on all text in the row */
+.inputs-row.completed {
+  text-decoration: line-through;
+  text-decoration-color: red;
+  text-decoration-thickness: 2px;
+}
+
+/* Completed preview row: red strike-through */
+.preview li.completed,
+.preview-row.completed {
+  text-decoration: line-through;
+  text-decoration-color: red;
+  text-decoration-thickness: 2px;
+}
+
+/* Remove bullets and left indent in the preview list */
+  #previewItems {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  /* Base grid for preview rows */
+  .preview-row {
+    display: grid;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* No-checkbox layouts (default) */
+  .preview-row.col-1 { grid-template-columns: 1fr; }
+  .preview-row.col-2 { grid-template-columns: 1fr 1fr; }
+  .preview-row.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* When checkboxes are ON, reserve a fixed first column for them */
+  #previewItems.checkboxes-on .preview-row.col-1 { grid-template-columns: 40px 1fr; }
+  #previewItems.checkboxes-on .preview-row.col-2 { grid-template-columns: 40px 1fr 1fr; }
+  #previewItems.checkboxes-on .preview-row.col-3 { grid-template-columns: 40px 1fr 1fr 1fr; }
+
+  /* Make the preview checkbox sit nicely in that first grid column */
+  .preview-check {
+    justify-self: center;
+    align-self: center;
+  }
+

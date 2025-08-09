@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>List Builder Workspace</title>
   <link rel="stylesheet" href="listasStyle.css">
+  <link rel="stylesheet" href="checkBoxes.css">
   <style></style>
 </head>
 <body>
@@ -121,9 +122,11 @@
         </form>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <button type="button" id="toggleCheckboxesBtn">Checkboxes</button>
           <button type="button" onclick="addRow()">Add Row</button>
           <button type="button" onclick="deleteRow()">Delete Row</button>
         </div>
+
 
         <div style="display: flex; gap: 10px;">
           <button type="button" onclick="saveList()">Save List</button>

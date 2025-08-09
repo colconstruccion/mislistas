@@ -2,6 +2,7 @@
     sessionStorage.setItem("sessionId", sessionId);
 
     let currentColumns = 1;
+    let checkboxesEnabled = false; // default hidden
 
    function saveList() {
       const title = document.getElementById("title").value.trim() || `Untitled List`;
@@ -78,18 +79,21 @@
       document.getElementById(id).classList.toggle("active");
     }
 
+
+    //Create the rows with the input fields
     function createItemInputs(count, columns = 1) {
       itemsContainer.innerHTML = '';
       currentColumns = columns;
-       // ✅ HIDE the rich text editor if it's visible
-      const container = document.getElementById('richTextContainer');
-      container.classList.remove('form-note-area');
+
+      const rtContainer = document.getElementById('richTextContainer');
+      rtContainer.classList.remove('form-note-area');
 
       let row;
 
       for (let i = 1; i <= count; i++) {
         const label = document.createElement('label');
         label.textContent = `Item ${i}`;
+
         const input = document.createElement('input');
         input.type = 'text';
         input.name = 'item';
@@ -98,15 +102,44 @@
         input.addEventListener('input', updatePreview);
 
         if (columns === 1) {
-          // Single-column layout
-          itemsContainer.appendChild(label);
-          itemsContainer.appendChild(input);
+          const r = document.createElement('div');
+          r.className = 'inputs-row';
+
+          const cbCell = document.createElement('div');
+          cbCell.className = 'row-checkbox';
+          if (!checkboxesEnabled) cbCell.classList.add('hidden-checkbox');
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.className = 'row-check';
+          cb.addEventListener('change', updatePreview);
+          cbCell.appendChild(cb);
+
+          const content = document.createElement('div');
+          content.className = 'row-content';
+          content.appendChild(label);
+          content.appendChild(input);
+
+          r.appendChild(cbCell);
+          r.appendChild(content);
+          itemsContainer.appendChild(r);
 
         } else {
-          // Start a new row every N items
           if ((i - 1) % columns === 0) {
             row = document.createElement('div');
             row.className = 'inputs-row';
+
+            const cbCell = document.createElement('div');
+            cbCell.className = 'row-checkbox';
+            if (!checkboxesEnabled) cbCell.classList.add('hidden-checkbox');
+
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'row-check';
+            cb.addEventListener('change', updatePreview);
+            cbCell.appendChild(cb);
+
+            row.appendChild(cbCell);
             itemsContainer.appendChild(row);
           }
 
@@ -114,24 +147,26 @@
           wrapper.appendChild(label);
           wrapper.appendChild(input);
 
-          // Adjust column widths
           if (columns === 2) {
             wrapper.style.flex = '1';
           } else if (columns === 3) {
-            if ((i - 1) % 3 === 0) {
-              wrapper.style.flex = '2'; // first input of row (½ row)
-            } else {
-              wrapper.style.flex = '1'; // second and third input (¼ each)
-            }
+            if ((i - 1) % 3 === 0) wrapper.style.flex = '2';
+            else wrapper.style.flex = '1';
           }
 
           row.appendChild(wrapper);
         }
       }
 
-      updatePreview(); 
-      updateRowControls(); 
+      updatePreview();
+      updateRowControls();
+
+      if (typeof syncCheckboxVisibility === 'function') {
+        syncCheckboxVisibility();
+      }
     }
+
+
 
     //Create form - unhides the div for the text area
     function appendFlexibleNoteArea() {
@@ -160,38 +195,82 @@
     function updatePreview() {
       previewTitle.textContent = titleInput.value.trim() || 'Your list title...';
       previewItems.innerHTML = '';
+
       const allItems = Array.from(document.querySelectorAll("input[name='item']"));
+      const formRowCheckboxes = Array.from(document.querySelectorAll(".row-check"));
 
       if (currentColumns === 2 || currentColumns === 3) {
         for (let i = 0; i < allItems.length; i += currentColumns) {
-          const row = document.createElement('li');
-          row.className = 'preview-row';
-          row.classList.add(`col-${currentColumns}`);
+          const rowLi = document.createElement('li');
+          rowLi.className = 'preview-row';
+          rowLi.classList.add(`col-${currentColumns}`);
 
+          // Preview left checkbox
+          const previewCb = document.createElement('input');
+          previewCb.type = 'checkbox';
+          previewCb.className = 'preview-check';
+
+          const formCb = formRowCheckboxes[Math.floor(i / currentColumns)];
+          if (formCb && formCb.checked) previewCb.checked = true;
+          if (!checkboxesEnabled) previewCb.classList.add('hidden-checkbox');
+
+          previewCb.addEventListener('change', function () {
+            if (formCb) formCb.checked = this.checked;
+            if (this.checked) rowLi.classList.add('completed');
+            else rowLi.classList.remove('completed');
+          });
+          rowLi.appendChild(previewCb);
+
+          // Text columns
           for (let j = 0; j < currentColumns; j++) {
             const col = document.createElement('div');
             col.textContent = allItems[i + j]?.value.trim() || '...';
-            row.appendChild(col);
+            rowLi.appendChild(col);
           }
 
-          previewItems.appendChild(row);
+          if (formCb && formCb.checked) rowLi.classList.add('completed');
+
+          previewItems.appendChild(rowLi);
         }
       } else {
-        // Single-column layout
-        allItems.forEach(input => {
+          // Single-column: one preview row per item; one checkbox per item (left)
+          allItems.forEach((input, index) => {
           const li = document.createElement('li');
-          li.textContent = input.value.trim() || '...';
+          li.className = 'preview-row col-1';
+
+          // --- Preview left checkbox ---
+          const previewCb = document.createElement('input');
+          previewCb.type = 'checkbox';
+          previewCb.className = 'preview-check';
+          const formCb = formRowCheckboxes[index];
+          if (formCb && formCb.checked) previewCb.checked = true;
+          if (!checkboxesEnabled) previewCb.classList.add('hidden-checkbox');
+          previewCb.addEventListener('change', function () {
+            if (formCb) formCb.checked = this.checked;
+            if (this.checked) li.classList.add('completed');
+            else li.classList.remove('completed');
+          });
+          li.appendChild(previewCb);
+
+          // --- Text column as a div (keeps grid consistent) ---
+          const col = document.createElement('div');
+          col.textContent = input.value.trim() || '...';
+          li.appendChild(col);
+
+          if (formCb && formCb.checked) li.classList.add('completed');
+
           previewItems.appendChild(li);
         });
       }
 
-      // ✅ Show note content if present
+      // Note content
       const noteTextarea = document.getElementById('editor');
       const notePreview = document.getElementById('notePreview');
       if (noteTextarea && notePreview) {
         notePreview.innerHTML = noteTextarea.innerHTML.trim();
       }
     }
+
 
 
     const titleInput = document.getElementById("title");
@@ -334,6 +413,35 @@
     function execCmd(command, value = null) {
       document.execCommand(command, false, value);
     }
-  
+    
+    // Toggle visibility of all row checkboxes
+    const toggleBtn = document.getElementById('toggleCheckboxesBtn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        checkboxesEnabled = !checkboxesEnabled;
+        syncCheckboxVisibility();
+      });
+    } else {
+      console.warn('Checkboxes button not found: #toggleCheckboxesBtn');
+    }
+
+
+    function syncCheckboxVisibility() {
+      // Form-side cells
+      document.querySelectorAll('.row-checkbox').forEach(cell => {
+        cell.classList.toggle('hidden-checkbox', !checkboxesEnabled);
+      });
+
+      // Preview-side checkboxes
+      document.querySelectorAll('.preview-check').forEach(cb => {
+        cb.classList.toggle('hidden-checkbox', !checkboxesEnabled);
+      });
+
+      // ✅ Add/remove a class to control the grid template
+      const previewList = document.getElementById('previewItems');
+      if (previewList) {
+        previewList.classList.toggle('checkboxes-on', checkboxesEnabled);
+      }
+    }
 
 
