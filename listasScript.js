@@ -286,27 +286,7 @@
         const totalInputs = columns === 2 ? count * 2 : count;
         createItemInputs(totalInputs, columns);
       });
-    });
-
-    // para formularios
-    document.querySelectorAll(".sidebar a.form-option").forEach(link => {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const rows = parseInt(this.dataset.rows, 10);
-            createItemInputs(rows, 1); // one-column inputs
-            appendFlexibleNoteArea(); // add flexible textarea
-        });
-    });
-
-    document.querySelectorAll(".sidebar a.form2-option").forEach(link => {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const rows = parseInt(this.dataset.rows, 10);
-        const totalInputs = rows * 2; // Two columns per row
-        createItemInputs(totalInputs, 2);
-        appendFlexibleNoteArea();
-      });
-    });
+    });    
 
     document.querySelectorAll(".sidebar a.option-3col").forEach(link => {
       link.addEventListener("click", function (e) {
@@ -317,15 +297,6 @@
       });
     });
 
-    document.querySelectorAll(".sidebar a.form3-option").forEach(link => {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const rows = parseInt(this.dataset.rows, 10);
-        const totalInputs = rows * 3;
-        createItemInputs(totalInputs, 3);
-        appendFlexibleNoteArea();
-      });
-    });
 
     // Initialize default list
     createItemInputs(5);
@@ -339,19 +310,23 @@
 
       const existingValues = currentInputs.map(input => input.value.trim());
 
-      // ✅ Detect if a form note area exists
-      const noteElement = document.querySelector('.form-note-area');
-      const noteContent = document.getElementById('form-note')?.value.trim() || "";
+      // ✅ Preserve current rich text content
+      const editor = document.getElementById('editor');
+      const noteContent = editor?.innerHTML.trim() || "";
 
       createItemInputs(newTotal, currentColumns);
 
+      // Restore input values
       const allInputs = document.querySelectorAll("input[name='item']");
       existingValues.forEach((val, i) => allInputs[i].value = val);
 
-      // ✅ Re-append note if it existed
-      if (noteElement) {
-        appendFlexibleNoteArea();
-        document.getElementById('form-note').value = noteContent;
+      // ✅ Re-append note box if visible before
+      const container = document.getElementById('richTextContainer');
+      if (container && container.classList.contains('form-note-area')) {
+        container.classList.add('form-note-area'); // Ensure visible
+        editor.innerHTML = noteContent; // Restore content
+        editor.removeEventListener('keyup', updatePreview);
+        editor.addEventListener('keyup', updatePreview);
       }
 
       allInputs[newTotal - 1]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -359,6 +334,7 @@
       updatePreview();
       updateRowControls();
     }
+
 
     function deleteRow() {
       const inputsPerRow = currentColumns;
@@ -368,34 +344,29 @@
       const newTotal = currentInputs.length - inputsPerRow;
       const remainingValues = currentInputs.slice(0, newTotal).map(input => input.value.trim());
 
-      // ✅ Detect note before regeneration
-      const noteElement = document.querySelector('.form-note-area');
-      const noteContent = document.getElementById('form-note')?.value.trim() || "";
+      // ✅ Preserve current note content
+      const editor = document.getElementById('editor');
+      const noteContent = editor?.innerHTML.trim() || "";
 
       createItemInputs(newTotal, currentColumns);
 
+      // Restore input values
       const allInputs = document.querySelectorAll("input[name='item']");
       remainingValues.forEach((val, i) => allInputs[i].value = val);
 
-      // ✅ Re-append note if it existed
-      if (noteElement) {
-        appendFlexibleNoteArea();
-        document.getElementById('form-note').value = noteContent;
+      // ✅ Restore note if it was visible before
+      const container = document.getElementById('richTextContainer');
+      if (container && container.classList.contains('form-note-area')) {
+        container.classList.add('form-note-area'); // Ensure it's shown
+        editor.innerHTML = noteContent;            // Restore content
+        editor.removeEventListener('keyup', updatePreview);
+        editor.addEventListener('keyup', updatePreview);
       }
 
       updatePreview();
       updateRowControls();
     }
-    
 
-    //checks if this is a form to add the text area after adding or deleting row
-    function isFormMode() {
-      return (
-        document.querySelector(".sidebar a.form-option.active") ||
-        document.querySelector(".sidebar a.form2-option.active") ||
-        document.querySelector(".sidebar a.form3-option.active")
-      );
-    }
 
 
     // do not delete las input row
@@ -443,5 +414,19 @@
         previewList.classList.toggle('checkboxes-on', checkboxesEnabled);
       }
     }
+
+      // Toggle Note Area visibility
+      const toggleNoteAreaBtn = document.getElementById('toggleNoteBoxBtn');
+      toggleNoteAreaBtn.addEventListener('click', () => {
+        const container = document.getElementById('richTextContainer');
+        if (container.classList.contains('form-note-area')) {
+          container.classList.remove('form-note-area');
+        } else {
+          container.classList.add('form-note-area');
+        }
+         // ✅ Only add event listener if not already attached
+          editor.removeEventListener('keyup', updatePreview);
+          editor.addEventListener('keyup', updatePreview);
+      });
 
 
