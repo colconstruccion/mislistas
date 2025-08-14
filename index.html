@@ -6,6 +6,8 @@
   <title>List Builder Workspace</title>
   <link rel="stylesheet" href="listasStyle.css">
   <link rel="stylesheet" href="checkBoxes.css">
+  <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
+
   <style></style>
 </head>
 <body>
@@ -103,6 +105,9 @@
 
         <div style="display: flex; gap: 10px;">
           <button type="button" onclick="saveList()">Save List</button>
+          <!-- Upload Header Button V6 -->
+          <input type="file" id="headerImageInput" accept="image/*" style="display: none;" />
+          <button type="button" id="uploadHeaderBtn">Upload Header</button>
           <button type="button" onclick="window.print()">Print List</button>
         </div>
       </div>
@@ -118,6 +123,8 @@
   </div>
 
   <script src="listasScript.js"></script>
+  <script src="uploadHeader.js"></script> <!-- V6-->
+
 </body>
 </html>
 
