@@ -1,22 +1,21 @@
-#headerPreview {
+#footerPreview {
   position: relative;
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
-#headerPreview img {
+#footerPreview img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Red remove button in top-right corner */
-#headerPreview .remove-btn {
+#footerPreview .remove-footer-btn {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #e74c3c; /* vivid red */
+  background: #e74c3c;
   color: white;
   border: none;
   border-radius: 50%;
@@ -24,19 +23,15 @@
   height: 24px;
   font-size: 18px;
   cursor: pointer;
-  line-height: 20px;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
 }
 
-/* Hide remove icon when printing */
 @media print {
-  #headerPreview .remove-btn {
+  #footerPreview .remove-footer-btn {
     display: none;
   }
 }
-
 
