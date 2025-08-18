@@ -10,17 +10,6 @@
   <link rel="stylesheet" href="uploadFooter.css">
   <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
   <style></style>
-  <script>
-  const userLang = navigator.language || navigator.userLanguage;
-
-  if (userLang.startsWith('es')) {
-    //console.log(userLang);
-    window.location.href = 'index-es.html';
-    
-  }
-  // Everyone else stays on index.html
-  </script>
-
 </head>
 <body>
   <div class="layout">
@@ -31,47 +20,47 @@
         </a>
       </div>
       <h3>Quick Lists</h3>
-      <a class="toggle-link" onclick="openWorkspace()">My Workspace</a>
+      <a class="toggle-link" onclick="openWorkspace()">Mis listas</a>
       <div id="workspace" style="margin-top: 20px; font-size: 14px; color: #333;"></div>
       
-      <a class="toggle-link" onclick="toggleSection('one-column-list')">One Column Lists</a>
+      <a class="toggle-link" onclick="toggleSection('one-column-list')">Listas de una columna</a>
       <ul id="one-column-list" class="active">
-        <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
-        <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
+        <li><a href="#" class="option" data-count="5" data-columns="1">Lista 5 items</a></li>
+        <li><a href="#" class="option" data-count="10" data-columns="1">Lista 10 items</a></li>
         <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
         <li><a href="#" class="option" data-count="20" data-columns="1">List 20 items</a></li>
         <li><a href="#" class="option" data-count="25" data-columns="1">List 25 items</a></li>
         <li><a href="#" class="option" data-count="30" data-columns="1">List 30 items</a></li>
       </ul>
 
-      <a class="toggle-link" onclick="toggleSection('two-column-list')">Two Column Lists</a>
+      <a class="toggle-link" onclick="toggleSection('two-column-list')">Listas de dos columnas</a>
       <ul id="two-column-list">
-        <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
-        <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
-        <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
-        <li><a href="#" class="option" data-count="20" data-columns="2">20 rows</a></li>
-        <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
-        <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
+        <li><a href="#" class="option" data-count="5" data-columns="2">5 renglones</a></li>
+        <li><a href="#" class="option" data-count="10" data-columns="2">10 renglones</a></li>
+        <li><a href="#" class="option" data-count="15" data-columns="2">15 renglones</a></li>
+        <li><a href="#" class="option" data-count="20" data-columns="2">20 renglones</a></li>
+        <li><a href="#" class="option" data-count="25" data-columns="2">25 renglones</a></li>
+        <li><a href="#" class="option" data-count="30" data-columns="2">30 renglones</a></li>
       </ul>
 
-      <a class="toggle-link" onclick="toggleSection('three-column-list')">Three Columns Lists</a>
+      <a class="toggle-link" onclick="toggleSection('three-column-list')">Listas de tres columnas</a>
       <ul id="three-column-list">
-        <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="20" data-columns="3">20 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="25" data-columns="3">25 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="30" data-columns="3">30 rows</a></li>
+        <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 renglones</a></li>
+        <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 renglones</a></li>
+        <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 renglones</a></li>
+        <li><a href="#" class="option-3col" data-count="20" data-columns="3">20 renglones</a></li>
+        <li><a href="#" class="option-3col" data-count="25" data-columns="3">25 renglones</a></li>
+        <li><a href="#" class="option-3col" data-count="30" data-columns="3">30 renglones</a></li>
       </ul>
 
     </aside>
 
     <div class="main">
       <div class="form-container">
-        <h2>Create a List</h2>
+        <h2>Hacer una lista</h2>
         <form id="listForm">
-          <label for="title">List Title</label>
-          <input type="text" id="title" name="title" placeholder="Enter list title">
+          <label for="title">Titulo de la lista</label>
+          <input type="text" id="title" name="title" placeholder="Escriba el titulo de la lista">
           <div id="itemsContainer"></div>
           <!-- text editor; hidden at first-->
           <div id="richTextContainer">
@@ -113,28 +102,28 @@
         </form>
 
         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <button type="button" id="toggleCheckboxesBtn">Checkboxes</button>
-          <button type="button" id="toggleNoteBoxBtn">Note Box</button>
-          <button type="button" onclick="addRow()">Add Row</button>
-          <button type="button" onclick="deleteRow()">Delete Row</button>
+          <button type="button" id="toggleCheckboxesBtn">Casillas</button>
+          <button type="button" id="toggleNoteBoxBtn">Area de texto</button>
+          <button type="button" onclick="addRow()">Otron renglon</button>
+          <button type="button" onclick="deleteRow()">Quitar renglon</button>
         </div>
 
 
         <div style="display: flex; gap: 10px;">
-          <button type="button" onclick="saveList()">Save List</button>
+          <button type="button" onclick="saveList()">Guardar Lista</button>
           <!-- Upload Header Button V6 -->
           <input type="file" id="headerImageInput" accept="image/*" style="display: none;" />
-          <button type="button" id="uploadHeaderBtn">Upload Header</button>
+          <button type="button" id="uploadHeaderBtn">Subir encabezado</button>
           <!-- Upload footer V7-->
           <input type="file" id="footerImageInput" accept="image/*" style="display: none;" />
-          <button type="button" id="uploadFooterBtn">Add Footer</button> 
-          <button type="button" onclick="window.print()">Print List</button>
+          <button type="button" id="uploadFooterBtn">Subir pie de pagina</button> 
+          <button type="button" onclick="window.print()">Imprimir lista</button>
         </div>
       </div>
 
       <div class="preview-container">
-        <h2 id="livePreviewHeader">Live Preview</h2>
-        <h3 id="previewTitle">Your list title...</h3>
+        <h2 id="livePreviewHeader">Pagina actual</h2>
+        <h3 id="previewTitle">El titulo de su lista</h3>
         <ul class="preview" id="previewItems"></ul>
         <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
         
@@ -142,12 +131,12 @@
     </div>
   </div>
 
-  <script src="listasScript.js"></script>
+  <script src="listasScript-es.js"></script>
   <script src="uploadHeader.js"></script> <!-- V6-->
   <script src="uploadFooter.js"></script>
   
   <footer class="page-footer">
-    <p>&copy; lysty.co. All rights reserved.</p>
+    <p>&copy; lysty.co. Todos los derechos reservados.</p>
   </footer>
 
 </body>
