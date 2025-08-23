@@ -1,0 +1,28 @@
+
+  /* Orange theme overrides */
+  .theme-orange button,
+  .theme-orange .sidebar .login-btn {
+    background-color: #ff7a00;
+  }
+  .theme-orange button:hover,
+  .theme-orange .sidebar .login-btn:hover {
+    background-color: #cc6200;
+  }
+  .theme-orange .sidebar a.toggle-link,
+  .theme-orange .sidebar a.option,
+  .theme-orange .sidebar a.option-3col,
+  .theme-orange .sidebar a.form-option,
+  .theme-orange .sidebar a.form2-option,
+  .theme-orange .sidebar a.form3-option {
+    color: #ff7a00;
+  }
+  .theme-orange .sidebar a.toggle-link:hover,
+  .theme-orange .sidebar a.option:hover,
+  .theme-orange .sidebar a.option-3col:hover,
+  .theme-orange .sidebar a.form-option:hover,
+  .theme-orange .sidebar a.form2-option:hover,
+  .theme-orange .sidebar a.form3-option:hover {
+    color: #cc6200;
+    text-decoration: underline;
+  }
+

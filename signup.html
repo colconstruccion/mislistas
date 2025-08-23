@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Lists + Images (Plain JS)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    .row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .items { margin-top: 1rem; }
+    .item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+    img.header { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; }
+    small.muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>My List</h1>
+
+  <!-- AUTH (super minimal) -->
+  <div id="auth">
+    <div class="row">
+      <input id="email" type="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button id="signup">Sign up</button>
+      <button id="login">Log in</button>
+      <button id="logout" style="display:none;">Log out</button>
+    </div>
+    <small class="muted" id="authStatus">Not signed in</small>
+  </div>
+
+  <hr />
+
+  <!-- LIST METADATA -->
+  <div id="listSection" style="display:none;">
+    <div class="row">
+      <input id="listTitle" placeholder="List title" />
+      <input id="listNote" placeholder="List note (optional)" />
+      <button id="saveListMeta">Save list meta</button>
+    </div>
+
+    <!-- HEADER IMAGE UPLOAD -->
+    <div class="row">
+      <input id="headerFile" type="file" accept="image/*" />
+      <button id="uploadHeaderBtn">Upload header image</button>
+      <small class="muted" id="uploadStatus"></small>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="row">
+      <img id="headerPreview" class="header" alt="Header preview" />
+    </div>
+
+    <!-- ITEMS -->
+    <div class="row">
+      <input id="newItemText" placeholder="Add an item…" />
+      <button id="addItemBtn">Add</button>
+    </div>
+
+    <div class="items" id="itemsList"></div>
+  </div>

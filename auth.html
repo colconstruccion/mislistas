@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
   <link rel="stylesheet" href="uploadFooter.css">
   <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
+  <link rel="stylesheet" href="auth.css"> <!--V13-->
   <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
   <style></style>
   <script>
@@ -23,15 +24,19 @@
   </script>
 
 </head>
-<body>
-  <div class="layout">
+<body class="theme-orange">
+  <div class="layout" id="appLayout" style="display:none;">
     <aside class="sidebar">
       <div class="logo-container">
         <a href="https://lysty.co">
           <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
         </a>
       </div>
-      <a href="login.html" class="login-btn">Login</a>
+      <button type="button" id="logoutBtn">Logout</button>
+        <script type="module">
+       
+        </script>
+
 
       <a class="toggle-link" onclick="openWorkspace()">My Workspace</a>
       <div id="workspace" style="margin-top: 20px; font-size: 14px; color: #333;"></div>
@@ -149,7 +154,55 @@
   <script src="listasScript.js"></script>
   <script src="uploadHeader.js"></script> <!-- V6-->
   <script src="uploadFooter.js"></script>
-  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const appLayout = document.getElementById("appLayout");
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+        // Not signed in → back to login
+        window.location.href = "login.html";
+        return;
+        }
+
+        // OPTION A: allow all Google accounts (default if you only show Google button on login)
+        const isGoogle = (user.providerData || []).some(p => p.providerId === "google.com");
+
+        // OPTION B (stricter): require a Gmail address specifically
+        const isGmail = (user.email || "").toLowerCase().endsWith("@gmail.com");
+
+        // Pick one rule:
+        const allow = isGoogle;         // A: all Google accounts
+        // const allow = isGmail;       // B: Gmail-only
+
+        if (!allow) {
+        alert("This page is limited to Google (Gmail) sign-ins.");
+        await signOut(auth);
+        window.location.href = "login.html";
+        return;
+        }
+
+        // Passed checks → reveal the app
+        appLayout.style.display = "flex";
+
+        //logout button
+        document.getElementById('logoutBtn')?.addEventListener('click', () => signOut(auth));
+    });
+    </script>
+
   <footer class="page-footer">
     <p>&copy; lysty.co. All rights reserved.</p>
   </footer>
