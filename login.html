@@ -70,43 +70,9 @@
   </div>
 
   <script type="module">
-    // 1. Firebase SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import {
-        getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-    // 2. Your Firebase config
-   const firebaseConfig = {
-    apiKey: "AIzaSyBLGPdKkyYVwIA1-5QZTIBkoOznNgLIW6I",
-    authDomain: "quick-lysty.firebaseapp.com",
-    projectId: "quick-lysty",
-    storageBucket: "quick-lysty.firebasestorage.app",
-    messagingSenderId: "5584828638",
-    appId: "1:5584828638:web:4e4a4c2d2b3e2a4f52aa4f",
-    measurementId: "G-LRWMK06XZK"
-   };
-
-    // 3. Init Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    // 4. If already logged in, skip login page
-    onAuthStateChanged(auth, (user) => {
-        if (user) window.location.href = "auth.html";
-    });
-
-    // 5. Handle button click
-    document.querySelector(".google-btn").addEventListener("click", async () => {
-        try {
-        await signInWithPopup(auth, provider);
-        window.location.href = "auth.html";
-        } catch (err) {
-        alert(err.message);
-        }
-    });
+    
    </script>
 
 </body>
 </html>
+
