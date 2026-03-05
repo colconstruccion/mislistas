@@ -90,7 +90,7 @@
       flex: 1;
       flex-direction: row;
       flex-wrap: wrap;
-      gap: 40px;
+      gap: 20px;
       padding: 40px;
     }
 
@@ -129,6 +129,53 @@
       border-radius: 6px;
       font-size: 16px;
       background-color: #fafafa;
+    }
+
+    /* Override global input margin inside search box */
+    .search-row input[type="text"] {
+      margin-bottom: 0;
+    }
+
+    /* Search box title cleanup */
+    #search-box h3 {
+      margin: 0 0 10px 0;   /* controlled spacing */
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    #search-box {
+      display: none;
+    }
+
+    .platform-slogan {
+      margin: 8px 0 8px;
+      max-width: 720px;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #425466;
+    }
+
+    .platform-slogan::before {
+      content: "🔗 ";
+    }
+
+    .platform-pricing {
+      margin: 6px 0 18px;
+      padding: 10px 14px;
+      background: #f4f8ff;
+      border: 1px solid #e1ebff;
+      border-radius: 10px;
+      max-width: 720px;
+      font-size: 0.95rem;
+      color: #2d3748;
+    }
+
+    @media (max-width: 768px) {
+      .platform-slogan,
+      .platform-pricing {
+        max-width: 100%;
+        font-size: 0.95rem;
+      }
     }
 
     button {
@@ -314,3 +361,433 @@
   .sidebar .login-btn:hover {
     background-color: #357ab8;
   }
+
+  /* Ensure the Workspace list shows in the sidebar */
+  .sidebar .workspace-list {
+  display: block !important;
+}
+
+/* Search box above form */
+/* Align search box with form & preview column */
+#search-box {
+  width: 100%;
+  max-width: 1100px;   /* match form/preview width */
+  margin: 0 auto 10px auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  margin-top: 30px;
+}
+
+.search-box{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:14px;
+  margin: 0 0 14px 0;
+}
+
+.search-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  height: 42px;        /* force the row to match controls */
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+}
+
+.search-row input,
+.search-row button{
+  height: 42px;
+  line-height: normal;
+}
+
+
+.search-row input {
+  flex: 1;
+  height: 42px;          /* match button */
+  padding: 0 12px;      /* remove vertical padding */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  color: #111827;
+  font-size: 15px;
+}
+
+.search-row button {
+  background: #1e40af;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+  min-width: 140px;
+  height: 42px;
+  /* line-height: 42px; */
+  padding: 0 18px;   /* ✅ FIX: no vertical padding */
+}
+
+
+/* Hover state */
+.search-row button:hover {
+  background: #1e3a8a;          /* slightly darker */
+}
+
+/* Disabled / inactive (optional future use) */
+.search-row button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.search-msg{
+  margin-top:10px;
+  font-size:0.95rem;
+  opacity:0.9;
+}
+
+/* Hide form until user chooses a list */
+#formContainer{
+  display:none;
+}
+
+/* Sidebar nested menu look */
+.sidebar .toggle-link.sub{
+  margin-left: 10px;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.sidebar ul.nested{
+  margin: 6px 0 10px 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar ul.nested li a{
+  display:block;
+  padding:6px 0;
+  font-size: 13px;
+}
+
+/* Hide form and preview until a list is selected */
+#formContainer,
+#preview-container {
+  display: none;
+}
+
+.search-msg a{
+  color:#1e40af;
+  font-weight:600;
+  text-decoration:none;
+  padding: 6px 10px;
+  border: 1px solid rgba(30,64,175,0.25);
+  border-radius: 8px;
+}
+.search-msg a:hover{
+  text-decoration: underline;
+}
+
+/* Auth buttons container */
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+/* Make both buttons tap-friendly */
+.auth-buttons a,
+.auth-buttons button {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* Optional: make Sign Up visually secondary */
+.signup-btn {
+  background: transparent;
+  color: #1f8fff;
+  border: 2px solid #1f8fff;
+}
+
+/* ---------- MOBILE ONLY ---------- */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+  }
+
+  .auth-buttons {
+    padding: 0 10px;
+  }
+}
+
+/* Icon-only button */
+.icon-btn{
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(30,64,175,0.25);
+  background: #f8fafc;
+  color: #1e40af;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  /* ✅ OVERRIDES for your global button{} rule */
+  flex: 0 0 auto;      /* cancels button{flex:1} */
+  padding: 0;          /* cancels button padding */
+  margin-top: 0;       /* cancels button margin-top */
+  font-size: 0;        /* prevents SVG scaling via inherited font-size */
+  line-height: 0;
+
+  border-radius: 10px;
+  border: 1px solid rgba(30,64,175,0.25);
+  background: #f8fafc;
+  color: #1e40af;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+}
+
+.icon-btn svg{
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: currentColor;
+}
+
+.icon-btn:hover{
+  background: #eef2ff;
+}
+
+/* Toast */
+.toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 9999;
+}
+
+.toast.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.secondary-btn {
+  margin-top: 8px;
+  background: transparent;
+  color: #0aa;
+  border: 1px solid #0aa;
+}
+
+.secondary-btn:hover {
+  background: #0aa;
+  color: #fff;
+}
+
+/* =========================
+   My Account Panel Styling
+   ========================= */
+
+#myAccountPanel {
+  color: #f2f2f2; /* light text */
+}
+
+/* Card container */
+#myAccountPanel .account-card {
+  background: #1e1e1e;   /* dark but lighter than body */
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+/* Labels */
+#myAccountPanel strong {
+  color: #ffffff;
+}
+
+/* Email text */
+#myAccountPanel .mono-text {
+  color: #b8e7e0; /* teal-ish accent */
+}
+
+/* Divider */
+#myAccountPanel hr {
+  border: none;
+  border-top: 1px solid #444;
+  margin: 14px 0;
+}
+
+/* Status / messages */
+#myAccountPanel .status-msg {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #ffd966; /* readable warning/info color */
+}
+
+/* Buttons spacing */
+#myAccountPanel button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.toast-message {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #222;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.toast-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero + Search wrapper */
+.hero-search{
+  margin: 18px 0 40px;
+}
+
+/* Hero block */
+.hero{
+  background: #ffffff;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  padding: 18px 18px 14px;
+  margin-bottom: 12px;
+}
+
+.hero-title{
+  margin: 0 0 8px;
+  font-size: 1.55rem;
+  line-height: 1.2;
+  color: #1f2d3d;
+}
+
+.hero-subtitle{
+  margin: 0 0 12px;
+  max-width: 760px;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #425466;
+}
+
+.hero-pricing{
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: #f4f8ff;
+  border: 1px solid #e1ebff;
+  border-radius: 10px;
+  color: #2d3748;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.hero-pricing-note{
+  display: block;
+  margin-top: 6px;
+  color: #4b5563;
+}
+
+/* Hero buttons */
+.hero-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.hero-btn.primary{
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.hero-btn.secondary{
+  background: #ffffff;
+  color: #1d4ed8;
+  border: 1px solid #cfe0ff;
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  .hero{
+    padding: 16px 14px 12px;
+  }
+  .hero-title{
+    font-size: 1.35rem;
+  }
+  .hero-btn{
+    width: 100%;
+  }
+}
+
+/* =========================
+   Saved Lists panel tweaks
+   ========================= */
+
+/* Make Saved Lists panel narrower on desktop (about ~20% smaller feel) */
+#savedListsView{
+  flex: 0 0 320px;
+  max-width: 320px;
+}
+
+/* On mobile, let it go full width */
+@media (max-width: 768px){
+  #savedListsView{
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+}
+
+/* Pagination buttons/links should have dark text (override global button color) */
+#savedListsView .pagination button,
+#savedListsView .pagination a{
+  color: #111827 !important;
+}
+
+/* Optional: make pagination buttons look nicer on light backgrounds */
+#savedListsView .pagination button{
+  background: #e5e7eb !important;
+}
+#savedListsView .pagination button:hover{
+  background: #d1d5db !important;
+}

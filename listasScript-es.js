@@ -337,43 +337,57 @@
 
 
     function deleteRow() {
-      const inputsPerRow = currentColumns;
+      const inputsPerRow = currentColumns; // how many inputs make one row
       const currentInputs = Array.from(document.querySelectorAll("input[name='item']"));
-      if (currentInputs.length <= inputsPerRow) return;
 
-      const newTotal = currentInputs.length - inputsPerRow;
+      // Allow deleting down to zero; only bail if truly nothing left
+      if (currentInputs.length === 0) return;
+
+      // Compute the new total inputs after removing one full row
+      const newTotal = Math.max(0, currentInputs.length - inputsPerRow);
+
+      // Capture remaining values (first newTotal inputs)
       const remainingValues = currentInputs.slice(0, newTotal).map(input => input.value.trim());
 
       // ✅ Preserve current note content
       const editor = document.getElementById('editor');
       const noteContent = editor?.innerHTML.trim() || "";
 
+      // Rebuild inputs to exactly newTotal (this clears container if newTotal === 0)
       createItemInputs(newTotal, currentColumns);
 
       // Restore input values
       const allInputs = document.querySelectorAll("input[name='item']");
-      remainingValues.forEach((val, i) => allInputs[i].value = val);
+      remainingValues.forEach((val, i) => { allInputs[i].value = val; });
 
       // ✅ Restore note if it was visible before
       const container = document.getElementById('richTextContainer');
       if (container && container.classList.contains('form-note-area')) {
-        container.classList.add('form-note-area'); // Ensure it's shown
-        editor.innerHTML = noteContent;            // Restore content
-        editor.removeEventListener('keyup', updatePreview);
-        editor.addEventListener('keyup', updatePreview);
+        container.classList.add('form-note-area');
+        if (editor) {
+          editor.innerHTML = noteContent;
+          editor.removeEventListener('keyup', updatePreview);
+          editor.addEventListener('keyup', updatePreview);
+        }
       }
 
-      updatePreview();
-      updateRowControls();
-    }
+      // 🔄 Update buttons/counters after rows changed
+      if (typeof updateRowControls === "function") {
+        updateRowControls();
+      }
 
+      // (Optional) ensure preview updates even when list becomes empty
+      if (typeof updatePreview === "function") {
+        try { updatePreview(); } catch {}
+      }
+    }
 
 
     // do not delete las input row
     function updateRowControls() {
       const inputs = document.querySelectorAll("input[name='item']");
       const deleteButton = document.querySelector("button[onclick='deleteRow()']");
-      const inputsPerRow = currentColumns;
+      const inputsPerRow = 0;
 
       if (deleteButton) {
         deleteButton.disabled = inputs.length <= inputsPerRow;

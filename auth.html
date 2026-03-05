@@ -4,79 +4,97 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>List Builder Workspace</title>
-  <link rel="stylesheet" href="listasStyle.css">
+  <link rel="stylesheet" href="listasStyle.css?v=1">
   <link rel="stylesheet" href="checkBoxes.css">
   <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
   <link rel="stylesheet" href="uploadFooter.css">
   <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
   <link rel="stylesheet" href="auth.css"> <!--V13-->
   <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
-  <style></style>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .saved-list-card button[title="Delete this list"]:hover {
+        background:#f8d7da;
+        color:#900;
+        transform:scale(1.15);
+      }
+
+  </style>
   <script>
   const userLang = navigator.language || navigator.userLanguage;
 
-  if (userLang.startsWith('es')) {
-    //console.log(userLang);
-    window.location.href = 'index-es.html';
-    
-  }
-  // Everyone else stays on index.html
   </script>
 
 </head>
+
 <body class="theme-orange">
-  <div class="layout" id="appLayout" style="display:none;">
+  <main id="protected" hidden>
+  <div id="auth-loading" style="text-align:center; padding:1rem;">Loading…</div>
+
+  <div class="layout" id="appLayout">
     <aside class="sidebar">
       <div class="logo-container">
-        <a href="https://lysty.co">
+        <a href="lysty.co/auth.html">
           <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
         </a>
       </div>
-      <button type="button" id="logoutBtn">Logout</button>
-        <script type="module">
-       
-        </script>
-
-
-      <a class="toggle-link" onclick="openWorkspace()">My Workspace</a>
-      <div id="workspace" style="margin-top: 20px; font-size: 14px; color: #333;"></div>
       
-      <a class="toggle-link" onclick="toggleSection('one-column-list')">One Column Lists</a>
-      <ul id="one-column-list" class="active">
-        <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
-        <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
-        <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
-        <li><a href="#" class="option" data-count="20" data-columns="1">List 20 items</a></li>
-        <li><a href="#" class="option" data-count="25" data-columns="1">List 25 items</a></li>
-        <li><a href="#" class="option" data-count="30" data-columns="1">List 30 items</a></li>
-      </ul>
+      <button id="logoutBtn" class="login-btn" style="max-width:200px">Logout</button>
+      <!-- <a class="toggle-link" onclick="openWorkspace()">My Temp lists</a> --> <!-- Removed v28-->
+      <a class="toggle-link" onclick="toggleSavedLists()">My Saved Lists</a>
 
-      <a class="toggle-link" onclick="toggleSection('two-column-list')">Two Column Lists</a>
-      <ul id="two-column-list">
-        <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
-        <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
-        <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
-        <li><a href="#" class="option" data-count="20" data-columns="2">20 rows</a></li>
-        <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
-        <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
-      </ul>
+      <!-- Upload / view documents -->
+      <a class="toggle-link" id="loadDocLink">Upload document</a>
+      <a class="toggle-link" id="myDocsLink">My Documents</a>
+      <a class="toggle-link" id="searchDocsLink">Search Documents</a>
+      <a class="toggle-link" id="createListsLink">Create Lists</a>
+      
+      <div id="createListsMenu" style="display:none;">
 
-      <a class="toggle-link" onclick="toggleSection('three-column-list')">Three Columns Lists</a>
-      <ul id="three-column-list">
-        <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="20" data-columns="3">20 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="25" data-columns="3">25 rows</a></li>
-        <li><a href="#" class="option-3col" data-count="30" data-columns="3">30 rows</a></li>
-      </ul>
+        <a class="toggle-link sub" data-target="one-column-list">One Column Lists</a>
+        <ul id="one-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
+          <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
+          <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
+        </ul>
 
-      <a href="https://www.etsy.com/listing/4329439153/wooden-board-soccer-magnetic-game-with"><img src="images/futbolin.jpg" style="width:100%"></a>
-      <a href="https://a.co/d/1uqGr3A"><img src="images/libroRusaUsa.jpg" style="width:100%"></a>
+        <a class="toggle-link sub" data-target="two-column-list">Two Column Lists</a>
+        <ul id="two-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
+          <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
+          <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
+        </ul>
+
+        <a class="toggle-link sub" data-target="three-column-list">Three Column Lists</a>
+        <ul id="three-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
+        </ul>
+
+      </div>
+
+      <a class="toggle-link" id="myAccountLink">My Account</a>
+      <button type="button" onclick="buyPoints100()">Buy 100 Points ($10)</button>
+      <div id="billingPanel" style="margin-top:10px; padding:10px; border:1px solid #ddd; border-radius:10px; font-size:0.95rem;">
+        <div><strong>Plan:</strong> <span id="planLabel">—</span></div>
+        <div><strong>Points:</strong> <span id="pointsLabel">—</span></div>
+      </div>
+
     </aside>
 
     <div class="main">
-      <div class="form-container">
+      <div id="search-box" class="search-box">
+        <h3>Search Document by ID</h3>
+        <div class="search-row">
+          <input id="publicIdInput" type="text" placeholder="Enter ID (e.g., B3KM)" maxlength="6" />
+          <button id="searchPublicDocBtn" type="button">Search</button>
+        </div>
+        <div id="searchResultMsg" class="search-msg"></div>
+      </div>
+
+      <div id="savedListsView" data-open="0" style="display:none;"></div>
+      <div class="form-container" id="formContainer">
         <h2>Create a List</h2>
         <form id="listForm">
           <label for="title">List Title</label>
@@ -130,7 +148,9 @@
 
 
         <div style="display: flex; gap: 10px;">
-          <button type="button" onclick="saveList()">Save List</button>
+          <button type="button" id="saveAsCopyBtn">Save as Copy</button>
+          <button type="button" id="saveCloudBtn">Save to Cloud</button>
+
           <!-- Upload Header Button V6 -->
           <input type="file" id="headerImageInput" accept="image/*" style="display: none;" />
           <button type="button" id="uploadHeaderBtn">Upload Header</button>
@@ -141,26 +161,314 @@
         </div>
       </div>
 
-      <div class="preview-container">
+      <!-- Document Upload Panel (hidden by default) -->
+      <div id="docUploadPanel" style="display:none; margin: 14px 0; padding: 12px; border: 1px dashed #ccc; border-radius: 8px;">
+        
+        <h3 style="margin-top:0;">Upload a document</h3>
+
+        <form id="docUploadForm">
+              <label for="docTitle">Title (optional)</label>
+              <input type="text" id="docTitle" name="docTitle" placeholder="Document title">
+
+              <label for="docFile" style="display:block; margin-top:8px;">Select file (.pdf, .doc, .docx)</label>
+              <input type="file" id="docFile" accept=".pdf,.doc,.docx" required>
+
+              <div style="display:flex; gap:10px; margin-top:10px;">
+                <button type="submit" id="docUploadBtn">Upload</button>
+                <button type="button" id="docUploadCancelBtn">Cancel</button>
+              </div>
+        </form>
+
+        <div id="docUploadStatus" style="margin-top:8px; font-size:0.95rem;"></div>
+        
+      </div>
+      <!-- Document list (hidden by default) -->
+      <div id="documentList" style="display:block; margin: 20px 0;"></div>
+
+      <div class="preview-container" id="preview-container">
         <h2 id="livePreviewHeader">Live Preview</h2>
         <h3 id="previewTitle">Your list title...</h3>
         <ul class="preview" id="previewItems"></ul>
         <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
         
       </div>
-    </div>
-  </div>
+            <!-- PDF Viewer Panel -->
+      <div id="pdfViewerPanel" style="display:none; margin: 14px 0;">
+        <h3>Document Viewer</h3>
+        <iframe id="pdfFrame" style="width:100%; height:600px; border:1px solid #ccc;" title="PDF viewer"></iframe>
+        <div style="margin-top:8px;">
+          <button type="button" onclick="closePdfViewer()">Close</button>
+        </div>
+      </div>
 
-  <script src="listasScript.js"></script>
+      <!-- My Account Panel -->
+      <div id="myAccountPanel"
+          style="display:none; max-width:420px; margin:20px auto; padding:16px;">
+
+        <h2>My Account</h2>
+
+        <div class="account-card">
+          <p><strong>Email</strong></p>
+          <p id="accountEmail" class="mono-text">Loading...</p>
+
+          <hr />
+
+          <button id="accountChangePasswordBtn" class="cta-btn">
+            Change Password
+          </button>
+
+          <button id="accountDeleteBtn" class="cta-btn danger-btn">
+            Delete Account
+          </button>
+
+          <p id="accountMsg" class="status-msg"></p>
+        </div>
+      </div>
+
+    </div>
+    
+  </div>
+  <!-- 1) Initialize Firebase -->
+
+  <script type="module" src="firebaseConfig.js?v=5"></script>
+  <script type="module" src="uploadDocuments.js?v=2"></script>
+  <script src="accordion.js?v=1"></script>
+  <script src="listasScript.js?v=1"></script>
   <script src="uploadHeader.js"></script> <!-- V6-->
   <script src="uploadFooter.js"></script>
+  <script type="module" src="saveToFirestore.js?v=6"></script>
+  <script type="module" src="loadFromFirestore.js?v=8"></script>
+  <script src="showSavedLists.js?v=1"></script>
+
+  <script type="module">
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const { auth } = window._firebase;
+  const db = getFirestore();
+
+  async function ensureUserProfile(user) {
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        email: user.email ?? "",
+        displayName: user.displayName ?? "",
+
+        role: "user",
+        plan: "free",
+
+        pointsBalance: 0,
+        usage: { listCount: 0, docCount: 0 },
+
+        limits: { freeLists: 10, freeDocs: 10 },
+        costs: { listPoints: 10, docPoints: 10 },
+
+        companyId: null,
+
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+  }
+
+
+  const protectedEl = document.getElementById('protected');
+  const loadingEl = document.getElementById('auth-loading');
+  const appLayout = document.getElementById('appLayout');
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (!user.emailVerified) {
+      await user.reload(); // refresh from server
+
+      if (!user.emailVerified) {
+        await signOut(auth);
+        window.location.href = "login.html";
+        return;
+      }
+    }
+
+
+    // ✅ STEP 1B — ensure user profile exists
+    await ensureUserProfile(user);
+    //console.log("ensureUserProfile ran for:", user.uid);
+
+    if (loadingEl) loadingEl.remove?.();
+    if (protectedEl) protectedEl.hidden = false;
+    if (appLayout) appLayout.style.display = '';
+
+    // ✅ Auto-load documents on login
+      const documentList = document.getElementById('documentList');
+      if (documentList) documentList.style.display = 'block';
+
+      if (window.loadUserDocuments) {
+        await window.loadUserDocuments();
+      }
+  });
+
+  // 🔹 Logout handler
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+      sessionStorage.removeItem('currentListId');
+    });
+  }
+  </script>
+
+
+  <!-- NEW: Wire "My Documents" and PDF viewer -->
+  <script>
+    (function () {
+      const myDocsLink = document.getElementById('myDocsLink');
+      const documentList = document.getElementById('documentList');
+      const formContainer = document.getElementById('formContainer');
+
+      if (myDocsLink) {
+        myDocsLink.addEventListener('click', async () => {
+          const isOpen = documentList.style.display === 'block';
+
+          if (isOpen) {
+            documentList.style.display = 'none';
+            formContainer.style.display = 'block';
+            return;
+          }
+
+          // open list
+          formContainer.style.display = 'none';
+          documentList.style.display = 'block';
+
+          if (window.loadUserDocuments) {
+            await window.loadUserDocuments();
+          }
+        });
+      }
+
+      window.openPdf = function (url) {
+        const panel = document.getElementById('pdfViewerPanel');
+        const frame = document.getElementById('pdfFrame');
+
+        // Hide document list when viewing a PDF
+        const docList = document.getElementById('documentList');
+        if (docList) docList.style.display = 'none';
+
+        if (!panel || !frame) {
+          window.open(url, "_blank");
+          return;
+        }
+
+        panel.style.display = 'block';
+        frame.src = url;
+
+        // Optional: hide the form while viewing PDF
+        const formContainer = document.getElementById('formContainer');
+        if (formContainer) formContainer.style.display = 'none';
+      };
+
+
+      window.closePdfViewer = function () {
+        const panel = document.getElementById('pdfViewerPanel');
+        const frame = document.getElementById('pdfFrame');
+        if (panel) panel.style.display = 'none';
+        if (frame) frame.src = '';
+
+        // Show document list again
+        const docList = document.getElementById('documentList');
+        if (docList) docList.style.display = 'block';
+
+        // Restore the main form
+        const formContainer = document.getElementById('formContainer');
+        if (formContainer) formContainer.style.display = 'block';
+      };
+
+    })();
+
+    window.showToast = function showToast(message) {
+        const toast = document.getElementById("toastMessage");
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2000);
+      };
+
+      const searchDocsLink = document.getElementById('searchDocsLink');
+      const searchBox = document.getElementById('search-box');
+
+      if (searchDocsLink && searchBox) {
+        searchDocsLink.addEventListener('click', () => {
+          const isOpen = searchBox.style.display === 'block';
+          searchBox.style.display = isOpen ? 'none' : 'block';
+        });
+      }
+  </script>
   
 
-  <footer class="page-footer">
-    <p>&copy; lysty.co. All rights reserved.</p>
-  </footer>
+ <!-- NEW: Wire "My Accont"  -->
+<script>
+(function () {
+  const myAccountLink = document.getElementById('myAccountLink');
+  const myAccountPanel = document.getElementById('myAccountPanel');
 
+  const formContainer = document.getElementById('formContainer');
+  const documentList = document.getElementById('documentList');
+  const savedListsView = document.getElementById('savedListsView');
+  const pdfViewerPanel = document.getElementById('pdfViewerPanel');
+
+  if (!myAccountLink || !myAccountPanel) return;
+
+  myAccountLink.addEventListener('click', () => {
+    const isOpen = myAccountPanel.style.display === 'block';
+
+    // Hide everything else
+    if (formContainer) formContainer.style.display = 'none';
+    if (documentList) documentList.style.display = 'none';
+    if (savedListsView) savedListsView.style.display = 'none';
+    if (pdfViewerPanel) pdfViewerPanel.style.display = 'none';
+    if (myAccountPanel) myAccountPanel.style.display = 'none';
+
+    // Toggle account panel
+    myAccountPanel.style.display = isOpen ? 'none' : 'block';
+
+    // Restore editor if closing
+    if (isOpen && formContainer) {
+      formContainer.style.display = 'block';
+    }
+  });
+})();
+</script>
+
+<!-- Buy button -->
+<script type="module" src="./billing.js?v=1"></script>
+<script src="searchBox.js?v=1"></script>
+<script type="module" src="publicSearch.js?v=3"></script>
+<script type="module" src="myAccount.js?v=2"></script>
+<div id="toastMessage" class="toast-message"></div>
+<footer class="page-footer">
+  <p>
+    &copy; lysty.co. All rights reserved. |
+    <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> |
+    <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+  </p>
+</footer>
+
+</main>
 </body>
 </html>
-
-

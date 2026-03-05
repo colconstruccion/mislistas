@@ -1,60 +1,149 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Lists + Images (Plain JS)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lysty Sign Up</title>
+  <link rel="stylesheet" href="styles.css"> <!-- same stylesheet -->
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
-    .row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
-    .items { margin-top: 1rem; }
-    .item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
-    img.header { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; }
-    small.muted { color: #666; }
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .signup-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .signup-logo {
+      margin-bottom: 1rem;
+    }
+
+    .signup-logo img {
+      width: 60px;
+      height: auto;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: #555;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .signup-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #ff6a00; /* same bold orange */
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .signup-btn:hover {
+      background-color: #e55e00;
+    }
+
+    .signup-footer {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    .signup-footer a {
+      color: #ff6a00;
+      text-decoration: none;
+    }
+
+    .signup-legal {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .signup-legal a {
+      color: #ff6a00;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .signup-legal a:hover {
+      text-decoration: underline;
+    }
+
   </style>
 </head>
 <body>
-  <h1>My List</h1>
-
-  <!-- AUTH (super minimal) -->
-  <div id="auth">
-    <div class="row">
-      <input id="email" type="email" placeholder="Email" />
-      <input id="password" type="password" placeholder="Password" />
-      <button id="signup">Sign up</button>
-      <button id="login">Log in</button>
-      <button id="logout" style="display:none;">Log out</button>
+  <div class="signup-container">
+    <div class="signup-logo">
+      <a href="https://lysty.co/"><img src="images/logo_lysty.jpeg" alt="Lysty Logo"></a>
     </div>
-    <small class="muted" id="authStatus">Not signed in</small>
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <div class="input-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+      </div>
+      <p class="signup-legal">
+        By signing up, you agree to our 
+        <a href="terms.html" target="_blank">Terms of Service</a> 
+        and 
+        <a href="privacy.html" target="_blank">Privacy Policy</a>.
+      </p>
+
+      <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+    <div class="signup-footer">
+      <p>Already have an account? <a href="login.html">Login</a></p>
+    </div>
   </div>
+  <!-- 1) Initialize Firebase -->
+  <script type="module" src="firebaseConfig.js"></script>
+  <!-- 2) Handle signup -->
+  <script type="module" src="signup.js"></script>
 
-  <hr />
-
-  <!-- LIST METADATA -->
-  <div id="listSection" style="display:none;">
-    <div class="row">
-      <input id="listTitle" placeholder="List title" />
-      <input id="listNote" placeholder="List note (optional)" />
-      <button id="saveListMeta">Save list meta</button>
-    </div>
-
-    <!-- HEADER IMAGE UPLOAD -->
-    <div class="row">
-      <input id="headerFile" type="file" accept="image/*" />
-      <button id="uploadHeaderBtn">Upload header image</button>
-      <small class="muted" id="uploadStatus"></small>
-    </div>
-
-    <!-- PREVIEW -->
-    <div class="row">
-      <img id="headerPreview" class="header" alt="Header preview" />
-    </div>
-
-    <!-- ITEMS -->
-    <div class="row">
-      <input id="newItemText" placeholder="Add an item…" />
-      <button id="addItemBtn">Add</button>
-    </div>
-
-    <div class="items" id="itemsList"></div>
-  </div>
+</body>
+</html>

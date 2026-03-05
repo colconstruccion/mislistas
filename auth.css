@@ -26,3 +26,31 @@
     text-decoration: underline;
   }
 
+
+  /* Small red cross delete button under each saved title */
+.delete-list-btn {
+  margin-top: 4px;
+  display: inline-block;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #ffe5e5;
+  color: #c1272d;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+}
+.delete-list-btn:hover {
+  background: #ffd6d6;
+}
+
+.toggle-link {
+  cursor: pointer;
+  color: #ff6600; /* or your accent color */
+  text-decoration: none;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
+}
+

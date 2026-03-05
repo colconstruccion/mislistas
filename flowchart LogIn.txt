@@ -1,0 +1,29 @@
+flowchart TD
+  A[User visits login.html] -->|Submit| B{JS loaded?}
+  B -- No --> C[Browser default POST\n(prevented now by JS)]
+  B -- Yes --> D[signInWithEmailAndPassword]
+  D -->|Success| E[Redirect → auth.html]
+  D -->|Error| D1[Show error message]
+
+  E --> F{onAuthStateChanged in auth.html}
+  F -- user == null --> G[Redirect → login.html]
+  F -- user != null --> H[Reveal #protected + #appLayout\n(hide loader, show UI)]
+
+  H --> I[Use app features]
+  I --> J[Click Logout]
+  J --> K[signOut → Redirect → login.html]
+
+  A --> L[Forgot password?]
+  L --> M[passwordReset.js shows email box\nsendPasswordResetEmail]
+  M -->|Email link| N[User opens reset.html?mode=resetPassword&oobCode=...]
+  N --> O[verifyPasswordResetCode]
+  O -->|Ok| P[User enters new password\nconfirmPasswordReset]
+  O -->|Invalid| O1[Show error + hide form]
+  P --> Q[Success → Redirect → login.html]
+
+  %% Signup
+  R[User visits signup.html] --> S[createUserWithEmailAndPassword]
+  S -->|Success| T[Create /users/{uid} in Firestore\nsendEmailVerification]
+  T --> U[Redirect → auth.html]
+  U --> F
+  S -->|Error| S1[Show error message]

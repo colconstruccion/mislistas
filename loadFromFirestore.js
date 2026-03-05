@@ -1,0 +1,616 @@
+// loadFromFirestore.js
+// Lists saved docs and loads OR deletes one from the Workspace.
+import { auth, db} from "./firebaseConfig.js?v=4";
+import {
+  collection, query, orderBy, limit,
+  getDocs, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+import { getFunctions, httpsCallable }
+  from "https://www.gstatic.com/firebasejs/10.12.5/firebase-functions.js";
+
+
+const functions = getFunctions();
+const deleteListPaid = httpsCallable(functions, "deleteListPaid");
+const toggleDocumentVisibility = httpsCallable(functions, "toggleDocumentVisibility");
+const deleteDocumentPaid = httpsCallable(functions, "deleteDocumentPaid");
+/* ---------- Helpers to work with your DOM ---------- */
+
+function validId(id) {
+  return typeof id === "string" && id.length > 0 && id !== "undefined";
+}
+
+function rebuildInputsAndFill(items, columns = 1) {
+  if (typeof window.createItemInputs !== "function") return;
+
+  // Create proper layout using your existing engine
+  window.createItemInputs(items.length, columns);
+
+  // Fill values
+  const inputs = document.querySelectorAll("input[name='item']");
+  items.forEach((text, i) => {
+    if (inputs[i]) inputs[i].value = text || "";
+  });
+
+  try { window.updatePreview && window.updatePreview(); } catch {}
+}
+
+function applyColumnLayout(columns) {
+  const container = document.getElementById("itemsContainer");
+  if (!container) return;
+
+  container.classList.remove("col-2", "col-3");
+  if (columns == 2) container.classList.add("col-2");
+  if (columns == 3) container.classList.add("col-3");
+
+  // optional: store for saving if needed
+  container.dataset.columns = String(columns);
+}
+
+function loadListIntoForm(docData) {
+  const { 
+    title = "Untitled List", 
+    items = [], 
+    note = "",
+    columns = 1
+  } = docData || {};
+
+  const titleEl = document.getElementById("title");
+  if (titleEl) titleEl.value = title;
+
+  const cleaned = (Array.isArray(items) ? items : [])
+    .filter(v => typeof v === "string" && v.trim() !== "" && v.toLowerCase() !== "on");
+  // ✅ Apply saved column layout
+  applyColumnLayout(columns);
+  rebuildInputsAndFill(cleaned, columns);
+
+  const rich = document.getElementById("richTextContainer");
+  if (rich) rich.style.display = "block";
+  const editor = document.getElementById("editor");
+  if (editor) editor.innerHTML = note || "";
+
+  try { window.updatePreview && window.updatePreview(); } catch {}
+}
+
+function dateLabel(ts) {
+  if (!ts || !ts.toDate) return "";
+  const d = ts.toDate();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function renderWorkspaceList(container, rows, onClickItem, onDeleteItem) {
+  container.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.justifyContent = "space-between";
+  header.style.alignItems = "center";
+  header.style.marginBottom = "8px";
+  
+  const totalLists = Array.isArray(rows) ? rows.length : 0;
+
+  header.innerHTML = `
+    <strong>
+      My Saved Lists <span class="saved-lists-count">(${totalLists})</span>
+    </strong>
+    <button id="refreshListsBtn" style="padding:4px 8px">Refresh</button>
+  `;
+  container.appendChild(header);
+
+  const ul = document.createElement("ul");
+  ul.classList.add("workspace-list", "active");
+  ul.style.listStyle = "none";
+  ul.style.paddingLeft = "0";
+  ul.style.margin = "0";
+  ul.style.display = "block";
+
+  if (!rows.length) {
+    const li = document.createElement("li");
+    li.style.opacity = ".7";
+    li.textContent = "No saved lists yet.";
+    ul.appendChild(li);
+  } else {
+    rows.forEach(({ id, title, count, createdAt }) => {
+      const li = document.createElement("li");
+      li.style.marginBottom = "10px";
+
+      const loadBtn = document.createElement("button");
+      loadBtn.type = "button";
+      loadBtn.style.width = "100%";
+      loadBtn.style.textAlign = "left";
+      loadBtn.style.cursor = "pointer";
+      loadBtn.style.padding = "6px 8px";
+      loadBtn.textContent = `${title || "Untitled"} · ${count} item(s)${createdAt ? " · " + createdAt : ""}`;
+      loadBtn.addEventListener("click", () => onClickItem(id));
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "delete-list-btn";
+      delBtn.textContent = "×";
+      delBtn.title = "Delete this list";
+      delBtn.setAttribute("aria-label", "Delete this list");
+      delBtn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        onDeleteItem && onDeleteItem(id, title);
+      });
+
+      li.appendChild(loadBtn);
+      li.appendChild(delBtn); // appears below the title
+      ul.appendChild(li);
+    });
+  }
+
+  container.appendChild(ul);
+
+  const refresh = document.getElementById("refreshListsBtn");
+  if (refresh) {
+    refresh.addEventListener("click", () => {
+      loadSavedLists(container.id);
+    });
+  }
+}
+
+function showEditorPanel() {
+  const formContainer = document.getElementById("formContainer");
+  const documentList = document.getElementById("documentList");
+  const pdfPanel = document.getElementById("pdfViewerPanel");
+
+  // show editor
+  if (formContainer) formContainer.style.display = "block";
+
+  // hide documents UI
+  if (documentList) documentList.style.display = "none";
+  if (pdfPanel) pdfPanel.style.display = "none";
+}
+
+
+/* ---------- Firestore reads/writes ---------- */
+
+async function fetchRecentListsMeta(uid, max = 15) {
+  const colRef = collection(db, "users", uid, "lists");
+  const q = query(colRef, orderBy("createdAt", "desc"), limit(max));
+  const snap = await getDocs(q);
+
+  const rows = [];
+  snap.forEach(d => {
+    const data = d.data() || {};
+    rows.push({
+      id: d.id,
+      title: data.title || "Untitled",
+      count: Array.isArray(data.items) ? data.items.length : (data.totalItems ?? 0),
+      createdAt: data.createdAt ? dateLabel(data.createdAt) : ""
+    });
+  });
+  return rows;
+}
+
+async function fetchList(uid, listId) {
+  const dref = doc(db, "users", uid, "lists", listId);
+  const ds = await getDoc(dref);
+  return ds.exists() ? ds.data() : null;
+}
+
+async function deleteList(listId) {
+  // uid is unused now but keep signature so you don’t change other calls
+  await deleteListPaid({ listId });
+}
+
+/* ---------- Public API ---------- */
+export function loadSavedLists(workspaceId = "workspace") {
+  const container = document.getElementById(workspaceId);
+  if (!container) return;
+
+  container.innerHTML = `<div style="opacity:.7">Loading your lists…</div>`;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      container.innerHTML = `<div style="color:#a00">Please sign in to see your lists.</div>`;
+      return;
+    }
+
+    // define handlers up front so we can reuse them on refresh
+    const onClickItem = async (listId) => {
+      try {
+        const data = await fetchList(user.uid, listId);
+        if (!data) {
+          alert("This list could not be loaded (it may have been deleted).");
+          return;
+        }
+        showEditorPanel();     // ✅ make sure editor is visible
+        loadListIntoForm(data);
+
+        if (validId(listId)) {
+          sessionStorage.setItem('currentListId', listId);
+        } else {
+          sessionStorage.removeItem('currentListId');
+        }
+
+        const saveBtn = document.getElementById('saveCloudBtn');
+        if (saveBtn) saveBtn.textContent = 'Update in Cloud';
+
+        try { window.updateRowControls && window.updateRowControls(); } catch {}
+      } catch (e) {
+        console.error("Load list failed:", e);
+        alert("Could not load that list. See console for details.");
+      }
+    };
+
+    const onDeleteItem = async (listId, title) => {
+      const name = title || "this list";
+      if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+
+      try {
+        await deleteList(listId);
+
+        // re-fetch and re-render after delete using the SAME handlers
+        const meta2 = await fetchRecentListsMeta(user.uid, 15);
+
+        // ✅ keep Saved Lists data in sync (no remap)
+        window.allUserLists = meta2;
+
+        renderWorkspaceList(container, meta2, onClickItem, onDeleteItem);
+
+        // refresh Saved Lists panel if it's open
+        if (typeof window.showSavedLists === "function") {
+          if (typeof window.resetSavedListsPage === "function") window.resetSavedListsPage();
+          window.showSavedLists();
+        }
+      } catch (e) {
+        console.error("Delete failed:", e);
+        alert("Could not delete the list. See console for details.");
+      }
+    };
+
+    try {
+      const meta = await fetchRecentListsMeta(user.uid, 15);
+      renderWorkspaceList(container, meta, onClickItem, onDeleteItem);
+
+      // ✅ store meta for Saved Lists view (id, title, count, createdAt)
+      window.allUserLists = meta;
+
+      // Optionally render Saved Lists now
+      if (typeof window.showSavedLists === "function") {
+        if (typeof window.resetSavedListsPage === "function") window.resetSavedListsPage();
+        window.showSavedLists();
+      }
+    } catch (e) {
+      console.error("Fetching lists failed:", e);
+      container.innerHTML = `<div style="color:#a00">Could not load saved lists.</div>`;
+    }
+  });
+}
+
+
+// Make "Open in editor" behave like clicking a Workspace list item.
+window.openListById = async function(listId) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please sign in to open your lists.");
+      return;
+    }
+
+    // 1) Fetch the full list doc (same API used by Workspace click)
+    const data = await fetchList(user.uid, listId);  // uses Firestore doc() + getDoc()
+    if (!data) {
+      alert("This list could not be loaded (it may have been deleted).");
+      return;
+    }
+
+    // 2) Populate the editor UI (title + items into #itemsContainer + note)
+    showEditorPanel();     // ✅ make sure editor is visible
+    loadListIntoForm(data); // this rebuilds inputs inside #itemsContainer
+
+    // 3) Mirror Workspace behavior (remember list id, update button, row controls)
+    if (validId(listId)) {
+      sessionStorage.setItem('currentListId', listId);
+    } else {
+      sessionStorage.removeItem('currentListId');
+    }
+
+    const saveBtn = document.getElementById('saveCloudBtn');
+    if (saveBtn) saveBtn.textContent = 'Update in Cloud';
+
+    try { window.updateRowControls && window.updateRowControls(); } catch {}
+  } catch (e) {
+    console.error("Open list by id failed:", e);
+    alert("Could not open that list. See console for details.");
+  }
+};
+
+// Allow Saved Lists view to delete by id and then refresh both panels
+window.deleteListById = async function(listId) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please sign in to delete lists.");
+      return;
+    }
+    if (!confirm("Delete this list? This cannot be undone.")) return;
+
+    await deleteList(listId);
+
+    // Refresh workspace list (with correct handlers)
+    if (typeof window.loadSavedLists === "function") {
+      await window.loadSavedLists("workspace");
+    }
+
+    // Refresh Saved Lists panel
+    if (typeof window.showSavedLists === "function") {
+      // window.allUserLists was refreshed by loadSavedLists via meta
+      window.showSavedLists();
+    }
+  } catch (e) {
+    console.error("Delete failed:", e);
+    alert("Could not delete the list. See console for details.");
+  }
+};
+
+// Toggle the Workspace panel open/closed.
+window.toggleWorkspace = async function () {
+  const el = document.getElementById('workspace');
+  if (!el) return;
+
+  const isOpen = el.dataset.open === '1';
+
+  if (isOpen) {
+    // Close it (just hide, don’t reload)
+    el.style.display = 'none';
+    el.dataset.open = '0';
+    return;
+  }
+
+  // Open it (show and fetch)
+  el.style.display = '';
+  el.innerHTML = `<div style="opacity:.7">Loading your lists…</div>`;
+  el.dataset.open = '1';
+  // Reuse the existing loader (renders and wires refresh/delete etc.)
+  await window.loadSavedLists('workspace');
+};
+
+// Open/close the Saved Lists pane without reloading on close
+// Open/close the Saved Lists pane and LOAD immediately on open
+window.toggleSavedLists = async function () {
+  const pane = document.getElementById('savedListsView');
+  if (!pane) return;
+
+  const isOpen = pane.dataset.open === '1';
+  if (isOpen) {
+    // Close: hide only
+    pane.style.display = 'none';
+    pane.dataset.open = '0';
+    return;
+  }
+
+  // Open: show + load just like Workspace
+  pane.style.display = '';
+  pane.dataset.open = '1';
+  pane.innerHTML = `<div style="opacity:.7">Loading your lists…</div>`;
+
+  // ✅ Reuse the same Firestore loader but target the Saved Lists panel
+  // This renders the list (title, count, delete) into #savedListsView
+  await window.loadSavedLists('savedListsView');
+
+  // (Nice touch) close Workspace if it's open
+  const workspace = document.getElementById('workspace');
+  if (workspace && workspace.dataset.open === '1') {
+    workspace.style.display = 'none';
+    workspace.dataset.open = '0';
+  }
+};
+
+
+// Backwards compatibility so old onclick="ensureSavedLists()" still works if left anywhere
+window.ensureSavedLists = window.toggleSavedLists;
+
+
+// Make callable from inline onclick=""
+window.loadSavedLists = loadSavedLists;
+
+/* ---------- Documents list loader ---------- */
+/* ---------- Documents list loader ---------- */
+
+// List user's uploaded documents with Visible checkbox + Open + Delete
+async function loadUserDocuments() {
+  const user = auth.currentUser;
+  const listDiv = document.getElementById("documentList");
+  if (!user || !listDiv) return;
+
+  listDiv.innerHTML = `<div style="opacity:.7">Loading your documents…</div>`;
+
+  try {
+    const docsRef = collection(db, "users", user.uid, "documents");
+    const qDocs = query(docsRef, orderBy("createdAt", "desc"));
+    const snap = await getDocs(qDocs);
+
+    let html = `
+      <h3>Your Documents</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+        <thead>
+          <tr style="background:#f3f3f3; text-align:left;">
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Visible / ID</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Title</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">File</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Uploaded</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">View</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    if (snap.empty) {
+      html += `
+        <tr>
+          <td colspan="6" style="padding:10px; opacity:.7;">No documents uploaded yet.</td>
+        </tr>
+      `;
+    } else {
+      snap.forEach((docSnap) => {
+        const d = docSnap.data() || {};
+        const title = d.title || d.filename || "Untitled document";
+        const filename = d.filename || "(no file)";
+        const created = d.createdAt?.toDate
+          ? d.createdAt.toDate().toLocaleString()
+          : "(unknown)";
+
+        // default unchecked unless visible === 1 or true or "YES"
+        const isVisible = d.visible === true;
+
+        // escape single quotes for inline onclick strings
+        const downloadURL = (d.downloadURL || "").replace(/'/g, "\\'");
+        const storagePath = (d.storagePath || "").replace(/'/g, "\\'");
+
+        html += `
+          <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:8px; white-space:nowrap;">
+              <label style="display:inline-flex; align-items:center; gap:8px;">
+                <input
+                  type="checkbox"
+                  ${isVisible ? "checked" : ""}
+                  onchange="toggleDocVisible('${docSnap.id}', this.checked)"
+                />
+                <span style="font-size:0.85rem; opacity:.8;">
+                ${d.publicId ? d.publicId : ""}
+                </span>
+                ${d.publicId ? `
+                <button
+                  title="Copy share link"
+                  onclick="copyDocLink('${d.publicId}')"
+                  style="
+                    border:none;
+                    background:none;
+                    cursor:pointer;
+                    font-size:16px;
+                    margin-left:6px;
+                  "
+                >
+                📋
+                </button>
+                ` : ""}
+              </label>
+            </td>
+            <td style="padding:8px;">${title}</td>
+            <td style="padding:8px;">${filename}</td>
+            <td style="padding:8px; white-space:nowrap;">${created}</td>
+            <td style="padding:8px;">
+              ${
+                d.downloadURL
+                  ? `<button type="button" onclick="openPdf('${downloadURL}')">Open</button>`
+                  : `<span style="opacity:.6;">No URL</span>`
+              }
+            </td>
+            <td style="padding:8px;">
+              <button
+                type="button"
+                style="color:#a00;"
+                onclick="deleteUserDocument('${docSnap.id}')"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    html += `</tbody></table>`;
+    listDiv.innerHTML = html;
+  } catch (e) {
+    console.error("Failed to load documents:", e);
+    listDiv.innerHTML = `<div style="color:#a00;">Could not load your documents.</div>`;
+  }
+}
+
+// Toggle visibility with persistent publicId + public index doc
+window.toggleDocVisible = async function (docId, checked) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please sign in first.");
+    return;
+  }
+
+  try {
+    const res = await toggleDocumentVisibility({
+      docId,
+      visible: !!checked,
+    });
+
+    const publicId = res?.data?.publicId;
+
+    // ✅ If turned ON and ID exists → copy automatically
+    if (checked && publicId) {
+      try {
+        await navigator.clipboard.writeText(`https://lysty.co/doc/${publicId}`);
+        showToast(`Link to Document with Code ${publicId} copied`);
+      } catch (err) {
+        console.warn("Clipboard copy failed:", err);
+      }
+    }
+
+    await loadUserDocuments();
+  } catch (e) {
+    console.error("toggleDocVisible failed:", e);
+    alert("Could not update visibility.");
+
+    await loadUserDocuments();
+  }
+};
+
+window.copyDocLink = async function(publicId) {
+  const link = `https://lysty.co/doc/${publicId}`;
+
+  try {
+    await navigator.clipboard.writeText(link);
+
+    if (window.showToast) {
+      window.showToast("Link copied to clipboard");
+    } else {
+      alert("Link copied:\n" + link);
+    }
+
+  } catch (err) {
+    console.error("Clipboard copy failed:", err);
+
+    // fallback for older browsers
+    const temp = document.createElement("input");
+    temp.value = link;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+
+    alert("Link copied:\n" + link);
+  }
+};
+
+// Delete document from Storage and Firestore
+window.deleteUserDocument = async function (docId) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please sign in first.");
+    return;
+  }
+
+  if (!confirm("Delete this document? This cannot be undone.")) return;
+
+  try {
+    // ✅ server does: delete Firestore meta, decrement usage.docCount, and best-effort delete storage file
+    const res = await deleteDocumentPaid({ docId });
+    console.log("deleteDocumentPaid:", res?.data);
+
+    await loadUserDocuments();
+  } catch (e) {
+    console.error("Delete document failed:", e);
+    alert("Could not delete the document. See console for details.");
+  }
+};
+
+
+// Expose as global so auth.html can call window.loadUserDocuments()
+window.loadUserDocuments = loadUserDocuments;

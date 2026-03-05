@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lysty – Shared Document</title>
+  <link rel="stylesheet" href="/listasStyle.css?v=1">
+</head>
+<style>
+  #doc-search-box { display:block; }
+</style>
+<body>
+
+  <div class="main">
+    <div id="doc-search-box" class="search-box">
+      <h3>Shared Document</h3> <a href="/" style="display:inline-block;margin-bottom:12px;">← Back to Lysty</a>
+
+      <div class="search-row">
+        <input id="publicIdInput" type="text" placeholder="Enter ID (e.g., B3KM)" maxlength="6" />
+        <button id="searchPublicDocBtn" type="button">Search</button>
+      </div>
+      <div id="searchResultMsg" class="search-msg"></div>
+      <button id="openDocBtn" type="button" style="display:none; margin-top:10px;">
+        Open Document
+      </button>
+
+      <div style="margin-top:8px;">
+        <a id="openDocLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+          Open / Download in new tab
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+<script type="module">
+  import { db } from "/firebaseConfig.js?v=4";
+  import {
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  function getIdFromUrl() {
+    const parts = location.pathname.split("/").filter(Boolean);
+    const id = (parts[0] === "doc" && parts[1]) ? parts[1].toUpperCase() : "";
+    return id;
+  }
+
+  async function openPublicDoc(publicId, autoOpen = false) {
+    const msgEl = document.getElementById("searchResultMsg");
+    const setMsg = (t, isError = false) => {
+      if (!msgEl) return;
+      msgEl.textContent = t;
+      msgEl.style.color = isError ? "#a00" : "#333";
+    };
+
+    const id = (publicId || "").trim().toUpperCase();
+    if (!id) {
+      setMsg("Enter a document ID (e.g., EUVW).", true);
+      return;
+    }
+
+    setMsg("Looking up document…");
+
+    try {
+      const ref = doc(db, "publicDocuments", id);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        setMsg("That ID was not found.", true);
+        return;
+      }
+
+      const data = snap.data() || {};
+      const url = data.downloadURL;
+
+      if (!url) {
+        setMsg("This document has no download URL.", true);
+        return;
+      }
+
+      const openBtn = document.getElementById("openDocBtn");
+      const openLink = document.getElementById("openDocLink");
+
+      setMsg("Document found. Tap Open to view it.");
+
+      if (openLink) {
+        openLink.href = url;
+        openLink.style.display = "inline-block";
+      }
+      if (openBtn) {
+        openBtn.style.display = "inline-block";
+        openBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      if (autoOpen) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      // If you'd rather open new tab, use:
+      // window.open(url, "_blank");
+    } catch (e) {
+      console.error("openPublicDoc failed:", e);
+      setMsg("Could not open document. Check console.", true);
+    }
+  }
+
+  // Wire UI
+  const input = document.getElementById("publicIdInput");
+  const btn = document.getElementById("searchPublicDocBtn");
+
+  if (btn) {
+    btn.addEventListener("click", () => openPublicDoc(input?.value || "", true));
+  }
+
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") openPublicDoc(input.value || "");
+    });
+  }
+
+  // Auto-open if /doc/XXXX
+  const idFromUrl = getIdFromUrl();
+  if (idFromUrl && input) input.value = idFromUrl;
+  if (idFromUrl) openPublicDoc(idFromUrl, false);
+</script>
+
+
+</body>
+</html>

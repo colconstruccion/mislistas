@@ -1,133 +1,290 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Geomegol</title>
-        <link rel="stylesheet" href="geomeStyles.css">
-    </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>List Builder Workspace</title>
+  <link rel="stylesheet" href="listasStyle.css">
+  <link rel="stylesheet" href="checkBoxes.css">
+  <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
+  <link rel="stylesheet" href="uploadFooter.css">
+  <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
+  <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
+  <style></style>
+  <script>
+  const userLang = navigator.language || navigator.userLanguage;
 
-    <body>
-        <header><h1 class="brand-title">Geomegol</h1>
-            <h2 id="mensaje">Ubica los jugadores con sus coordenadas<br>
-            El campo de juego se localiza en el primer cuadrante cartesiano<br>
-            sus dimensiones son de 600 horizontal x 200 vertical</h2>
-            <section class="instructions-card" aria-labelledby="instrucciones-title">
-            <h3 id="instrucciones-title">Instrucciones</h3>
-            <p>Coloca las coordenadas (X,Y) para los jugadores y ajusta la posición del balón. Usa ΔX y ΔY para moverlo y observa la pendiente (m) de la trayectoria.</p>
-            <ol class="instructions-list">
-                <li>Ingresa X y Y para cada jugador que quieras que aparezca (Local y Visitante).</li>
-                <li>Define <strong>Posición del balón</strong> en X e Y.</li>
-                <li>Ajusta <strong>ΔY</strong> y <strong>ΔX</strong> y presiona <em>Mover Balón</em>.</li>
-                <li>La <strong>pendiente (m)</strong> se muestra en la barra superior.</li>
-                <li>Mueve la pelota en la secuencia de la posicion de tus jugadores o dispara al arco</li>
-            </ol>
-            </section>
+  /*
+  if (userLang.startsWith('es')) {
+    //console.log(userLang);
+    window.location.href = 'index-es.html';
+    
+  } */
+  // Everyone else stays on index.html
+  </script>
 
-            <nav class="topbar">
-                <div class="scoreboard-inline">
-                    <label for="scoreTeam1">Local</label>
-                    <input type="number" id="scoreTeam1" min="0" value="0" readonly="true">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo-container">
+        <a href="https://lysty.co">
+          <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
+        </a>
+      </div>
+      <div class="auth-buttons">
+        <a href="login.html" class="login-btn">Login</a>
 
-                    <label for="scoreTeam2">Visitante</label>
-                    <input type="number" id="scoreTeam2" min="0" value="0" readonly="true">
+        <button class="cta-btn signup-btn"
+                onclick="location.href='https://lysty.co/signup.html'">
+          Sign Up
+        </button>
+      </div>
 
-                    <label for="ballSlope">Pendiente (m)</label>
-                    <output id="ballSlope">—</output>
+      <!-- Categories (hidden until Create Lists clicked) -->
+      <div id="createListsMenu" style="display:none;">
 
-                    <label for="lineEquation">Ecuacion de la linea</label>
-                    <output id="lineEquation">—</output>
-                </div>
-            </nav>
+        <a class="toggle-link sub" data-target="one-column-list">One Column Lists</a>
+        <ul id="one-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
+          <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
+          <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
+          <li><a href="#" class="option" data-count="20" data-columns="1">List 20 items</a></li>
+          <li><a href="#" class="option" data-count="25" data-columns="1">List 25 items</a></li>
+          <li><a href="#" class="option" data-count="30" data-columns="1">List 30 items</a></li>
+        </ul>
 
-        </header>
+        <a class="toggle-link sub" data-target="two-column-list">Two Column Lists</a>
+        <ul id="two-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
+          <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
+          <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
+          <li><a href="#" class="option" data-count="20" data-columns="2">20 rows</a></li>
+          <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
+          <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
+        </ul>
 
-        <main>
-            <div class="court">
-                <section class="main">
-                    <canvas id="myCanvas" width="600" height="200"></canvas>
-                </section>
-                <label>Posicion del balon en x</label>
-                <input type="number" id="ball-x">
-                <label>Posicion del balon en y</label>
-                <input type="number" id="ball-y">
-                <label>Cuanto se mueve en Y</label>
-                <input id="deltaY" type="number" value="1"><br>
-                <label>Cuanto se mueve en X</label>
-                <input id="deltaX" type="number" value="1">
+        <a class="toggle-link sub" data-target="three-column-list">Three Column Lists</a>
+        <ul id="three-column-list" class="nested" style="display:none;">
+          <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="20" data-columns="3">20 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="25" data-columns="3">25 rows</a></li>
+          <li><a href="#" class="option-3col" data-count="30" data-columns="3">30 rows</a></li>
+        </ul>
 
-                <button id="moverBtn">Mover Balon</button>
+      </div>
+
+    </aside>
+
+    <div class="main">
+      <section class="hero-search">
+        <div class="hero">
+          <h1 class="hero-title">Share documents without filling up devices</h1>
+
+          <p class="hero-subtitle">
+            Share PDFs & Word documents with a secure link or 4-digit code — no downloads, no email attachments.
+          </p>
+
+          <div class="hero-pricing">
+            🎉 First <strong>10 lists</strong> + first <strong>10 documents</strong> are FREE.
+            <span class="hero-pricing-note">
+              After that, it’s <strong>$1</strong> per additional list or document.
+            </span>
+          </div>
+
+          <div class="hero-actions">
+            <a class="hero-btn primary" href="signup.html">Start Free</a>
+          </div>
+        </div>
+
+        <div id="searchDocsBox" class="search-box">
+          <h3>Search Document by ID</h3>
+          <div class="search-row">
+            <input id="publicIdInput" type="text" placeholder="Enter ID (e.g., B3KM)" maxlength="6" />
+            <button id="searchPublicDocBtn" type="button">Search</button>
+          </div>
+          <div id="searchResultMsg" class="search-msg"></div>
+        </div>
+      </section>
+
+      <div class="form-container" id="formContainer">
+        <h2>Create a List</h2>
+        <form id="listForm">
+          <label for="title">List Title</label>
+          <input type="text" id="title" name="title" placeholder="Enter list title">
+          <div id="itemsContainer"></div>
+          <!-- text editor; hidden at first-->
+          <div id="richTextContainer">
+            <div id="toolbar">
+              <button type="button" onclick="execCmd('bold')"><b>B</b></button>
+              <button type="button" onclick="execCmd('italic')"><i>I</i></button>
+              <button type="button" onclick="execCmd('underline')"><u>U</u></button>
+              <button type="button" onclick="execCmd('justifyLeft')">🡸</button>
+              <button type="button" onclick="execCmd('justifyCenter')">⇔</button>
+              <button type="button" onclick="execCmd('justifyRight')">🡺</button>
+              <button type="button" onclick="execCmd('insertUnorderedList')">• List</button>
+
+              <!-- Font Size -->
+              <select onchange="execCmd('fontSize', this.value)">
+                <option value="3">Font Size</option>
+                <option value="1">Very Small</option>
+                <option value="2">Small</option>
+                <option value="3">Normal</option>
+                <option value="4">Large</option>
+                <option value="5">Very Large</option>
+                <option value="6">Huge</option>
+                <option value="7">Maximum</option>
+              </select>
+
+              <!-- Font Family -->
+              <select onchange="execCmd('fontName', this.value)">
+                <option value="">Font Family</option>
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+              </select>
             </div>
+            <div id="editor" contenteditable="true" style="min-height: 100px; border: 1px solid #ccc; padding: 10px;"></div>
+          </div>
 
-            <div class="players">
-                <div class="team">
-                    <h3>Local</h3>
-                    <div class="input-grid">
-                        <!-- 11 rows of 2 inputs -->
-                        <input type="number" placeholder="X1">
-                        <input type="number" placeholder="Y1">
-                        <input type="number" placeholder="X2">
-                        <input type="number" placeholder="Y2">
-                        <input type="number" placeholder="X3">
-                        <input type="number" placeholder="Y3">
-                        <input type="number" placeholder="X4">
-                        <input type="number" placeholder="Y4">
-                        <input type="number" placeholder="X5">
-                        <input type="number" placeholder="Y5">
-                        <input type="number" placeholder="X6">
-                        <input type="number" placeholder="Y6">
-                        <input type="number" placeholder="X7">
-                        <input type="number" placeholder="Y7">
-                        <input type="number" placeholder="X8">
-                        <input type="number" placeholder="Y8">
-                        <input type="number" placeholder="X9">
-                        <input type="number" placeholder="Y9">
-                        <input type="number" placeholder="X10">
-                        <input type="number" placeholder="Y10">
-                        <input type="number" placeholder="X11">
-                        <input type="number" placeholder="Y11">
-                    </div>
-                </div>
+        </form>
 
-                <div class="team">
-                    <h3>Visitante</h3>
-                    <div class="input-grid">
-                        <!-- 11 rows of 2 inputs -->
-                        <input type="number" placeholder="X1">
-                        <input type="number" placeholder="Y1">
-                        <input type="number" placeholder="X2">
-                        <input type="number" placeholder="Y2">
-                        <input type="number" placeholder="X3">
-                        <input type="number" placeholder="Y3">
-                        <input type="number" placeholder="X4">
-                        <input type="number" placeholder="Y4">
-                        <input type="number" placeholder="X5">
-                        <input type="number" placeholder="Y5">
-                        <input type="number" placeholder="X6">
-                        <input type="number" placeholder="Y6">
-                        <input type="number" placeholder="X7">
-                        <input type="number" placeholder="Y7">
-                        <input type="number" placeholder="X8">
-                        <input type="number" placeholder="Y8">
-                        <input type="number" placeholder="X9">
-                        <input type="number" placeholder="Y9">
-                        <input type="number" placeholder="X10">
-                        <input type="number" placeholder="Y10">
-                        <input type="number" placeholder="X11">
-                        <input type="number" placeholder="Y11">
-                    </div>
-                </div>
-            </div>
-        </main>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <button type="button" id="toggleCheckboxesBtn">Checkboxes</button>
+          <button type="button" id="toggleNoteBoxBtn">Note Box</button>
+          <button type="button" onclick="addRow()">Add Row</button>
+          <button type="button" onclick="deleteRow()">Delete Row</button>
+        </div>
 
-        <footer>
-            <p>&copy; Geomegol. All rights reserved.</p>
-        </footer>
 
-    </body>
-    <script src="geomegol_v40.js"></script>
-    <script src="saquedeBanda.js"></script> <!-- V30-->
-    <script src="saquedeMeta.js"></script> <!-- V31 -->
-    <!-- <script src="tirosLibres.js"></script> -->  <!-- Alfa N6-->
-    <script src="frases.js"></script>
-    <script src="cancha.js"></script>
-    <script src="show.js"></script>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="saveList()">Save List</button>
+          <!-- Upload Header Button V6 -->
+          <input type="file" id="headerImageInput" accept="image/*" style="display: none;" />
+          <button type="button" id="uploadHeaderBtn">Upload Header</button>
+          <!-- Upload footer V7-->
+          <input type="file" id="footerImageInput" accept="image/*" style="display: none;" />
+          <button type="button" id="uploadFooterBtn">Add Footer</button> 
+          <button type="button" onclick="window.print()">Print List</button>
+        </div>
+      </div>
+
+      <div class="preview-container" id="preview-container">
+        <h2 id="livePreviewHeader">Live Preview</h2>
+        <h3 id="previewTitle">Your list title...</h3>
+        <ul class="preview" id="previewItems"></ul>
+        <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <script src="listasScript.js"></script>
+  <script src="uploadHeader.js"></script> <!-- V6-->
+  <script src="uploadFooter.js"></script>
+
+  <script>
+    // 1) Sidebar: Create Lists toggles categories
+    const createListsLink = document.getElementById("createListsLink");
+    const createListsMenu = document.getElementById("createListsMenu");
+
+    if (createListsLink && createListsMenu) {
+      createListsLink.addEventListener("click", () => {
+        const isOpen = createListsMenu.style.display === "block";
+        createListsMenu.style.display = isOpen ? "none" : "block";
+
+        // When collapsing Create Lists, also collapse all nested ULs
+        if (isOpen) {
+          const form = document.getElementById("formContainer");
+          const preview = document.getElementById("preview-container");
+
+          if (form) form.style.display = "none";
+          if (preview) preview.style.display = "none";
+          document.querySelectorAll("#createListsMenu ul.nested").forEach(ul => {
+            ul.style.display = "none";
+          });
+        }
+      });
+    }
+
+    // 2) Sidebar: Category toggles its list options
+    document.querySelectorAll("#createListsMenu .toggle-link.sub").forEach(link => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+        const ul = document.getElementById(targetId);
+        if (!ul) return;
+
+        const isOpen = ul.style.display === "block";
+
+        // Close other categories
+        document.querySelectorAll("#createListsMenu ul.nested").forEach(other => {
+          if (other !== ul) other.style.display = "none";
+        });
+
+        ul.style.display = isOpen ? "none" : "block";
+      });
+    });
+
+   function showCreateListUI() {
+      const form = document.getElementById("formContainer");
+      const preview = document.getElementById("preview-container");
+
+      if (form) form.style.display = "block";
+      if (preview) preview.style.display = "block";
+    }
+
+   
+
+    // Hook into your existing option clicks.
+    // Your listasScript.js already listens for .option and .option-3col clicks.
+    // We just add a capturing listener so the form shows immediately.
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest("a.option, a.option-3col");
+      if (!a) return;
+      e.preventDefault();
+
+      showCreateListUI();
+    }, true);
+
+  </script>
+
+  <script type="module" src="firebaseConfig.js?v=5"></script>
+  <script type="module">
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+    // Wait until firebaseConfig.js sets window._firebase
+    function getAuthSafe() {
+      return window._firebase?.auth || null;
+    }
+
+    const auth = getAuthSafe();
+    if (auth) {
+      onAuthStateChanged(auth, (user) => {
+        // If already signed in, go straight to the workspace
+        if (user && user.emailVerified) {
+          // Use replace so back button doesn’t bounce back to index
+          window.location.replace("auth.html");
+        }
+      });
+    }
+  </script>
+
+  <script src="searchBox.js?v=1"></script>
+  <script type="module" src="publicSearch.js?v=3"></script>
+  
+  <footer class="page-footer">
+    <p>
+      &copy; lysty.co. All rights reserved. |
+      <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> |
+      <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+    </p>
+  </footer>
+
+</body>
 </html>
+
