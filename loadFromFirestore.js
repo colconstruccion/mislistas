@@ -3,7 +3,7 @@
 import { auth, db} from "./firebaseConfig.js?v=4";
 import {
   collection, query, orderBy, limit,
-  getDocs, doc, getDoc
+  getDocs, doc, getDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -16,6 +16,8 @@ const functions = getFunctions();
 const deleteListPaid = httpsCallable(functions, "deleteListPaid");
 const toggleDocumentVisibility = httpsCallable(functions, "toggleDocumentVisibility");
 const deleteDocumentPaid = httpsCallable(functions, "deleteDocumentPaid");
+const renameDocumentTitle = httpsCallable(functions, "renameDocumentTitle");
+const sendDocumentShareEmail = httpsCallable(functions, "sendDocumentShareEmail");
 /* ---------- Helpers to work with your DOM ---------- */
 
 function validId(id) {
@@ -434,10 +436,10 @@ async function loadUserDocuments() {
         <thead>
           <tr style="background:#f3f3f3; text-align:left;">
             <th style="padding:8px; border-bottom:1px solid #ddd;">Visible / ID</th>
-            <th style="padding:8px; border-bottom:1px solid #ddd;">Title</th>
-            <th style="padding:8px; border-bottom:1px solid #ddd;">File</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd; width:40%;">Title</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Uploaded</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">View</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Share</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Delete</th>
           </tr>
         </thead>
@@ -454,7 +456,7 @@ async function loadUserDocuments() {
       snap.forEach((docSnap) => {
         const d = docSnap.data() || {};
         const title = d.title || d.filename || "Untitled document";
-        const filename = d.filename || "(no file)";
+        // const filename = d.filename || "(no file)";
         const created = d.createdAt?.toDate
           ? d.createdAt.toDate().toLocaleString()
           : "(unknown)";
@@ -464,7 +466,7 @@ async function loadUserDocuments() {
 
         // escape single quotes for inline onclick strings
         const downloadURL = (d.downloadURL || "").replace(/'/g, "\\'");
-        const storagePath = (d.storagePath || "").replace(/'/g, "\\'");
+        // const storagePath = (d.storagePath || "").replace(/'/g, "\\'");
 
         html += `
           <tr style="border-bottom:1px solid #eee;">
@@ -495,8 +497,48 @@ async function loadUserDocuments() {
                 ` : ""}
               </label>
             </td>
-            <td style="padding:8px;">${title}</td>
-            <td style="padding:8px;">${filename}</td>
+            <td style="padding:8px;">
+              <div class="doc-title-inline">
+
+                <span
+                  class="doc-title-text"
+                  id="docTitleText-${docSnap.id}"
+                >
+                  ${title}
+                </span>
+
+                <button
+                  type="button"
+                  class="rename-pencil-btn"
+                  title="Rename document"
+                  onclick="startInlineRename('${docSnap.id}', '${title.replace(/'/g, "\\'")}')"
+                >
+                  ✏️
+                </button>
+
+                <div
+                  class="doc-title-editor"
+                  id="docTitleEditor-${docSnap.id}"
+                  style="display:none;"
+                >
+                  <input
+                    type="text"
+                    id="docTitleInput-${docSnap.id}"
+                    value="${title.replace(/"/g, "&quot;")}"
+                  />
+
+                  <button onclick="saveInlineRename('${docSnap.id}')">
+                    Save
+                  </button>
+
+                  <button onclick="cancelInlineRename('${docSnap.id}')">
+                    Cancel
+                  </button>
+
+                </div>
+
+              </div>
+            </td>
             <td style="padding:8px; white-space:nowrap;">${created}</td>
             <td style="padding:8px;">
               ${
@@ -505,6 +547,20 @@ async function loadUserDocuments() {
                   : `<span style="opacity:.6;">No URL</span>`
               }
             </td>
+
+            <td style="padding:8px;">
+              ${
+                d.publicId
+                  ? `<button
+                      type="button"
+                      onclick="openShareDocForm('${docSnap.id}', '${title.replace(/'/g, "\\'")}', '${d.publicId}')"
+                    >
+                      Share
+                    </button>`
+                  : `<span style="opacity:.6;" class="private-badge">Private</span>`
+              }
+            </td>
+
             <td style="padding:8px;">
               <button
                 type="button"
@@ -611,6 +667,183 @@ window.deleteUserDocument = async function (docId) {
   }
 };
 
+window.startInlineRename = function (docId, currentTitle) {
+  const textEl = document.getElementById(`docTitleText-${docId}`);
+  const editorEl = document.getElementById(`docTitleEditor-${docId}`);
+  const inputEl = document.getElementById(`docTitleInput-${docId}`);
+
+  if (textEl) textEl.style.display = "none";
+  if (editorEl) editorEl.style.display = "inline-flex";
+  if (inputEl) {
+    inputEl.value = currentTitle || "";
+    inputEl.focus();
+    inputEl.select();
+  }
+
+  inputEl.onkeydown = async (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      await window.saveInlineRename(docId);
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      window.cancelInlineRename(docId);
+    }
+  };
+};
+
+window.cancelInlineRename = function (docId) {
+  const textEl = document.getElementById(`docTitleText-${docId}`);
+  const editorEl = document.getElementById(`docTitleEditor-${docId}`);
+
+  if (textEl) textEl.style.display = "inline";
+  if (editorEl) editorEl.style.display = "none";
+};
+
+window.saveInlineRename = async function (docId) {
+  const inputEl = document.getElementById(`docTitleInput-${docId}`);
+  const newTitle = inputEl?.value?.trim();
+
+  if (!newTitle) {
+    alert("Title cannot be empty.");
+    return;
+  }
+
+  try {
+    await renameDocumentTitle({
+      docId,
+      title: newTitle
+    });
+
+    await loadUserDocuments();
+
+    if (window.showToast) {
+      window.showToast("Document renamed");
+    }
+
+  } catch (e) {
+    console.error("Inline rename failed:", e);
+    alert("Could not rename document.");
+  }
+};
+
+window.openShareDocForm = function (docId, title, publicId) {
+  const panel = document.getElementById("shareDocPanel");
+  const docIdEl = document.getElementById("shareDocId");
+  const publicIdEl = document.getElementById("sharePublicId");
+  const titleEl = document.getElementById("shareDocTitle");
+  const emailEl = document.getElementById("shareRecipientEmail");
+  const msgEl = document.getElementById("shareEmailMessage");
+  const statusEl = document.getElementById("shareDocStatus");
+
+  if (!panel) return;
+
+  if (docIdEl) docIdEl.value = docId || "";
+  if (publicIdEl) publicIdEl.value = publicId || "";
+  if (titleEl) titleEl.value = title || "";
+  if (emailEl) emailEl.value = "";
+  if (msgEl) msgEl.value = "";
+  if (statusEl) {
+    statusEl.textContent = "";
+    statusEl.style.color = "#333";
+  }
+
+  panel.style.display = "block";
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+  if (emailEl) emailEl.focus();
+};
+
+window.closeShareDocForm = function () {
+  const panel = document.getElementById("shareDocPanel");
+  const form = document.getElementById("shareDocForm");
+  const statusEl = document.getElementById("shareDocStatus");
+
+  if (panel) panel.style.display = "none";
+  if (form) form.reset();
+  if (statusEl) {
+    statusEl.textContent = "";
+    statusEl.style.color = "#333";
+  }
+};
+
+const shareDocCancelBtn = document.getElementById("shareDocCancelBtn");
+
+if (shareDocCancelBtn) {
+  shareDocCancelBtn.addEventListener("click", () => {
+    window.closeShareDocForm();
+  });
+}
+
+// share document function while js for sharing the document is written
+const shareDocForm = document.getElementById("shareDocForm");
+
+if (shareDocForm) {
+  shareDocForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const docId = document.getElementById("shareDocId")?.value || "";
+    const publicId = document.getElementById("sharePublicId")?.value || "";
+    const title = document.getElementById("shareDocTitle")?.value || "";
+    const email = document.getElementById("shareRecipientEmail")?.value?.trim() || "";
+    const message = document.getElementById("shareEmailMessage")?.value?.trim() || "";
+    const statusEl = document.getElementById("shareDocStatus");
+    const sendBtn = document.getElementById("sendShareEmailBtn");
+
+    if (!docId || !publicId || !email) {
+      if (statusEl) {
+        statusEl.textContent = "Please enter an email.";
+        statusEl.style.color = "#a00";
+      }
+      return;
+    }
+
+    try {
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = "Sending...";
+      }
+
+      if (statusEl) {
+        statusEl.textContent = "Sending email...";
+        statusEl.style.color = "#333";
+      }
+
+      await sendDocumentShareEmail({
+        docId,
+        to: email,
+        message
+      });
+
+      if (statusEl) {
+        statusEl.textContent = `Document "${title}" sent to ${email}.`;
+        statusEl.style.color = "#0a0";
+      }
+
+      if (window.showToast) {
+        window.showToast("Share email sent");
+      }
+    } catch (err) {
+      console.error("Share email failed:", err);
+
+      const msg =
+        err?.message ||
+        err?.details?.message ||
+        "Could not send email.";
+
+      if (statusEl) {
+        statusEl.textContent = msg;
+        statusEl.style.color = "#a00";
+      }
+    } finally {
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send Email";
+      }
+    }
+  });
+}
 
 // Expose as global so auth.html can call window.loadUserDocuments()
 window.loadUserDocuments = loadUserDocuments;

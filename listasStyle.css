@@ -791,3 +791,77 @@
 #savedListsView .pagination button:hover{
   background: #d1d5db !important;
 }
+
+/* Document title + rename */
+.doc-title-inline{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  position:relative;
+}
+
+.doc-title-text{
+  font-weight:500;
+  color:#222;
+  word-break:break-word;
+}
+
+.rename-pencil-btn{
+  background:transparent !important;
+  border:none !important;
+  cursor:pointer;
+  font-size:16px;
+  color:#0b57d0;
+
+  opacity:0;
+  transition:opacity 0.2s ease;
+}
+
+/* show pencil on hover */
+.doc-title-inline:hover .rename-pencil-btn{
+  opacity:1;
+}
+
+.rename-pencil-btn:hover{
+  transform:scale(1.1);
+}
+
+/* inline editor */
+
+.doc-title-editor{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+
+.doc-title-editor input{
+  padding:5px 8px;
+  font-size:14px;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+
+#shareDocPanel{
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+#shareDocPanel h3{
+  margin-bottom: 10px;
+}
+
+#shareDocPanel textarea{
+  resize: vertical;
+}
+
+#shareDocStatus{
+  line-height: 1.4;
+}
+
+.private-badge{
+  font-size:12px;
+  background:#f3f4f6;
+  border:1px solid #e5e7eb;
+  border-radius:6px;
+  padding:3px 8px;
+  color:#374151;
+}
