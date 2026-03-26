@@ -158,30 +158,35 @@
           <!-- Upload footer V7-->
           <input type="file" id="footerImageInput" accept="image/*" style="display: none;" />
           <button type="button" id="uploadFooterBtn">Add Footer</button> 
+          <button type="button" id="savePreviewPdfBtn">Save Preview as PDF</button>
           <button type="button" onclick="window.print()">Print List</button>
         </div>
       </div>
 
+      <!-- Document Upload Panel (hidden by default) -->
       <!-- Document Upload Panel (hidden by default) -->
       <div id="docUploadPanel" style="display:none; margin: 14px 0; padding: 12px; border: 1px dashed #ccc; border-radius: 8px;">
         
         <h3 style="margin-top:0;">Upload a document</h3>
 
         <form id="docUploadForm">
-              <label for="docTitle">Title (optional)</label>
-              <input type="text" id="docTitle" name="docTitle" placeholder="Document title">
+          <label for="docTitle">Title (optional)</label>
+          <input type="text" id="docTitle" name="docTitle" placeholder="Document title">
 
-              <label for="docFile" style="display:block; margin-top:8px;">Select file (.pdf, .doc, .docx)</label>
-              <input type="file" id="docFile" accept=".pdf,.doc,.docx" required>
+          <label for="docFile" style="display:block; margin-top:8px;">Select file (.pdf, .doc, .docx)</label>
+          <input type="file" id="docFile" accept=".pdf,.doc,.docx" required>
 
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <button type="submit" id="docUploadBtn">Upload</button>
-                <button type="button" id="docUploadCancelBtn">Cancel</button>
-              </div>
+          <p id="docUploadHint" class="doc-upload-hint">
+            Free accounts can upload up to 30MB per document. Paid accounts can upload up to 120MB per document.
+          </p>
+
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button type="submit" id="docUploadBtn">Upload</button>
+            <button type="button" id="docUploadCancelBtn">Cancel</button>
+          </div>
         </form>
 
         <div id="docUploadStatus" style="margin-top:8px; font-size:0.95rem;"></div>
-        
       </div>
 
       <!-- Document share panel (hidden by default) -->
@@ -197,7 +202,7 @@
             type="text"
             id="shareDocTitle"
             readonly
-            style="background:#f9fafb;"
+            class="share-input-large"
           >
 
           <label for="shareRecipientEmail" style="display:block; margin-top:8px;">
@@ -208,6 +213,7 @@
             id="shareRecipientEmail"
             placeholder="Enter email address"
             required
+            class="share-input-large"
           >
 
           <label for="shareEmailMessage" style="display:block; margin-top:8px;">
@@ -275,17 +281,18 @@
     </div>
     
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- 1) Initialize Firebase -->
-
   <script type="module" src="firebaseConfig.js?v=5"></script>
-  <script type="module" src="uploadDocuments.js?v=2"></script>
+  <script type="module" src="uploadDocuments.js?v=4"></script>
   <script src="accordion.js?v=1"></script>
-  <script src="listasScript.js?v=1"></script>
-  <script src="uploadHeader.js"></script> <!-- V6-->
-  <script src="uploadFooter.js"></script>
-  <script type="module" src="saveToFirestore.js?v=6"></script>
-  <script type="module" src="loadFromFirestore.js?v=8"></script>
-  <script src="showSavedLists.js?v=1"></script>
+  <script src="listasScript.js?v=2"></script>
+  <script type="module" src="uploadHeader.js"></script> <!-- V61 -->
+  <script type="module" src="uploadFooter.js"></script>
+  <script type="module" src="saveToFirestore.js?v=9"></script>
+  <script type="module" src="loadFromFirestore.js?v=11"></script>
+  <script src="showSavedLists.js?v=3"></script>
 
   <script type="module">
   import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -507,6 +514,8 @@
 <script src="searchBox.js?v=1"></script>
 <script type="module" src="publicSearch.js?v=3"></script>
 <script type="module" src="myAccount.js?v=2"></script>
+<script type="module" src="savePreviewPdfToDocuments.js?v=2"></script>
+<script type="module" src="shareList.js?v=2"></script> <!-- V66 -->
 <div id="toastMessage" class="toast-message"></div>
 <footer class="page-footer">
   <p>

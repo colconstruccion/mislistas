@@ -79,9 +79,18 @@
       document.getElementById(id).classList.toggle("active");
     }
 
+    function normalizeItemCountForColumns(count, columns = 1) {
+      const safeCount = Math.max(0, Number(count) || 0);
+      const safeColumns = [1, 2, 3].includes(Number(columns)) ? Number(columns) : 1;
 
+      if (safeColumns === 1) return safeCount;
+
+      return Math.ceil(safeCount / safeColumns) * safeColumns;
+    }
     //Create the rows with the input fields
     function createItemInputs(count, columns = 1) {
+      count = normalizeItemCountForColumns(count, columns);
+
       itemsContainer.innerHTML = '';
       currentColumns = columns;
 
@@ -165,7 +174,6 @@
         syncCheckboxVisibility();
       }
     }
-
 
 
     //Create form - unhides the div for the text area
@@ -465,3 +473,5 @@
       });
 
 
+window.updatePreview = updatePreview;
+window.createItemInputs = createItemInputs;

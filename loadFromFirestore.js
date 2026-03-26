@@ -63,10 +63,19 @@ function loadListIntoForm(docData) {
   if (titleEl) titleEl.value = title;
 
   const cleaned = (Array.isArray(items) ? items : [])
-    .filter(v => typeof v === "string" && v.trim() !== "" && v.toLowerCase() !== "on");
-  // ✅ Apply saved column layout
-  applyColumnLayout(columns);
-  rebuildInputsAndFill(cleaned, columns);
+  .map(v => typeof v === "string" ? v : "")
+  .filter(v => v.toLowerCase() !== "on");
+
+  const safeColumns = [1, 2, 3].includes(Number(columns)) ? Number(columns) : 1;
+  const padded = [...cleaned];
+
+    while (safeColumns > 1 && padded.length % safeColumns !== 0) {
+      padded.push("");
+    }
+
+    // ✅ Apply saved column layout
+  applyColumnLayout(safeColumns);
+  rebuildInputsAndFill(padded, safeColumns);
 
   const rich = document.getElementById("richTextContainer");
   if (rich) rich.style.display = "block";
@@ -184,8 +193,18 @@ async function fetchRecentListsMeta(uid, max = 15) {
     rows.push({
       id: d.id,
       title: data.title || "Untitled",
+
+      // existing
       count: Array.isArray(data.items) ? data.items.length : (data.totalItems ?? 0),
-      createdAt: data.createdAt ? dateLabel(data.createdAt) : ""
+      createdAt: data.createdAt ? dateLabel(data.createdAt) : "",
+
+      // 🔥 ADD THESE (REQUIRED)
+      items: Array.isArray(data.items) ? data.items : [],
+      note: data.note || "",
+
+      // 🔥 SHARE SYSTEM
+      visible: !!data.visible,
+      publicId: data.publicId || ""
     });
   });
   return rows;
@@ -291,34 +310,195 @@ export function loadSavedLists(workspaceId = "workspace") {
 // Make "Open in editor" behave like clicking a Workspace list item.
 window.openListById = async function(listId) {
   try {
+    const formContainer = document.getElementById("formContainer");
+    const previewContainer = document.getElementById("preview-container");
+    const savedListsView = document.getElementById("savedListsView");
+    const documentList = document.getElementById("documentList");
+    const pdfViewerPanel = document.getElementById("pdfViewerPanel");
+    const myAccountPanel = document.getElementById("myAccountPanel");
+    const docUploadPanel = document.getElementById("docUploadPanel");
+    const shareDocPanel = document.getElementById("shareDocPanel");
+    const searchBox = document.getElementById("search-box");
+
+    if (formContainer) formContainer.style.display = "block";
+    if (previewContainer) previewContainer.style.display = "block";
+
+    if (savedListsView) savedListsView.style.display = "none";
+    if (documentList) documentList.style.display = "none";
+    if (pdfViewerPanel) pdfViewerPanel.style.display = "none";
+    if (myAccountPanel) myAccountPanel.style.display = "none";
+    if (docUploadPanel) docUploadPanel.style.display = "none";
+    if (shareDocPanel) shareDocPanel.style.display = "none";
+    if (searchBox) searchBox.style.display = "none";
+
     const user = auth.currentUser;
     if (!user) {
       alert("Please sign in to open your lists.");
       return;
     }
 
-    // 1) Fetch the full list doc (same API used by Workspace click)
-    const data = await fetchList(user.uid, listId);  // uses Firestore doc() + getDoc()
+    // 1) Fetch the full list doc
+    const data = await fetchList(user.uid, listId);
     if (!data) {
       alert("This list could not be loaded (it may have been deleted).");
       return;
     }
 
-    // 2) Populate the editor UI (title + items into #itemsContainer + note)
-    showEditorPanel();     // ✅ make sure editor is visible
-    loadListIntoForm(data); // this rebuilds inputs inside #itemsContainer
+    // 2) Populate editor UI
+    showEditorPanel();
+    loadListIntoForm(data);
 
-    // 3) Mirror Workspace behavior (remember list id, update button, row controls)
+    // 3) Remember list id
     if (validId(listId)) {
-      sessionStorage.setItem('currentListId', listId);
+      sessionStorage.setItem("currentListId", listId);
     } else {
-      sessionStorage.removeItem('currentListId');
+      sessionStorage.removeItem("currentListId");
     }
 
-    const saveBtn = document.getElementById('saveCloudBtn');
-    if (saveBtn) saveBtn.textContent = 'Update in Cloud';
+    const saveBtn = document.getElementById("saveCloudBtn");
+    if (saveBtn) saveBtn.textContent = "Update in Cloud";
 
     try { window.updateRowControls && window.updateRowControls(); } catch {}
+
+    // 4) Populate Preview Container
+    const title = data.title || "Untitled List";
+    const items = Array.isArray(data.items) ? data.items : [];
+    const note = data.note || "";
+    const columns = Number(data.columns || 1);
+
+    const headerImageUrl = data.headerImageUrl || "";
+    const headerImagePath = data.headerImagePath || "";
+    const footerImageUrl = data.footerImageUrl || "";
+    const footerImagePath = data.footerImagePath || "";
+
+    // Clear previous list image session state
+    sessionStorage.removeItem("headerImage");
+    sessionStorage.removeItem("headerImagePath");
+    sessionStorage.removeItem("footerImage");
+    sessionStorage.removeItem("footerImagePath");
+
+    // Restore current list image session state
+    if (headerImageUrl) sessionStorage.setItem("headerImage", headerImageUrl);
+    if (headerImagePath) sessionStorage.setItem("headerImagePath", headerImagePath);
+    if (footerImageUrl) sessionStorage.setItem("footerImage", footerImageUrl);
+    if (footerImagePath) sessionStorage.setItem("footerImagePath", footerImagePath);
+
+    if (typeof createItemInputs === "function") {
+      createItemInputs(items.length, columns);
+
+      const titleEl = document.getElementById("title");
+      if (titleEl) titleEl.value = title;
+
+      const inputs = document.querySelectorAll("#itemsContainer input[type='text']");
+      items.forEach((val, i) => {
+        if (inputs[i]) inputs[i].value = val;
+      });
+
+      const richTextContainer = document.getElementById("richTextContainer");
+      const editor = document.getElementById("editor");
+
+      if (editor) {
+        editor.innerHTML = note || "";
+      }
+
+      if (richTextContainer) {
+        if (note && note.trim() !== "") {
+          richTextContainer.classList.add("form-note-area");
+        } else {
+          richTextContainer.classList.remove("form-note-area");
+        }
+      }
+    }
+
+    // Restore header preview
+    let headerPreview = document.getElementById("headerPreview");
+    if (!headerPreview && previewContainer) {
+      headerPreview = document.createElement("div");
+      headerPreview.id = "headerPreview";
+      previewContainer.insertBefore(headerPreview, previewContainer.firstChild);
+    }
+
+    if (headerPreview) {
+      if (headerImageUrl) {
+        headerPreview.innerHTML = `
+          <button class="remove-btn" title="Remove Header">&times;</button>
+          <img src="${headerImageUrl}" alt="Header Image" crossorigin="anonymous" />
+        `;
+
+        const removeBtn = headerPreview.querySelector(".remove-btn");
+        if (removeBtn) {
+          removeBtn.addEventListener("click", async () => {
+            const oldPath = sessionStorage.getItem("headerImagePath");
+
+            try {
+              if (oldPath) {
+                const { getStorage, ref, deleteObject } = await import(
+                  "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js"
+                );
+                const storage = getStorage();
+                await deleteObject(ref(storage, oldPath));
+              }
+            } catch (err) {
+              console.warn("Could not delete header image from storage:", err);
+            }
+
+            sessionStorage.removeItem("headerImage");
+            sessionStorage.removeItem("headerImagePath");
+            headerPreview.innerHTML = "";
+          });
+        }
+      } else {
+        headerPreview.innerHTML = "";
+      }
+    }
+
+    // Restore footer preview
+    let footerPreview = document.getElementById("footerPreview");
+    if (!footerPreview && previewContainer) {
+      footerPreview = document.createElement("div");
+      footerPreview.id = "footerPreview";
+      previewContainer.appendChild(footerPreview);
+    }
+
+    if (footerPreview) {
+      if (footerImageUrl) {
+        footerPreview.innerHTML = `
+          <button class="remove-footer-btn" title="Remove Footer">&times;</button>
+          <img src="${footerImageUrl}" alt="Footer Image" crossorigin="anonymous" />
+        `;
+
+        const removeBtn = footerPreview.querySelector(".remove-footer-btn");
+        if (removeBtn) {
+          removeBtn.addEventListener("click", async () => {
+            const oldPath = sessionStorage.getItem("footerImagePath");
+
+            try {
+              if (oldPath) {
+                const { getStorage, ref, deleteObject } = await import(
+                  "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js"
+                );
+                const storage = getStorage();
+                await deleteObject(ref(storage, oldPath));
+              }
+            } catch (err) {
+              console.warn("Could not delete footer image from storage:", err);
+            }
+
+            sessionStorage.removeItem("footerImage");
+            sessionStorage.removeItem("footerImagePath");
+            footerPreview.innerHTML = "";
+          });
+        }
+      } else {
+        footerPreview.innerHTML = "";
+      }
+    }
+
+    if (typeof updatePreview === "function") {
+      updatePreview();
+    }
+
+    formContainer?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
     console.error("Open list by id failed:", e);
     alert("Could not open that list. See console for details.");
@@ -431,12 +611,13 @@ async function loadUserDocuments() {
     const snap = await getDocs(qDocs);
 
     let html = `
-      <h3>Your Documents</h3>
-      <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+    <h3>Your Documents</h3>
+    <div class="documents-table-wrap">
+      <table class="documents-table" style="width:100%; border-collapse:collapse; font-size:0.95rem;">
         <thead>
           <tr style="background:#f3f3f3; text-align:left;">
             <th style="padding:8px; border-bottom:1px solid #ddd;">Visible / ID</th>
-            <th style="padding:8px; border-bottom:1px solid #ddd; width:40%;">Title</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd; min-width:240px;">Title</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Uploaded</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">View</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Share</th>
@@ -497,7 +678,7 @@ async function loadUserDocuments() {
                 ` : ""}
               </label>
             </td>
-            <td style="padding:8px;">
+            <td style="padding:8px;min-width:220px;">
               <div class="doc-title-inline">
 
                 <span
@@ -575,7 +756,7 @@ async function loadUserDocuments() {
       });
     }
 
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
     listDiv.innerHTML = html;
   } catch (e) {
     console.error("Failed to load documents:", e);
@@ -743,7 +924,7 @@ window.openShareDocForm = function (docId, title, publicId) {
   if (publicIdEl) publicIdEl.value = publicId || "";
   if (titleEl) titleEl.value = title || "";
   if (emailEl) emailEl.value = "";
-  if (msgEl) msgEl.value = "";
+  if (msgEl) msgEl.value = "Document shared using lysty.co";
   if (statusEl) {
     statusEl.textContent = "";
     statusEl.style.color = "#333";

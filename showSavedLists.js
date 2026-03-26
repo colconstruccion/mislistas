@@ -60,6 +60,7 @@
                   ${typeof listObj.count === 'number' ? `${listObj.count} item(s)` : `${(items||[]).length} item(s)`}
                   ${listObj.createdAt ? ` · ${listObj.createdAt}` : ""}
                   ${listObj.id ? ` · ID: ${listObj.id}` : ""}
+                  ${listObj.visible && listObj.publicId ? ` · Share code: ${listObj.publicId}` : ""}
                 </div>
               </div>
 
@@ -100,11 +101,37 @@
               ? `<div style="margin-top:8px; font-size:13px; color:#666;"><strong>Note:</strong> ${note}</div>`
               : ""}
 
-            <button type="button"
-              style="margin-top:10px; font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#f0f0f0; color:#222; font-weight:600; cursor:pointer;"
-              onclick="openListById('${listObj.id}')">
-              Open in editor
-            </button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+              <button type="button"
+                style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#f0f0f0; color:#222; font-weight:600; cursor:pointer;"
+                onclick="openListById('${listObj.id}')">
+                Open in editor
+              </button>
+
+              <button type="button"
+                style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid ${listObj.visible ? '#a33' : '#2b6'}; background:${listObj.visible ? '#fff5f5' : '#f3fff7'}; color:${listObj.visible ? '#a33' : '#166534'}; font-weight:600; cursor:pointer;"
+                onclick="toggleShareList('${listObj.id}')">
+                ${listObj.visible ? 'Unshare' : 'Share'}
+              </button>
+
+              ${
+                listObj.visible && listObj.publicId
+                  ? `
+                    <button type="button"
+                      style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#fafafa; color:#222; font-weight:600; cursor:pointer;"
+                      onclick="copyListShareLink('${listObj.publicId}')">
+                      Copy link
+                    </button>
+
+                    <button type="button"
+                      style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #1d4ed8; background:#eff6ff; color:#1d4ed8; font-weight:600; cursor:pointer;"
+                      onclick="openSharedList('${listObj.publicId}')">
+                      Open shared list
+                    </button>
+                  `
+                  : ""
+              }
+            </div>
           </div>
         `;
 

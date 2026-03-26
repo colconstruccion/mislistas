@@ -1,9 +1,7 @@
 // saveToFirestore.js  (load with: <script type="module" src="saveToFirestore.js"></script>)
 
-// ✅ Use the initialized instances from firebaseConfig.js (Option B)
-// saveToFirestore.js
-import { auth, db } from "./firebaseConfig.js?v=4";  // match the query
-import { doc, updateDoc, serverTimestamp } 
+import { auth, db } from "./firebaseConfig.js?v=4";
+import { doc, updateDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged }
@@ -15,36 +13,56 @@ import { getFunctions, httpsCallable }
 const functions = getFunctions();
 const createListPaid = httpsCallable(functions, "createListPaid");
 
-
-// --- Read the current list from the DOM ---
-// Grabs title, ALL inputs inside #itemsContainer, an optional note, and sessionId.
 function readListFromDOM() {
   const titleEl = document.getElementById("title");
-  // Only grab text-like inputs (ignore row checkboxes)
-  const allInputs = Array.from(
-  document.querySelectorAll("#itemsContainer input[type='text'], #itemsContainer textarea"));
 
+  const allInputs = Array.from(
+    document.querySelectorAll("#itemsContainer input[type='text'], #itemsContainer textarea")
+  );
 
   const title = (titleEl?.value || "").trim() || "Untitled List";
 
-  // Collect ALL rows; keep only non-empty strings
-  const items = allInputs
-  .map(inp => (inp?.value || "").trim())
-  .filter(v => v !== "" && v.toLowerCase() !== "on");
-
-  // Optional note box: supports <textarea id="form-note"> or <div id="editor" contenteditable>
   const noteBox = document.getElementById("form-note") || document.getElementById("editor");
   const note = noteBox
     ? (noteBox.value ?? noteBox.textContent ?? noteBox.innerHTML ?? "").toString().trim()
     : "";
 
-  // Reuse your existing session id if you set it elsewhere
   const sessionId = sessionStorage.getItem("sessionId") || null;
 
-  // Detect selected column layout
   const columns = currentColumns || 1;
+  const safeColumns = [1, 2, 3].includes(Number(columns)) ? Number(columns) : 1;
 
-  return { title, items, note, sessionId, columns };
+  let items = allInputs.map(inp => (inp?.value || "").trim());
+
+  // convert stray "on" values to empty strings
+  items = items.map(v => v.toLowerCase() === "on" ? "" : v);
+
+  // remove only trailing empty cells
+  while (items.length > 0 && items[items.length - 1] === "") {
+    items.pop();
+  }
+
+  // pad back to complete the final row
+  while (safeColumns > 1 && items.length % safeColumns !== 0) {
+    items.push("");
+  }
+
+  const headerImageUrl = sessionStorage.getItem("headerImage") || "";
+  const headerImagePath = sessionStorage.getItem("headerImagePath") || "";
+  const footerImageUrl = sessionStorage.getItem("footerImage") || "";
+  const footerImagePath = sessionStorage.getItem("footerImagePath") || "";
+
+  return {
+    title,
+    items,
+    note,
+    sessionId,
+    columns: safeColumns,
+    headerImageUrl,
+    headerImagePath,
+    footerImageUrl,
+    footerImagePath
+  };
 }
 
 function validId(id) {
@@ -58,7 +76,18 @@ export async function saveListToCloud() {
     return;
   }
 
-  const { title, items, note, sessionId, columns } = readListFromDOM();
+  const {
+    title,
+    items,
+    note,
+    sessionId,
+    columns,
+    headerImageUrl,
+    headerImagePath,
+    footerImageUrl,
+    footerImagePath
+  } = readListFromDOM();
+
   if (!items || items.length === 0) {
     alert("Please add at least one item before saving.");
     return;
@@ -69,7 +98,6 @@ export async function saveListToCloud() {
     const existingId = validId(existingIdRaw) ? existingIdRaw : null;
 
     if (existingId) {
-      // ✅ UPDATE existing list (still client-side)
       const dref = doc(db, "users", user.uid, "lists", existingId);
       await updateDoc(dref, {
         title,
@@ -77,6 +105,10 @@ export async function saveListToCloud() {
         note,
         sessionId,
         columns,
+        headerImageUrl,
+        headerImagePath,
+        footerImageUrl,
+        footerImagePath,
         totalItems: items.length,
         updatedAt: serverTimestamp(),
       });
@@ -85,14 +117,24 @@ export async function saveListToCloud() {
       return;
     }
 
-    // ✅ CREATE new list (billing-enforced via Cloud Function)
     const res = await createListPaid({
       title,
       items,
       note,
       sessionId,
       columns,
+      headerImageUrl,
+      headerImagePath,
+      footerImageUrl,
+      footerImagePath,
       totalItems: items.length,
+    });
+
+    console.log("Saving list image fields:", {
+      headerImageUrl,
+      headerImagePath,
+      footerImageUrl,
+      footerImagePath
     });
 
     const newId = res?.data?.listId;
@@ -117,8 +159,6 @@ export async function saveListToCloud() {
   }
 }
 
-
-// --- Wire the "Save to Cloud" button and auth state ---
 export function wireSaveButton(btnId = "saveCloudBtn") {
   const btn = document.getElementById(btnId);
   if (btn) btn.addEventListener("click", saveListToCloud);
@@ -126,7 +166,7 @@ export function wireSaveButton(btnId = "saveCloudBtn") {
   const copyBtn = document.getElementById("saveAsCopyBtn");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
-      sessionStorage.removeItem('currentListId'); // force new doc
+      sessionStorage.removeItem("currentListId");
       await saveListToCloud();
     });
   }
@@ -144,9 +184,6 @@ export function wireSaveButton(btnId = "saveCloudBtn") {
   });
 }
 
-
-
-// Auto-wire on DOM ready (safe no-op if button not present)
 document.addEventListener("DOMContentLoaded", () => {
   wireSaveButton();
 });

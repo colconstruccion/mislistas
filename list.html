@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared List | lysty.co</title>
+  <link rel="stylesheet" href="/listasStyle.css" />
+  <style>
+    .shared-page {
+      min-height: 100vh;
+      padding: 32px 20px;
+      background: #f9f9f9;
+    }
+
+    .shared-shell {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .shared-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .shared-brand {
+      font-size: 0.95rem;
+      color: #4b5563;
+    }
+
+    .shared-brand a {
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .shared-brand a:hover {
+      text-decoration: underline;
+    }
+
+    .shared-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #ececec;
+    }
+
+    .shared-title {
+      margin: 0 0 10px 0;
+      color: #1f2d3d;
+      font-size: 1.7rem;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .shared-meta {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .shared-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0 24px;
+    }
+
+    .shared-list.cols-1 {
+        grid-template-columns: 1fr;
+    }
+
+    .shared-list.cols-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .shared-list.cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .shared-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        min-width: 0;
+    }
+
+    .shared-item:last-child {
+      border-bottom: none;
+    }
+
+    .shared-item-checkbox {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .shared-item-checkbox.is-unchecked {
+      opacity: 0;
+    }
+
+    .shared-item-checkbox.is-checked {
+      opacity: 1;
+    }
+
+    .shared-item-text {
+      color: #2c3e50;
+      font-size: 1rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .shared-item.completed .shared-item-text {
+      text-decoration: line-through;
+      opacity: 0.65;
+    }
+
+    .shared-item-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .shared-item:hover .shared-item-checkbox.is-unchecked,
+    .shared-item:focus-within .shared-item-checkbox.is-unchecked {
+      opacity: 0.35;
+    }
+
+    .shared-note {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid #ededed;
+    }
+
+    .shared-note h3 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+      font-size: 1.05rem;
+    }
+
+    .shared-note-body {
+      color: #374151;
+      line-height: 1.55;
+    }
+
+    .shared-empty,
+    .shared-error,
+    .shared-loading {
+      text-align: center;
+      color: #4b5563;
+      padding: 30px 10px;
+    }
+
+    .shared-error {
+      color: #a33;
+    }
+
+    .shared-footer {
+      text-align: center;
+      margin-top: 18px;
+      color: #6b7280;
+      font-size: 0.92rem;
+    }
+
+    .back-home-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.96rem;
+      background: #ffffff;
+      color: #1d4ed8;
+      border: 1px solid #cfe0ff;
+    }
+
+    .back-home-link:hover {
+      background: #f8fbff;
+    }
+
+    @media (max-width: 768px) {
+      .shared-page {
+        padding: 20px 14px;
+      }
+
+      .shared-card {
+        padding: 18px 16px;
+      }
+
+      .shared-title {
+        font-size: 1.35rem;
+      }
+
+      .shared-item-text {
+        font-size: 1rem;
+      }
+
+      .shared-topbar {
+        align-items: stretch;
+      }
+
+      .back-home-link {
+        width: 100%;
+      }
+
+      .shared-list.cols-2,
+      .shared-list.cols-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .shared-placeholder {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="shared-page">
+    <div class="shared-shell">
+      <div class="shared-topbar">
+        <div class="shared-brand">
+          Shared with <a href="https://lysty.co">lysty.co</a>
+        </div>
+
+        <a class="back-home-link" href="https://lysty.co">
+          ← Back to lysty.co
+        </a>
+      </div>
+
+      <div class="shared-card">
+        <h1 id="sharedListTitle" class="shared-title">Shared List</h1>
+        <div id="sharedMeta" class="shared-meta"></div>
+
+        <div id="sharedLoading" class="shared-loading">Loading list…</div>
+        <div id="sharedError" class="shared-error" style="display:none;"></div>
+
+        <ul id="sharedListItems" class="shared-list" style="display:none;"></ul>
+
+        <div id="sharedNoteWrap" class="shared-note" style="display:none;">
+          <h3>Note</h3>
+          <div id="sharedNoteBody" class="shared-note-body"></div>
+        </div>
+      </div>
+
+      <div class="shared-footer">
+        Create and share lists and documents on lysty.co
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/publicList.js?v=7"></script>
+</body>
+</html>
