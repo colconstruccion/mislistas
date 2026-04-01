@@ -22,7 +22,7 @@ function init() {
       const cred = await signInWithEmailAndPassword(auth, email, password);
 
       if (!cred.user.emailVerified) {
-        await sendEmailVerification(cred.user); // safe, rate-limited
+        await sendEmailVerification(cred.user);
         await signOut(auth);
 
         alert(
@@ -32,7 +32,14 @@ function init() {
         return;
       }
 
-      window.location.href = 'auth.html';
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get("returnTo");
+
+      if (returnTo) {
+        window.location.href = returnTo;
+      } else {
+        window.location.href = 'auth.html';
+      }
 
     } catch (err) {
       alert(err.message || 'Login failed. Please try again.');

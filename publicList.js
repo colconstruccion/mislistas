@@ -1,4 +1,4 @@
-import { db } from "./firebaseConfig.js?v=4";
+import { app, auth, db } from "./firebaseConfig.js?v=4";
 import {
   doc,
   getDoc,
@@ -6,6 +6,10 @@ import {
   serverTimestamp,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-functions.js";
+
+const functions = getFunctions(app);
+const cloneSharedListToUser = httpsCallable(functions, "cloneSharedListToUser");
 
 let stopSharedListListener = null;
 
@@ -148,6 +152,7 @@ function renderList(data, publicId) {
     noteWrap.style.display = "none";
   }
 
+  wireSaveSharedCopyButton(publicId);
   setLoading(false);
 }
 
@@ -173,6 +178,48 @@ async function updateSharedCheckbox(publicId, index, checked) {
     console.error("Failed to update shared checkbox:", err);
     alert("Could not save the checkbox change.");
   }
+}
+
+function wireSaveSharedCopyButton(publicId) {
+  const btn = document.getElementById("saveSharedCopyBtn");
+  if (!btn) return;
+
+  btn.style.display = "inline-flex";
+
+  btn.onclick = async () => {
+    try {
+      // not signed in -> send to login
+      if (!auth.currentUser) {
+        const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login.html?returnTo=${returnTo}`;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Saving copy...";
+
+      const res = await cloneSharedListToUser({ publicId });
+      const newListId = res?.data?.listId;
+
+      if (!newListId) {
+        throw new Error("No list ID returned.");
+      }
+
+      window.location.href = `/auth.html?openListId=${encodeURIComponent(newListId)}`;
+    } catch (err) {
+      console.error("Failed to save shared copy:", err);
+
+      if (err?.code === "functions/unauthenticated") {
+        const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login.html?returnTo=${returnTo}`;
+        return;
+      }
+
+      alert("Could not save a copy of this list.");
+      btn.disabled = false;
+      btn.textContent = "Save as Copy";
+    }
+  };
 }
 
 function loadSharedList() {

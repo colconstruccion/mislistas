@@ -1,0 +1,167 @@
+.forms-menu-block {
+  width: 100%;
+}
+
+.forms-submenu {
+  padding-left: 12px;
+}
+
+.create-login-panel {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  max-width: 420px;
+}
+
+.create-login-panel h3 {
+  margin-top: 0;
+}
+
+.form-field {
+  margin-bottom: 14px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.password-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-input-wrap input {
+  flex: 1;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #f5f5f5;
+}
+
+.icon-btn .material-icons {
+  font-size: 20px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .create-login-panel {
+    max-width: 100%;
+  }
+}
+
+.form-actions {
+  margin-top: 14px;
+}
+
+#loginFormStatus {
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+#saveLoginFormBtn {
+  background-color: #0ea5e9; /* same blue as your app */
+  color: white;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  width: 100%;
+}
+
+#saveLoginFormBtn:hover {
+  background-color: #0284c7;
+}
+
+#formsList {
+  list-style: none;
+  padding: 0;
+}
+
+.form-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.form-row {
+  margin-bottom: 6px;
+}
+
+.form-password {
+  width: 140px;
+  margin-left: 6px;
+}
+
+#formsListPanel {
+  margin: 20px 0;
+}
+
+.forms-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.forms-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.forms-table th,
+.forms-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.forms-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.form-password-cell {
+  min-width: 180px;
+}
+
+.saved-form-password {
+  width: 100%;
+  max-width: 180px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.form-actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.editing-password {
+  background: #fff;
+  border: 2px solid #0ea5e9;
+}

@@ -1,175 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="google-adsense-account" content="ca-pub-8341544205501655">
-  <title>List Builder Workspace</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lysty - Secure Document & List Sharing</title>
+  <meta name="description" content="Share PDFs and Word documents with a secure link or 4-digit code. No downloads, no email attachments, and no need to fill up devices." />
 
-  <link rel="stylesheet" href="listasStyle.css">
-  <link rel="stylesheet" href="checkBoxes.css">
-  <link rel="stylesheet" href="uploadHeader.css">
-  <link rel="stylesheet" href="uploadFooter.css">
-  <link rel="stylesheet" href="logoStyle.css">
-  <link rel="stylesheet" href="index-merge-pdf.css?v=1">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-  <meta name="impact-site-verification" value="34afe4e0-e835-4573-b804-2511dad74106">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-  <style></style>
+  <link rel="stylesheet" href="listasStyle2.css">
 
-  <script>
-    const userLang = navigator.language || navigator.userLanguage;
-
-    /*
-    if (userLang.startsWith('es')) {
-      window.location.href = 'index-es.html';
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#d3e4fe",
+            "on-error": "#ffffff",
+            "secondary": "#006b5f",
+            "surface-container": "#e5eeff",
+            "on-tertiary-container": "#fffbff",
+            "outline": "#727785",
+            "tertiary": "#4648d4",
+            "secondary-fixed": "#71f8e4",
+            "primary-container": "#2170e4",
+            "surface-container-highest": "#d3e4fe",
+            "surface": "#f8f9ff",
+            "secondary-container": "#6df5e1",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "on-secondary-container": "#006f64",
+            "on-secondary-fixed-variant": "#005048",
+            "tertiary-fixed": "#e1e0ff",
+            "surface-dim": "#cbdbf5",
+            "background": "#f8f9ff",
+            "tertiary-container": "#6063ee",
+            "on-primary-container": "#fefcff",
+            "on-tertiary-fixed": "#07006c",
+            "inverse-primary": "#adc6ff",
+            "outline-variant": "#c2c6d6",
+            "primary": "#0058be",
+            "primary-fixed-dim": "#adc6ff",
+            "on-primary-fixed-variant": "#004395",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "inverse-surface": "#213145",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#dce9ff",
+            "on-surface": "#0b1c30",
+            "surface-tint": "#005ac2",
+            "surface-bright": "#f8f9ff",
+            "on-error-container": "#93000a",
+            "secondary-fixed-dim": "#4fdbc8",
+            "on-secondary-fixed": "#00201c",
+            "surface-container-low": "#eff4ff",
+            "inverse-on-surface": "#eaf1ff",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-background": "#0b1c30",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#424754",
+            "on-primary-fixed": "#001a42",
+            "primary-fixed": "#d8e2ff"
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          }
+        }
+      }
     }
-    */
   </script>
-  <!-- google adsense-->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8341544205501655"
-     crossorigin="anonymous"></script>
 </head>
-<body>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="logo-container">
-        <a href="https://lysty.co">
-          <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
-        </a>
+
+<body class="bg-surface font-body text-on-surface">
+  <!-- Top Navigation Bar -->
+  <nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm">
+    <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+      <div class="text-2xl font-bold tracking-tighter text-blue-700 font-headline">
+        <a href="index.html">Lysty</a>
       </div>
 
-      <div class="auth-buttons">
-        <a href="login.html" class="login-btn">Login</a>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-1 font-headline text-sm tracking-tight" href="#features">Features</a>
+        <a class="text-slate-600 hover:text-blue-600 transition-colors font-headline text-sm tracking-tight font-medium" href="#pricing">Pricing</a>
+        <a class="text-slate-600 hover:text-blue-600 transition-colors font-headline text-sm tracking-tight font-medium" href="#about">About</a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a
+          href="login.html"
+          class="text-slate-600 hover:text-blue-600 transition-colors font-headline text-sm font-medium"
+        >
+          Login
+        </a>
 
         <button
-          class="cta-btn signup-btn"
-          onclick="location.href='https://lysty.co/signup.html'">
+          class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-headline text-sm font-semibold hover:opacity-90 transition-all active:scale-95 cursor-pointer"
+          onclick="location.href='https://lysty.co/signup.html'"
+          type="button"
+        >
           Sign Up
         </button>
       </div>
+    </div>
+  </nav>
 
-      <div id="createListsMenu" style="display:none;">
-        <a class="toggle-link sub" data-target="one-column-list">One Column Lists</a>
-        <ul id="one-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
-          <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
-          <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
-          <li><a href="#" class="option" data-count="20" data-columns="1">List 20 items</a></li>
-          <li><a href="#" class="option" data-count="25" data-columns="1">List 25 items</a></li>
-          <li><a href="#" class="option" data-count="30" data-columns="1">List 30 items</a></li>
-        </ul>
+  <main class="pt-24">
+    <!-- Hero Section -->
+    <section class="relative px-6 py-20 md:py-32 overflow-hidden" id="about">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
+        <div class="w-full md:w-1/2 space-y-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-primary font-label text-xs font-semibold uppercase tracking-wider">
+            <span class="material-symbols-outlined text-sm">verified_user</span>
+            SECURE DOCUMENT SHARING
+          </div>
 
-        <a class="toggle-link sub" data-target="two-column-list">Two Column Lists</a>
-        <ul id="two-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
-          <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
-          <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
-          <li><a href="#" class="option" data-count="20" data-columns="2">20 rows</a></li>
-          <li><a href="#" class="option" data-count="25" data-columns="2">25 rows</a></li>
-          <li><a href="#" class="option" data-count="30" data-columns="2">30 rows</a></li>
-        </ul>
+          <h1 class="text-5xl md:text-7xl font-headline font-extrabold text-on-surface leading-[1.1] tracking-tight">
+            Share with clarity, <br/><span class="text-primary">securely.</span>
+          </h1>
 
-        <a class="toggle-link sub" data-target="three-column-list">Three Column Lists</a>
-        <ul id="three-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="20" data-columns="3">20 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="25" data-columns="3">25 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="30" data-columns="3">30 rows</a></li>
-        </ul>
-      </div>
-    </aside>
+          <p class="text-xl text-on-surface-variant max-w-xl leading-relaxed">
+            The sophisticated way to distribute PDFs and Word documents. Use 4-digit secure codes or private links to share content without unwanted downloads.
+          </p>
 
-    <div class="main">
-      <div class="top-tools-layout">
+          <div class="flex flex-col sm:flex-row gap-4 pt-4">
+            <button
+              class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-4 rounded-xl font-headline font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-95 cursor-pointer"
+              onclick="location.href='https://lysty.co/signup.html'"
+              type="button"
+            >
+              Get Started
+            </button>
 
-        <div class="page-container home-merge-panel">
-          <div class="pdf-box">
-            <h2>Merge PDF Files</h2>
-
-            <p>Select multiple PDF files and combine them into one document.</p>
-
-            <div id="dropZone" class="drop-zone">
-              <div class="drop-zone-inner">
-                <p class="drop-zone-title">Drag and drop PDF files here</p>
-                <p class="drop-zone-subtext">or</p>
-
-                <label for="pdfFilesInput" class="choose-files-btn">
-                  Select PDF Files
-                </label>
-
-                <input
-                  id="pdfFilesInput"
-                  type="file"
-                  accept="application/pdf"
-                  multiple
-                  hidden
-                >
-              </div>
-            </div>
-
-            <div id="selectedFilesWrapper" class="selected-files-wrapper">
-              <h3 class="selected-files-title">Selected Files</h3>
-              <div id="selectedFilesList" class="selected-files-list"></div>
-            </div>
-
-            <div class="pdf-actions">
-              <button id="mergePdfBtn" class="pdf-btn merge-btn" type="button">
-                Merge PDFs
-              </button>
-
-              <a
-                id="downloadMergedPdf"
-                class="pdf-btn download-btn"
-                download="merged.pdf"
-              >
-                Download merged PDF
-              </a>
-            </div>
-
-            <p id="mergeStatus" class="status"></p>
+            <button
+              class="flex items-center justify-center gap-2 border border-outline-variant/30 text-primary px-8 py-4 rounded-xl font-headline font-bold text-lg bg-surface-container-lowest hover:bg-surface-container-low transition-all active:scale-95 cursor-pointer"
+              onclick="location.href='merge-pdf.html'"
+              type="button"
+            >
+              <span class="material-symbols-outlined">merge_type</span>
+              Merge PDF
+            </button>
           </div>
         </div>
 
-        <section class="hero-search hero-search-right">
-          <div class="hero">
-            <h1 class="hero-title">Share documents without filling up devices</h1>
+        <div class="w-full md:w-1/2 relative">
+          <div class="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-3 bg-surface-container-lowest border border-outline-variant/10 p-4">
+            <img
+              alt="Document Preview"
+              class="rounded-2xl w-full h-[400px] object-cover"
+              data-alt="A realistic, high-quality professional flat-lay or workspace photo showcasing a variety of document types: a beautifully designed restaurant menu, a formal legal letter with a wax seal, a creative design portfolio, and a professional business invoice."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTMccci2jeNg8s-mrTzVi4eJA6FHpzUPzJWtB-xhGpMi7zrujJcS6SkZ04EcaICY0xuqrJ2RObiSoZ0YkvW2eqyGJAYXi_V-01rXFgLIcwYtDI9-_cd2JVb5dNMWG2BTNR_k3_ffuWwsXpN_JXjvbudOh20f77wo3MxU6he5q77m4qjkXh67Ov7fDh1GLA9yyMOLVoMcC026D0soctK-whQpWQ7RjC_gfD9PBkP8TELERh9V_xbDhWlDqUSBMZ4nUQ7dHPPRyV4_k"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/20 to-transparent"></div>
+          </div>
 
-            <p class="hero-subtitle">
-              Share PDFs & Word documents with a secure link or 4-digit code — no downloads, no email attachments.
-            </p>
+          <div class="absolute -top-6 -right-6 w-32 h-32 bg-secondary/10 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-tertiary/10 rounded-full blur-3xl"></div>
+        </div>
+      </div>
+    </section>
 
-            <div class="hero-pricing">
-              🎉 First <strong>10 lists</strong> + first <strong>10 documents</strong> are FREE.
-              <span class="hero-pricing-note">
-                After that, it’s <strong>$1</strong> per additional list or document.
-              </span>
+    <!-- Document Search Section -->
+    <section class="bg-surface-container-low py-20 px-6">
+      <div class="max-w-3xl mx-auto text-center space-y-8">
+        <div class="space-y-4">
+          <h2 class="text-3xl font-headline font-bold text-on-surface">Access a Shared Document</h2>
+          <p class="text-on-surface-variant">Enter the 4-digit code or document ID provided by the sender.</p>
+        </div>
+
+        <div class="relative group">
+          <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-20 group-focus-within:opacity-40 transition duration-500"></div>
+
+          <div class="relative flex items-center bg-surface-container-lowest rounded-2xl overflow-hidden p-2">
+            <div class="pl-6 text-outline">
+              <span class="material-symbols-outlined">search</span>
             </div>
 
-            <div class="hero-actions">
-              <a class="hero-btn primary" href="signup.html">Start Free</a>
+            <input
+              id="publicIdInput"
+              class="w-full px-4 py-4 bg-transparent border-none focus:ring-0 font-headline font-medium text-lg placeholder:text-outline/50"
+              placeholder="Enter ID (e.g., B3KM)"
+              type="text"
+              maxlength="6"
+            />
+
+            <button
+              id="searchPublicDocBtn"
+              class="bg-primary text-white px-8 py-4 rounded-xl font-headline font-bold transition-all hover:bg-primary-container cursor-pointer"
+              type="button"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+
+        <div id="searchResultMsg" class="mt-4 text-sm min-h-[24px]"></div>
+        <p class="text-xs text-outline mt-2">
+          No login required to view shared documents
+        </p>
+        <p class="text-xs font-medium text-outline uppercase tracking-widest">Secure end-to-end lookup</p>
+      </div>
+    </section>
+
+    <!-- Product Features Section -->
+    <section class="py-32 px-6" id="features">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div class="max-w-2xl space-y-4">
+            <h2 class="text-4xl font-headline font-extrabold tracking-tight">Crafted for Professionals</h2>
+            <p class="text-lg text-on-surface-variant">We've reimagined how lists and documents move through your workspace. No bloat, just pure efficiency.</p>
+          </div>
+
+          <!--<div class="hidden md:block">
+            <span class="text-primary font-headline font-bold text-lg cursor-pointer flex items-center gap-2 hover:gap-4 transition-all">
+              View all capabilities <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
+          </div> -->
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+          <div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant/10 rounded-[2rem] p-10 flex flex-col justify-between group hover:border-primary/20 transition-all shadow-sm">
+            <div class="space-y-6">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-3xl" data-weight="fill">shield_with_heart</span>
+              </div>
+
+              <h3 class="text-3xl font-headline font-bold">Secure, download-free document sharing</h3>
+              <p class="text-on-surface-variant text-lg max-w-md">Control exactly how your work is viewed. Prevent unauthorized downloads and keep your intellectual property under your control with timed links.</p>
+            </div>
+
+            <div class="mt-8 relative h-48 overflow-hidden rounded-2xl">
+              <img
+                alt="Secure Dashboard"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                data-alt="A futuristic digital dashboard with soft blue data visualizations and secure lock icons in a clean interface"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBQq7bCqGCu1_PROlzTmGNtCyNngDgSKmfX-3y2L8q55qZuFVBVoh85M4SxpoDzxPWy9XMWbLmbgwf9QSEM1ulCewG5q_HiV0JWYhA9gQGVND1XaZ2qRomwwIq2wUqLwkf8eyBs2niLYjujvHPoRLsthO9Nux636KkXBFc8Nypp_cx63yFvLYgfdfej_T7bSoRivGVBomGqG-6_y3eyYZDUB-kdFaRK6s8QoZFIGihWAYDPTLtn3Ku6fb3j8nsrPiNi7EwvexNfTM"
+              />
             </div>
           </div>
 
-          <div id="searchDocsBox" class="search-box">
-            <h3>Search Document by ID</h3>
-            <div class="search-row">
-              <input id="publicIdInput" type="text" placeholder="Enter ID (e.g., B3KM)" maxlength="6" />
-              <button id="searchPublicDocBtn" type="button">Search</button>
-            </div>
-            <div id="searchResultMsg" class="search-msg"></div>
-          </div>
-        </section>
+          <div class="md:col-span-4 flex flex-col gap-6">
+            <div class="h-1/2 bg-secondary text-white rounded-[2rem] p-8 flex flex-col justify-between group hover:opacity-95 transition-all">
+              <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl" data-weight="fill">merge</span>
+              </div>
 
+              <div class="space-y-2">
+                <h3 class="text-2xl font-headline font-bold">Fast and free document merging</h3>
+                <p class="text-white/80 text-sm">Combine multiple PDFs into a single, polished file in seconds. No watermarks, ever.</p>
+              </div>
+            </div>
+
+            <div class="h-1/2 bg-surface-container-high rounded-[2rem] p-8 flex flex-col justify-between border border-outline-variant/10 group hover:bg-surface-container-highest transition-all">
+              <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
+                <span class="material-symbols-outlined text-2xl" data-weight="fill">lock</span>
+              </div>
+
+              <div class="space-y-2">
+                <h3 class="text-2xl font-headline font-bold text-on-surface">Private lists and document storage</h3>
+                <p class="text-on-surface-variant text-sm">Organize your digital life with encrypted lists and private cloud storage built for speed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-24 bg-white overflow-hidden" id="pricing">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 space-y-4">
+          <h2 class="text-3xl md:text-4xl font-headline font-extrabold text-on-surface tracking-tight">Pricing</h2>
+          <p class="text-on-surface-variant max-w-2xl mx-auto">First 10 lists + first 10 documents are FREE. After that, it’s $1 per additional list or document.</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">gavel</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Legal Documents</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">restaurant_menu</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Menus</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">confirmation_number</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Coupons</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">campaign</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Marketing Campaigns</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">receipt_long</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Invoices</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">mail</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Letters</span>
+          </div>
+
+          <div class="flex flex-col items-center p-6 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-primary/30 transition-all group">
+            <div class="w-14 h-14 mb-4 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-3xl">work_outline</span>
+            </div>
+            <span class="font-headline font-bold text-sm text-on-surface text-center">Portfolios</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-32 px-6">
+      <div class="max-w-5xl mx-auto bg-primary rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-2xl">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-tertiary-container/30 rounded-full blur-3xl"></div>
+
+        <div class="relative z-10 space-y-8">
+          <h2 class="text-4xl md:text-5xl font-headline font-extrabold">Ready to share better?</h2>
+
+          <p class="text-xl text-primary-fixed max-w-2xl mx-auto leading-relaxed">
+            Share PDFs & Word documents with a secure link or 4-digit code — no downloads, no email attachments.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <button
+              class="bg-white text-primary px-10 py-4 rounded-xl font-headline font-bold text-lg hover:bg-primary-fixed transition-all active:scale-95 cursor-pointer"
+              onclick="location.href='https://lysty.co/signup.html'"
+              type="button"
+            >
+              Create Free Account
+            </button>
+
+            <button
+              class="bg-primary-container text-white px-10 py-4 rounded-xl font-headline font-bold text-lg border border-white/20 hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
+              onclick="location.href='#features'"
+              type="button"
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-200 bg-slate-50">
+    <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto gap-4">
+      <div class="flex flex-col items-center md:items-start gap-4">
+        <div class="font-headline font-bold text-slate-900 text-xl">Lysty</div>
+        <p class="font-inter text-xs text-slate-500">© 2026 Lysty. All rights reserved.</p>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-8">
+        <a
+          class="text-slate-500 hover:text-blue-600 transition-colors font-inter text-xs"
+          href="privacy.html"
+          target="_blank"
+          rel="noopener"
+        >
+          Privacy Policy
+        </a>
+
+        <a
+          class="text-slate-500 hover:text-blue-600 transition-colors font-inter text-xs"
+          href="terms.html"
+          target="_blank"
+          rel="noopener"
+        >
+          Terms of Service
+        </a>
+
+        <a
+          class="text-slate-500 hover:text-blue-600 transition-colors font-inter text-xs"
+          href="security.html"
+          target="_blank"
+          rel="noopener"
+        >
+          Security
+        </a>
+      </div>
+
+      <!--<div class="flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-sm">share</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-sm">mail</span>
+        </div>
+      </div> -->
+    </div>
+  </footer>
+
+  <!-- FAB + Chatbox -->
+  <div class="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-3">
+    <div
+      id="chatBoxPanel"
+      class="hidden w-[340px] max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+    >
+      <div class="bg-primary text-white px-4 py-3 flex items-center justify-between">
+        <div>
+          <h3 class="font-headline font-bold text-sm">Lysty Help</h3>
+          <p class="text-xs text-white/80">Quick answers about sharing and search</p>
+        </div>
+        <button
+          id="closeChatBoxBtn"
+          type="button"
+          class="cursor-pointer text-white/90 hover:text-white"
+        >
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div id="chatMessages" class="p-4 h-[320px] overflow-y-auto bg-slate-50 space-y-3">
+        <div class="bg-slate-200 text-slate-800 rounded-2xl px-4 py-3 text-sm max-w-[85%]">
+          Hi! I can answer simple questions about Lysty.
+        </div>
+      </div>
+
+      <div class="px-4 pt-3 pb-2 bg-white border-t border-slate-200">
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button type="button" class="faq-chip">What is Lysty?</button>
+          <button type="button" class="faq-chip">How do I share a document?</button>
+          <button type="button" class="faq-chip">Do I need login to open a shared document?</button>
+          <button type="button" class="faq-chip">How much does it cost?</button>
+          <button type="button" class="faq-chip">How do I merge PDFs?</button>
+        </div>
+
+        <div class="flex gap-2">
+          <input
+            id="chatInput"
+            type="text"
+            placeholder="Ask a simple question..."
+            class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            id="sendChatBtn"
+            type="button"
+            class="bg-primary text-white px-4 py-2 rounded-xl font-headline font-semibold text-sm cursor-pointer hover:opacity-90"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
+
+    <button
+      id="openChatBoxBtn"
+      class="w-14 h-14 rounded-full bg-tertiary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all cursor-pointer"
+      type="button"
+      aria-label="Open help chat"
+    >
+      <span class="material-symbols-outlined text-3xl">question_answer</span>
+    </button>
   </div>
 
-  <!-- <script src="listasScript.js"></script> -->
-
   <script type="module" src="firebaseConfig.js?v=5"></script>
+
   <script type="module">
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
@@ -191,15 +508,14 @@
   <script type="module" src="publicSearch.js?v=3"></script>
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="index-merge-pdf.js?v=4"></script>
-   
 
-  <footer class="page-footer">
-    <p>
-      &copy; lysty.co. All rights reserved. |
-      <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> |
-      <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
-    </p>
-  </footer>
+  <script>
+    document.getElementById("publicIdInput")?.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        document.getElementById("searchPublicDocBtn")?.click();
+      }
+    });
+  </script>
+  <script src="chatbox.js"></script>
 </body>
 </html>
-

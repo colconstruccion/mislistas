@@ -5,15 +5,6 @@ const functions = getFunctions();
 const shareListCallable = httpsCallable(functions, "shareList");
 const unshareListCallable = httpsCallable(functions, "unshareList");
 
-async function refreshSavedListsAfterShare() {
-  if (typeof window.loadSavedLists === "function") {
-    await window.loadSavedLists("workspace");
-  }
-  if (typeof window.showSavedLists === "function") {
-    window.showSavedLists();
-  }
-}
-
 window.toggleShareList = async function toggleShareList(listId) {
   const user = auth.currentUser;
   if (!user) {
@@ -35,14 +26,31 @@ window.toggleShareList = async function toggleShareList(listId) {
         listId,
         publicId: listObj.publicId
       });
+
+      // update local cache immediately
+      listObj.visible = false;
+
       alert("List unshared.");
     } else {
       const res = await shareListCallable({ listId });
       const publicId = res?.data?.publicId || "";
+
+      // update local cache immediately
+      listObj.visible = true;
+      listObj.publicId = publicId;
+
       alert(`List shared. Code: ${publicId}`);
     }
 
-    await refreshSavedListsAfterShare();
+    // re-render Saved Lists immediately from updated cache
+    if (typeof window.showSavedLists === "function") {
+      window.showSavedLists();
+    }
+
+    // refresh workspace list in background
+    if (typeof window.loadSavedLists === "function") {
+      window.loadSavedLists("workspace");
+    }
   } catch (err) {
     console.error("Share toggle failed:", err);
     alert(err?.message || "Could not change share status.");

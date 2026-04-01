@@ -214,9 +214,8 @@
     }
 
     ul.preview .preview-row.col-3 {
-      grid-template-columns: 2fr 1fr 1fr; /* 50%, 25%, 25% */
+      grid-template-columns: 2fr 1fr 1fr; /*50% 25% %25 */ 
     }
-
 
     @media (max-width: 768px) {
       .layout {
@@ -907,4 +906,39 @@
   color: #6b7280;
   margin-top: 6px;
   line-height: 1.4;
+}
+
+.icon-btn {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn .material-icons {
+  font-size: 22px;
+  color: #444;
+}
+
+.icon-btn:hover {
+  background: #eaeaea;
+  transform: scale(1.08);
+}
+
+.icon-btn.active {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.icon-btn.active .material-icons {
+  color: #065f46;
+}
+
+.editor-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }

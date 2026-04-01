@@ -1026,5 +1026,23 @@ if (shareDocForm) {
   });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const openListId = params.get("openListId");
+
+  if (!openListId) return;
+
+  const waitForEditor = setInterval(async () => {
+    if (auth.currentUser && typeof window.openListById === "function") {
+      clearInterval(waitForEditor);
+      await window.openListById(openListId);
+
+      // clean the URL after opening
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+  }, 300);
+});
+
 // Expose as global so auth.html can call window.loadUserDocuments()
 window.loadUserDocuments = loadUserDocuments;

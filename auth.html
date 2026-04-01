@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>List Builder Workspace</title>
-  <link rel="stylesheet" href="listasStyle.css?v=1">
-  <link rel="stylesheet" href="checkBoxes.css">
+  <link rel="stylesheet" href="listasStyle.css?v=4">
+  <link rel="stylesheet" href="checkBoxes.css?v=3">
   <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
   <link rel="stylesheet" href="uploadFooter.css">
   <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
   <link rel="stylesheet" href="auth.css"> <!--V13-->
+  <link rel="stylesheet" href="forms.css?v=3"> <!-- V75 -->
   <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -34,7 +35,7 @@
   <div class="layout" id="appLayout">
     <aside class="sidebar">
       <div class="logo-container">
-        <a href="lysty.co/auth.html">
+        <a href="index.html">
           <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
         </a>
       </div>
@@ -74,6 +75,15 @@
         </ul>
 
       </div>
+      <!-- NEW: Create Forms -->
+      <div class="forms-menu-block">
+        <a class="toggle-link" id="toggleFormsBtn">Create Forms</a>
+
+        <div id="formsSubmenu" class="forms-submenu" style="display:none;">
+          <a href="#" id="openCreateLoginLink" class="toggle-link sub">Create Login</a>
+        </div>
+      </div>
+      <a href="#" id="myFormsLink" class="toggle-link">My Forms</a>
       <a class="toggle-link" id="mergePdfLink" href="merge-pdf.html">Merge PDFs</a>
       <a class="toggle-link" id="myAccountLink">My Account</a>
       <button type="button" onclick="buyPoints100()">Buy 100 Points ($10)</button>
@@ -140,11 +150,15 @@
 
         </form>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <button type="button" id="toggleCheckboxesBtn">Checkboxes</button>
+        <div class="editor-controls">
+          <button type="button" id="toggleCheckboxesBtn" class="icon-btn" title="Toggle checkboxes">
+            <span class="material-icons">check_box</span>
+          </button>
           <button type="button" id="toggleNoteBoxBtn">Note Box</button>
           <button type="button" onclick="addRow()">Add Row</button>
           <button type="button" onclick="deleteRow()">Delete Row</button>
+          <button type="button" onclick="addColumn()">Add Column</button>
+          <button type="button" onclick="deleteColumn()">Delete Column</button>
         </div>
 
 
@@ -163,7 +177,6 @@
         </div>
       </div>
 
-      <!-- Document Upload Panel (hidden by default) -->
       <!-- Document Upload Panel (hidden by default) -->
       <div id="docUploadPanel" style="display:none; margin: 14px 0; padding: 12px; border: 1px dashed #ccc; border-radius: 8px;">
         
@@ -278,6 +291,50 @@
         </div>
       </div>
 
+      <!-- NEW: Create Login Panel -->
+      <div id="createLoginPanel" class="create-login-panel" style="display:none;">
+        <h3>Create Login</h3>
+
+        <form id="loginFormPanel" autocomplete="off">
+          <div class="form-field">
+            <label for="loginAccount">Login Account</label>
+            <input type="text" id="loginAccount" placeholder="Enter website or account name">
+          </div>
+
+          <div class="form-field">
+            <label for="loginUsername">Username</label>
+            <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username">
+          </div>
+
+          <div class="form-field">
+            <label for="loginPassword">Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+
+              <button type="button" id="togglePasswordBtn" class="icon-btn">
+                <span class="material-icons">visibility</span>
+              </button>
+
+              <button type="button" id="copyPasswordBtn" class="icon-btn">
+                <span class="material-icons">content_copy</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="saveLoginFormBtn">Save Login Form</button>
+          </div>
+        </form>
+
+        <div id="loginFormStatus" class="status-msg"></div>
+      </div>
+
+      <!-- My forms -->
+      <div id="formsListPanel" style="display:none; margin:20px 0;">
+        <h2>My Forms</h2>
+        <div id="formsTableWrap"></div>
+      </div>
+
     </div>
     
   </div>
@@ -287,10 +344,11 @@
   <script type="module" src="firebaseConfig.js?v=5"></script>
   <script type="module" src="uploadDocuments.js?v=4"></script>
   <script src="accordion.js?v=1"></script>
-  <script src="listasScript.js?v=2"></script>
+  <script src="listasScript.js?v=6"></script>
   <script type="module" src="uploadHeader.js"></script> <!-- V61 -->
   <script type="module" src="uploadFooter.js"></script>
   <script type="module" src="saveToFirestore.js?v=9"></script>
+  <script type="module" src="saveForms.js?v=2"></script>
   <script type="module" src="loadFromFirestore.js?v=11"></script>
   <script src="showSavedLists.js?v=3"></script>
 
@@ -515,7 +573,9 @@
 <script type="module" src="publicSearch.js?v=3"></script>
 <script type="module" src="myAccount.js?v=2"></script>
 <script type="module" src="savePreviewPdfToDocuments.js?v=2"></script>
-<script type="module" src="shareList.js?v=2"></script> <!-- V66 -->
+<script src="forms.js?v=6"></script> <!-- V75 -->
+<script type="module" src="loadForms.js?v=2"></script> <!-- V75 -->
+<script type="module" src="shareList.js?v=3"></script> <!-- V66 -->
 <div id="toastMessage" class="toast-message"></div>
 <footer class="page-footer">
   <p>
