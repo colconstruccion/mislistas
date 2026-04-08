@@ -1,0 +1,128 @@
+element,id,text
+button,logoutBtn,Logout
+a,loadDocLink,Upload document
+a,myDocsLink,My Documents
+a,searchDocsLink,Search Documents
+a,createListsLink,Create Lists
+div,createListsMenu,
+ul,one-column-list,List 5 items | List 10 items | List 15 items
+ul,two-column-list,5 rows | 10 rows | 15 rows
+ul,three-column-list,5 rows | 10 rows | 15 rows
+a,toggleFormsBtn,Create Forms
+div,formsSubmenu,Create Login
+a,openCreateLoginLink,Create Login
+a,myFormsLink,My Forms
+div,myFormsSubmenu,My Logins
+a,myLoginsLink,My Logins
+a,mergePdfLink,Merge PDFs
+a,myAccountLink,My Account
+div,billingPanel,Plan | Points
+span,planLabel,—
+span,pointsLabel,—
+
+element,id,text
+div,search-box,Search Document by ID
+input,publicIdInput,
+button,searchPublicDocBtn,Search
+div,searchResultMsg,
+
+element,id,text
+div,savedListsView,
+
+element,id,text
+div,formContainer,Create a List
+form,listForm,
+input,title,
+div,itemsContainer,
+div,richTextContainer,
+div,toolbar,B | I | U | Left | Center | Right | List | Font Size | Font Family
+div,editor,
+
+element,id,text
+button,toggleCheckboxesBtn,check_box
+button,toggleNoteBoxBtn,sticky_note_2
+button,addRowBtn,add
+button,deleteRowBtn,remove
+button,addColumnBtn,view_column
+button,deleteColumnBtn,view_stream
+button,toggleLinksBtn,link
+
+element,id,text
+button,saveAsCopyBtn,Save as Copy
+button,saveCloudBtn,Save to Cloud
+input,headerImageInput,
+button,uploadHeaderBtn,Upload Header
+input,footerImageInput,
+button,uploadFooterBtn,Add Footer
+button,savePreviewPdfBtn,Save Preview as PDF
+
+element,id,text
+div,docUploadPanel,Upload a document
+form,docUploadForm,
+input,docTitle,
+input,docFile,
+p,docUploadHint,Free 30MB | Paid 120MB
+button,docUploadBtn,Upload
+button,docUploadCancelBtn,Cancel
+div,docUploadStatus,
+
+element,id,text
+div,shareDocPanel,Share Document by Email
+form,shareDocForm,
+input,shareDocId,
+input,sharePublicId,
+input,shareDocTitle,
+input,shareRecipientEmail,
+textarea,shareEmailMessage,
+button,sendShareEmailBtn,Send Email
+button,shareDocCancelBtn,Cancel
+div,shareDocStatus,
+
+element,id,text
+div,documentList,
+div,pdfViewerPanel,Document Viewer
+iframe,pdfFrame,
+
+element,id,text
+div,preview-container,Live Preview
+h2,livePreviewHeader,Live Preview
+h3,previewTitle,Your list title...
+ul,previewItems,
+div,notePreview,
+
+element,id,text
+div,myAccountPanel,My Account
+p,accountEmail,Loading...
+button,accountChangePasswordBtn,Change Password
+button,accountDeleteBtn,Delete Account
+p,accountMsg,
+
+element,id,text
+div,createLoginPanel,Create Login
+form,loginFormPanel,
+input,loginAccount,
+input,loginUsername,
+input,loginPassword,
+button,togglePasswordBtn,visibility
+button,copyPasswordBtn,content_copy
+button,saveLoginFormBtn,Save Login Form
+div,loginFormStatus,
+
+element,id,text
+div,formsListPanel,My Forms
+div,vaultPanel,Unlock Logins Vault
+h3,vaultPanelTitle,Unlock Logins Vault
+input,vaultKeyInput,
+div,vaultConfirmWrap,Confirm Master Key
+input,vaultKeyConfirm,
+button,vaultActionBtn,Unlock Vault
+button,lockVaultBtn,Lock Vault
+button,deleteVaultBtn,Delete Vault
+div,vaultStatus,
+div,formsTableWrap,
+
+element,id,text
+main,protected,
+div,auth-loading,Loading…
+div,appLayout,
+div,toastMessage,

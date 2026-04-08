@@ -69,12 +69,14 @@
   /* No-checkbox layouts (default) */
   .preview-row.col-1 { grid-template-columns: 1fr; }
   .preview-row.col-2 { grid-template-columns: 1fr 1fr; }
-  .preview-row.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .preview-row.col-3 { grid-template-columns: 2fr 1fr 1fr; }
 
   /* When checkboxes are ON, reserve a fixed first column for them */
   #previewItems.checkboxes-on .preview-row.col-1 { grid-template-columns: 40px 1fr; }
   #previewItems.checkboxes-on .preview-row.col-2 { grid-template-columns: 40px 1fr 1fr; }
   #previewItems.checkboxes-on .preview-row.col-3 { grid-template-columns: 40px 1fr 1fr 1fr; }
+  #previewItems.checkboxes-on .preview-row.col-4 { grid-template-columns: 40px 1fr 1fr 1fr 1fr; }
+  #previewItems.checkboxes-on .preview-row.col-5 { grid-template-columns: 40px 1fr 1fr 1fr 1fr 1fr; }
 
   /* Make the preview checkbox sit nicely in that first grid column */
   .preview-check {

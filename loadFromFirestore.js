@@ -3,7 +3,7 @@
 import { auth, db} from "./firebaseConfig.js?v=4";
 import {
   collection, query, orderBy, limit,
-  getDocs, doc, getDoc
+  getDocs, doc, getDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -16,6 +16,8 @@ const functions = getFunctions();
 const deleteListPaid = httpsCallable(functions, "deleteListPaid");
 const toggleDocumentVisibility = httpsCallable(functions, "toggleDocumentVisibility");
 const deleteDocumentPaid = httpsCallable(functions, "deleteDocumentPaid");
+const renameDocumentTitle = httpsCallable(functions, "renameDocumentTitle");
+const sendDocumentShareEmail = httpsCallable(functions, "sendDocumentShareEmail");
 /* ---------- Helpers to work with your DOM ---------- */
 
 function validId(id) {
@@ -30,9 +32,25 @@ function rebuildInputsAndFill(items, columns = 1) {
 
   // Fill values
   const inputs = document.querySelectorAll("input[name='item']");
-  items.forEach((text, i) => {
-    if (inputs[i]) inputs[i].value = text || "";
+  items.forEach((item, i) => {
+    if (!inputs[i]) return;
+
+    if (typeof item === "string") {
+      inputs[i].value = item || "";
+      delete inputs[i].dataset.link;
+      return;
+    }
+
+    inputs[i].value = item?.text || "";
+
+    if (item?.link) {
+      inputs[i].dataset.link = item.link;
+    } else {
+      delete inputs[i].dataset.link;
+    }
   });
+
+  try { window.refreshRowLinkButtonsState && window.refreshRowLinkButtonsState(); } catch {}
 
   try { window.updatePreview && window.updatePreview(); } catch {}
 }
@@ -61,10 +79,37 @@ function loadListIntoForm(docData) {
   if (titleEl) titleEl.value = title;
 
   const cleaned = (Array.isArray(items) ? items : [])
-    .filter(v => typeof v === "string" && v.trim() !== "" && v.toLowerCase() !== "on");
-  // ✅ Apply saved column layout
-  applyColumnLayout(columns);
-  rebuildInputsAndFill(cleaned, columns);
+  .map(item => {
+    if (typeof item === "string") {
+      return {
+        text: item.toLowerCase() === "on" ? "" : item,
+        link: ""
+      };
+    }
+
+    if (item && typeof item === "object") {
+      const text = typeof item.text === "string" ? item.text : "";
+      const link = typeof item.link === "string" ? item.link : "";
+
+      return {
+        text: text.toLowerCase() === "on" ? "" : text,
+        link
+      };
+    }
+
+    return { text: "", link: "" };
+  });
+
+  const safeColumns = [1, 2, 3].includes(Number(columns)) ? Number(columns) : 1;
+  const padded = [...cleaned];
+
+  while (safeColumns > 1 && padded.length % safeColumns !== 0) {
+    padded.push({ text: "", link: "" });
+  }
+
+    // ✅ Apply saved column layout
+  applyColumnLayout(safeColumns);
+  rebuildInputsAndFill(padded, safeColumns);
 
   const rich = document.getElementById("richTextContainer");
   if (rich) rich.style.display = "block";
@@ -182,8 +227,18 @@ async function fetchRecentListsMeta(uid, max = 15) {
     rows.push({
       id: d.id,
       title: data.title || "Untitled",
+
+      // existing
       count: Array.isArray(data.items) ? data.items.length : (data.totalItems ?? 0),
-      createdAt: data.createdAt ? dateLabel(data.createdAt) : ""
+      createdAt: data.createdAt ? dateLabel(data.createdAt) : "",
+
+      // 🔥 ADD THESE (REQUIRED)
+      items: Array.isArray(data.items) ? data.items : [],
+      note: data.note || "",
+
+      // 🔥 SHARE SYSTEM
+      visible: !!data.visible,
+      publicId: data.publicId || ""
     });
   });
   return rows;
@@ -289,34 +344,211 @@ export function loadSavedLists(workspaceId = "workspace") {
 // Make "Open in editor" behave like clicking a Workspace list item.
 window.openListById = async function(listId) {
   try {
+    const formContainer = document.getElementById("formContainer");
+    const previewContainer = document.getElementById("preview-container");
+    const savedListsView = document.getElementById("savedListsView");
+    const documentList = document.getElementById("documentList");
+    const pdfViewerPanel = document.getElementById("pdfViewerPanel");
+    const myAccountPanel = document.getElementById("myAccountPanel");
+    const docUploadPanel = document.getElementById("docUploadPanel");
+    const shareDocPanel = document.getElementById("shareDocPanel");
+    const searchBox = document.getElementById("search-box");
+
+    if (formContainer) formContainer.style.display = "block";
+    if (previewContainer) previewContainer.style.display = "block";
+
+    if (savedListsView) savedListsView.style.display = "none";
+    if (documentList) documentList.style.display = "none";
+    if (pdfViewerPanel) pdfViewerPanel.style.display = "none";
+    if (myAccountPanel) myAccountPanel.style.display = "none";
+    if (docUploadPanel) docUploadPanel.style.display = "none";
+    if (shareDocPanel) shareDocPanel.style.display = "none";
+    if (searchBox) searchBox.style.display = "none";
+
     const user = auth.currentUser;
     if (!user) {
       alert("Please sign in to open your lists.");
       return;
     }
 
-    // 1) Fetch the full list doc (same API used by Workspace click)
-    const data = await fetchList(user.uid, listId);  // uses Firestore doc() + getDoc()
+    // 1) Fetch the full list doc
+    const data = await fetchList(user.uid, listId);
     if (!data) {
       alert("This list could not be loaded (it may have been deleted).");
       return;
     }
 
-    // 2) Populate the editor UI (title + items into #itemsContainer + note)
-    showEditorPanel();     // ✅ make sure editor is visible
-    loadListIntoForm(data); // this rebuilds inputs inside #itemsContainer
+    // 2) Populate editor UI
+    showEditorPanel();
+    loadListIntoForm(data);
 
-    // 3) Mirror Workspace behavior (remember list id, update button, row controls)
+    // 3) Remember list id
     if (validId(listId)) {
-      sessionStorage.setItem('currentListId', listId);
+      sessionStorage.setItem("currentListId", listId);
     } else {
-      sessionStorage.removeItem('currentListId');
+      sessionStorage.removeItem("currentListId");
     }
 
-    const saveBtn = document.getElementById('saveCloudBtn');
-    if (saveBtn) saveBtn.textContent = 'Update in Cloud';
+    const saveBtn = document.getElementById("saveCloudBtn");
+    if (saveBtn) saveBtn.textContent = "Update in Cloud";
 
     try { window.updateRowControls && window.updateRowControls(); } catch {}
+
+    // 4) Populate Preview Container
+    const title = data.title || "Untitled List";
+    const items = Array.isArray(data.items) ? data.items : [];
+    const note = data.note || "";
+    const columns = Number(data.columns || 1);
+
+    const headerImageUrl = data.headerImageUrl || "";
+    const headerImagePath = data.headerImagePath || "";
+    const footerImageUrl = data.footerImageUrl || "";
+    const footerImagePath = data.footerImagePath || "";
+
+    // Clear previous list image session state
+    sessionStorage.removeItem("headerImage");
+    sessionStorage.removeItem("headerImagePath");
+    sessionStorage.removeItem("footerImage");
+    sessionStorage.removeItem("footerImagePath");
+
+    // Restore current list image session state
+    if (headerImageUrl) sessionStorage.setItem("headerImage", headerImageUrl);
+    if (headerImagePath) sessionStorage.setItem("headerImagePath", headerImagePath);
+    if (footerImageUrl) sessionStorage.setItem("footerImage", footerImageUrl);
+    if (footerImagePath) sessionStorage.setItem("footerImagePath", footerImagePath);
+
+    if (typeof createItemInputs === "function") {
+      createItemInputs(items.length, columns);
+
+      const titleEl = document.getElementById("title");
+      if (titleEl) titleEl.value = title;
+
+      const inputs = document.querySelectorAll("#itemsContainer input[type='text']");
+      items.forEach((item, i) => {
+        if (!inputs[i]) return;
+
+        if (typeof item === "string") {
+          inputs[i].value = item || "";
+          delete inputs[i].dataset.link;
+          return;
+        }
+
+        inputs[i].value = item?.text || "";
+
+        if (item?.link) {
+          inputs[i].dataset.link = item.link;
+        } else {
+          delete inputs[i].dataset.link;
+        }
+      });
+
+      try { window.refreshRowLinkButtonsState && window.refreshRowLinkButtonsState(); } catch {}
+      
+      const richTextContainer = document.getElementById("richTextContainer");
+      const editor = document.getElementById("editor");
+
+      if (editor) {
+        editor.innerHTML = note || "";
+      }
+
+      if (richTextContainer) {
+        if (note && note.trim() !== "") {
+          richTextContainer.classList.add("form-note-area");
+        } else {
+          richTextContainer.classList.remove("form-note-area");
+        }
+      }
+    }
+
+    // Restore header preview
+    let headerPreview = document.getElementById("headerPreview");
+    if (!headerPreview && previewContainer) {
+      headerPreview = document.createElement("div");
+      headerPreview.id = "headerPreview";
+      previewContainer.insertBefore(headerPreview, previewContainer.firstChild);
+    }
+
+    if (headerPreview) {
+      if (headerImageUrl) {
+        headerPreview.innerHTML = `
+          <button class="remove-btn" title="Remove Header">&times;</button>
+          <img src="${headerImageUrl}" alt="Header Image" crossorigin="anonymous" />
+        `;
+
+        const removeBtn = headerPreview.querySelector(".remove-btn");
+        if (removeBtn) {
+          removeBtn.addEventListener("click", async () => {
+            const oldPath = sessionStorage.getItem("headerImagePath");
+
+            try {
+              if (oldPath) {
+                const { getStorage, ref, deleteObject } = await import(
+                  "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js"
+                );
+                const storage = getStorage();
+                await deleteObject(ref(storage, oldPath));
+              }
+            } catch (err) {
+              console.warn("Could not delete header image from storage:", err);
+            }
+
+            sessionStorage.removeItem("headerImage");
+            sessionStorage.removeItem("headerImagePath");
+            headerPreview.innerHTML = "";
+          });
+        }
+      } else {
+        headerPreview.innerHTML = "";
+      }
+    }
+
+    // Restore footer preview
+    let footerPreview = document.getElementById("footerPreview");
+    if (!footerPreview && previewContainer) {
+      footerPreview = document.createElement("div");
+      footerPreview.id = "footerPreview";
+      previewContainer.appendChild(footerPreview);
+    }
+
+    if (footerPreview) {
+      if (footerImageUrl) {
+        footerPreview.innerHTML = `
+          <button class="remove-footer-btn" title="Remove Footer">&times;</button>
+          <img src="${footerImageUrl}" alt="Footer Image" crossorigin="anonymous" />
+        `;
+
+        const removeBtn = footerPreview.querySelector(".remove-footer-btn");
+        if (removeBtn) {
+          removeBtn.addEventListener("click", async () => {
+            const oldPath = sessionStorage.getItem("footerImagePath");
+
+            try {
+              if (oldPath) {
+                const { getStorage, ref, deleteObject } = await import(
+                  "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js"
+                );
+                const storage = getStorage();
+                await deleteObject(ref(storage, oldPath));
+              }
+            } catch (err) {
+              console.warn("Could not delete footer image from storage:", err);
+            }
+
+            sessionStorage.removeItem("footerImage");
+            sessionStorage.removeItem("footerImagePath");
+            footerPreview.innerHTML = "";
+          });
+        }
+      } else {
+        footerPreview.innerHTML = "";
+      }
+    }
+
+    if (typeof updatePreview === "function") {
+      updatePreview();
+    }
+
+    formContainer?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
     console.error("Open list by id failed:", e);
     alert("Could not open that list. See console for details.");
@@ -429,15 +661,16 @@ async function loadUserDocuments() {
     const snap = await getDocs(qDocs);
 
     let html = `
-      <h3>Your Documents</h3>
-      <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+    <h3>Your Documents</h3>
+    <div class="documents-table-wrap">
+      <table class="documents-table" style="width:100%; border-collapse:collapse; font-size:0.95rem;">
         <thead>
           <tr style="background:#f3f3f3; text-align:left;">
             <th style="padding:8px; border-bottom:1px solid #ddd;">Visible / ID</th>
-            <th style="padding:8px; border-bottom:1px solid #ddd;">Title</th>
-            <th style="padding:8px; border-bottom:1px solid #ddd;">File</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd; min-width:240px;">Title</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Uploaded</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">View</th>
+            <th style="padding:8px; border-bottom:1px solid #ddd;">Share</th>
             <th style="padding:8px; border-bottom:1px solid #ddd;">Delete</th>
           </tr>
         </thead>
@@ -454,7 +687,7 @@ async function loadUserDocuments() {
       snap.forEach((docSnap) => {
         const d = docSnap.data() || {};
         const title = d.title || d.filename || "Untitled document";
-        const filename = d.filename || "(no file)";
+        // const filename = d.filename || "(no file)";
         const created = d.createdAt?.toDate
           ? d.createdAt.toDate().toLocaleString()
           : "(unknown)";
@@ -464,7 +697,7 @@ async function loadUserDocuments() {
 
         // escape single quotes for inline onclick strings
         const downloadURL = (d.downloadURL || "").replace(/'/g, "\\'");
-        const storagePath = (d.storagePath || "").replace(/'/g, "\\'");
+        // const storagePath = (d.storagePath || "").replace(/'/g, "\\'");
 
         html += `
           <tr style="border-bottom:1px solid #eee;">
@@ -495,8 +728,48 @@ async function loadUserDocuments() {
                 ` : ""}
               </label>
             </td>
-            <td style="padding:8px;">${title}</td>
-            <td style="padding:8px;">${filename}</td>
+            <td style="padding:8px;min-width:220px;">
+              <div class="doc-title-inline">
+
+                <span
+                  class="doc-title-text"
+                  id="docTitleText-${docSnap.id}"
+                >
+                  ${title}
+                </span>
+
+                <button
+                  type="button"
+                  class="rename-pencil-btn"
+                  title="Rename document"
+                  onclick="startInlineRename('${docSnap.id}', '${title.replace(/'/g, "\\'")}')"
+                >
+                  ✏️
+                </button>
+
+                <div
+                  class="doc-title-editor"
+                  id="docTitleEditor-${docSnap.id}"
+                  style="display:none;"
+                >
+                  <input
+                    type="text"
+                    id="docTitleInput-${docSnap.id}"
+                    value="${title.replace(/"/g, "&quot;")}"
+                  />
+
+                  <button onclick="saveInlineRename('${docSnap.id}')">
+                    Save
+                  </button>
+
+                  <button onclick="cancelInlineRename('${docSnap.id}')">
+                    Cancel
+                  </button>
+
+                </div>
+
+              </div>
+            </td>
             <td style="padding:8px; white-space:nowrap;">${created}</td>
             <td style="padding:8px;">
               ${
@@ -505,6 +778,20 @@ async function loadUserDocuments() {
                   : `<span style="opacity:.6;">No URL</span>`
               }
             </td>
+
+            <td style="padding:8px;">
+              ${
+                d.publicId
+                  ? `<button
+                      type="button"
+                      onclick="openShareDocForm('${docSnap.id}', '${title.replace(/'/g, "\\'")}', '${d.publicId}')"
+                    >
+                      Share
+                    </button>`
+                  : `<span style="opacity:.6;" class="private-badge">Private</span>`
+              }
+            </td>
+
             <td style="padding:8px;">
               <button
                 type="button"
@@ -519,7 +806,7 @@ async function loadUserDocuments() {
       });
     }
 
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
     listDiv.innerHTML = html;
   } catch (e) {
     console.error("Failed to load documents:", e);
@@ -611,6 +898,201 @@ window.deleteUserDocument = async function (docId) {
   }
 };
 
+window.startInlineRename = function (docId, currentTitle) {
+  const textEl = document.getElementById(`docTitleText-${docId}`);
+  const editorEl = document.getElementById(`docTitleEditor-${docId}`);
+  const inputEl = document.getElementById(`docTitleInput-${docId}`);
+
+  if (textEl) textEl.style.display = "none";
+  if (editorEl) editorEl.style.display = "inline-flex";
+  if (inputEl) {
+    inputEl.value = currentTitle || "";
+    inputEl.focus();
+    inputEl.select();
+  }
+
+  inputEl.onkeydown = async (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      await window.saveInlineRename(docId);
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      window.cancelInlineRename(docId);
+    }
+  };
+};
+
+window.cancelInlineRename = function (docId) {
+  const textEl = document.getElementById(`docTitleText-${docId}`);
+  const editorEl = document.getElementById(`docTitleEditor-${docId}`);
+
+  if (textEl) textEl.style.display = "inline";
+  if (editorEl) editorEl.style.display = "none";
+};
+
+window.saveInlineRename = async function (docId) {
+  const inputEl = document.getElementById(`docTitleInput-${docId}`);
+  const newTitle = inputEl?.value?.trim();
+
+  if (!newTitle) {
+    alert("Title cannot be empty.");
+    return;
+  }
+
+  try {
+    await renameDocumentTitle({
+      docId,
+      title: newTitle
+    });
+
+    await loadUserDocuments();
+
+    if (window.showToast) {
+      window.showToast("Document renamed");
+    }
+
+  } catch (e) {
+    console.error("Inline rename failed:", e);
+    alert("Could not rename document.");
+  }
+};
+
+window.openShareDocForm = function (docId, title, publicId) {
+  const panel = document.getElementById("shareDocPanel");
+  const docIdEl = document.getElementById("shareDocId");
+  const publicIdEl = document.getElementById("sharePublicId");
+  const titleEl = document.getElementById("shareDocTitle");
+  const emailEl = document.getElementById("shareRecipientEmail");
+  const msgEl = document.getElementById("shareEmailMessage");
+  const statusEl = document.getElementById("shareDocStatus");
+
+  if (!panel) return;
+
+  if (docIdEl) docIdEl.value = docId || "";
+  if (publicIdEl) publicIdEl.value = publicId || "";
+  if (titleEl) titleEl.value = title || "";
+  if (emailEl) emailEl.value = "";
+  if (msgEl) msgEl.value = "Document shared using lysty.co";
+  if (statusEl) {
+    statusEl.textContent = "";
+    statusEl.style.color = "#333";
+  }
+
+  panel.style.display = "block";
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+  if (emailEl) emailEl.focus();
+};
+
+window.closeShareDocForm = function () {
+  const panel = document.getElementById("shareDocPanel");
+  const form = document.getElementById("shareDocForm");
+  const statusEl = document.getElementById("shareDocStatus");
+
+  if (panel) panel.style.display = "none";
+  if (form) form.reset();
+  if (statusEl) {
+    statusEl.textContent = "";
+    statusEl.style.color = "#333";
+  }
+};
+
+const shareDocCancelBtn = document.getElementById("shareDocCancelBtn");
+
+if (shareDocCancelBtn) {
+  shareDocCancelBtn.addEventListener("click", () => {
+    window.closeShareDocForm();
+  });
+}
+
+// share document function while js for sharing the document is written
+const shareDocForm = document.getElementById("shareDocForm");
+
+if (shareDocForm) {
+  shareDocForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const docId = document.getElementById("shareDocId")?.value || "";
+    const publicId = document.getElementById("sharePublicId")?.value || "";
+    const title = document.getElementById("shareDocTitle")?.value || "";
+    const email = document.getElementById("shareRecipientEmail")?.value?.trim() || "";
+    const message = document.getElementById("shareEmailMessage")?.value?.trim() || "";
+    const statusEl = document.getElementById("shareDocStatus");
+    const sendBtn = document.getElementById("sendShareEmailBtn");
+
+    if (!docId || !publicId || !email) {
+      if (statusEl) {
+        statusEl.textContent = "Please enter an email.";
+        statusEl.style.color = "#a00";
+      }
+      return;
+    }
+
+    try {
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = "Sending...";
+      }
+
+      if (statusEl) {
+        statusEl.textContent = "Sending email...";
+        statusEl.style.color = "#333";
+      }
+
+      await sendDocumentShareEmail({
+        docId,
+        to: email,
+        message
+      });
+
+      if (statusEl) {
+        statusEl.textContent = `Document "${title}" sent to ${email}.`;
+        statusEl.style.color = "#0a0";
+      }
+
+      if (window.showToast) {
+        window.showToast("Share email sent");
+      }
+    } catch (err) {
+      console.error("Share email failed:", err);
+
+      const msg =
+        err?.message ||
+        err?.details?.message ||
+        "Could not send email.";
+
+      if (statusEl) {
+        statusEl.textContent = msg;
+        statusEl.style.color = "#a00";
+      }
+    } finally {
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send Email";
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const openListId = params.get("openListId");
+
+  if (!openListId) return;
+
+  const waitForEditor = setInterval(async () => {
+    if (auth.currentUser && typeof window.openListById === "function") {
+      clearInterval(waitForEditor);
+      await window.openListById(openListId);
+
+      // clean the URL after opening
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+  }, 300);
+});
 
 // Expose as global so auth.html can call window.loadUserDocuments()
 window.loadUserDocuments = loadUserDocuments;
