@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>List Builder Workspace</title>
+  <link rel="stylesheet" href="listasStyle.css?v=18">
+  <link rel="stylesheet" href="listasStyle2.css?v=4">
+  <link rel="stylesheet" href="checkBoxes.css?v=3">
+  <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
+  <link rel="stylesheet" href="uploadFooter.css">
+  <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
+  <link rel="stylesheet" href="auth.css?v=5"> <!--V13-->
+  <link rel="stylesheet" href="forms.css?v=3"> <!-- V75 -->
+  <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .saved-list-card button[title="Delete this list"]:hover {
+        background:#f8d7da;
+        color:#900;
+        transform:scale(1.15);
+      }
+
+  </style>
+  <script>
+  const userLang = navigator.language || navigator.userLanguage;
+
+  </script>
+
+</head>
+
+<body class="theme-orange">
+  <main id="protected" hidden>
+  <div id="auth-loading" style="text-align:center; padding:1rem;">Loading…</div>
+
+  <div class="layout" id="appLayout">
+    <aside class="sidebar app-sidebar">
+  <div class="sidebar-brand">
+        <a href="index.html" class="sidebar-brand-link">
+          <div class="sidebar-brand-icon">
+            <span class="material-icons">description</span>
+          </div>
+
+          <div class="sidebar-brand-text">
+            <div class="sidebar-logo-title">Lysty</div>
+            <!-- <div class="sidebar-logo-subtitle">EDITORIAL CURATOR</div> -->
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="auth.html?panel=dashboard" class="sidebar-nav-item">
+          <span class="material-icons sidebar-nav-icon">grid_view</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" id="myFormsLink">
+          <span class="material-icons sidebar-nav-icon">article</span>
+          <span>Forms</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" id="openVaultBtn">
+          <span class="material-icons sidebar-nav-icon">password</span>
+          <span>Password Manager</span>
+        </a>
+
+        <a href="merge-pdf.html" class="sidebar-nav-item" id="mergePdfLink">
+          <span class="material-icons sidebar-nav-icon">picture_as_pdf</span>
+          <span>Merge PDF</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-section-label">PREFERENCES</div>
+
+      <nav class="sidebar-nav sidebar-nav-bottom">
+        <a href="#" class="sidebar-nav-item" id="myAccountLink">
+          <span class="material-icons sidebar-nav-icon">person_outline</span>
+          <span>Account</span>
+        </a>
+
+        <button id="logoutBtn" class="sidebar-nav-item sidebar-logout-btn" type="button">
+          <span class="material-icons sidebar-nav-icon">logout</span>
+          <span>Log Out</span>
+        </button>
+      </nav>
+
+    </aside>
+
+    <div class="main">
+
+      <!-- My Account Panel -->
+      <div id="myAccountPanel"
+          style="display:none; max-width:420px; margin:20px auto; padding:16px;">
+
+        <h2>My Account</h2>
+
+        <div class="account-card">
+          <p><strong>Email</strong></p>
+          <p id="accountEmail" class="mono-text">Loading...</p>
+
+          <hr />
+
+          <button id="accountChangePasswordBtn" class="cta-btn">
+            Change Password
+          </button>
+
+          <button id="accountDeleteBtn" class="cta-btn danger-btn">
+            Delete Account
+          </button>
+
+          <p id="accountMsg" class="status-msg"></p>
+        </div>
+      </div>
+
+      <!-- My forms -->
+      <div id="formsListPanel" style="margin:20px 0;">
+        <h2>My Forms</h2>
+
+        <button id="openCreateLoginBtn" class="cta-btn" style="display:none;margin-bottom:12px;">
+          + Create Login
+        </button>
+
+        <button id="openCreateBusinessCardBtn" class="cta-btn" style="margin-bottom:12px;">
+          + Create Business Card
+        </button>
+
+        <button id="viewSignupList" class="cta-btn" style="margin-bottom:12px;">
+          View Signup Lists
+        </button>
+
+        <!-- NEW: Create Login Panel -->
+        <div id="createLoginPanel" class="create-login-panel" style="display:none;">
+          <h3>Create Login</h3>
+
+          <form id="loginFormPanel" autocomplete="off">
+            <div class="form-field">
+              <label for="loginAccount">Login Account</label>
+              <input type="text" id="loginAccount" placeholder="Enter website or account name">
+            </div>
+
+            <div class="form-field">
+              <label for="loginUsername">Username</label>
+              <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username">
+            </div>
+
+            <div class="form-field">
+              <label for="loginPassword">Password</label>
+              <div class="password-input-wrap">
+                <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+
+                <button type="button" id="togglePasswordBtn" class="icon-btn">
+                  <span class="material-icons">visibility</span>
+                </button>
+
+                <button type="button" id="copyPasswordBtn" class="icon-btn">
+                  <span class="material-icons">content_copy</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="saveLoginFormBtn">Save Login Form</button>
+            </div>
+          </form>
+
+          <div id="loginFormStatus" class="status-msg"></div>
+        </div>
+
+        <div id="vaultPanel" class="vault-panel" style="display:none;">
+          <h3 id="vaultPanelTitle">Unlock Logins Vault</h3>
+
+          <div class="form-field">
+            <label for="vaultKeyInput">Vault Key (Master Key)</label>
+            <input type="password" id="vaultKeyInput" placeholder="Enter your Master Key">
+          </div>
+
+          <div class="form-field" id="vaultConfirmWrap" style="display:none;">
+            <label for="vaultKeyConfirm">Confirm Master Key</label>
+            <input type="password" id="vaultKeyConfirm" placeholder="Confirm your Master Key">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="vaultActionBtn">Unlock Vault</button>
+            <button type="button" id="lockVaultBtn" style="display:none;">Lock Vault</button>
+
+            <!-- NEW DELETE BUTTON -->
+            <button type="button" id="deleteVaultBtn" style="display:none; background:#ef4444; color:white;">
+              Delete Vault
+            </button>
+          </div>
+
+          <div id="vaultStatus" class="status-msg"></div>
+          <p style="font-size:0.85rem; color:#666; margin-top:10px;">
+            ⚠ Your Master Key cannot be recovered. If lost, you must delete the vault and create a new one.
+          </p>
+        </div>
+         
+        <!-- Business Card Form -->
+        <div id="businessCardPanel" class="business-card-panel" style="display:none;">
+          <h3>Create Business Card</h3>
+
+          <div class="form-field">
+            <label>Company / Business Name</label>
+            <input type="text" id="bcCompany" placeholder="ABC CONSULTING LLC">
+          </div>
+
+          <div class="form-field">
+            <label>Name</label>
+            <input type="text" id="bcName" placeholder="Ricardo Velez">
+          </div>
+
+          <div class="form-field">
+            <label>Job Title</label>
+            <input type="text" id="bcRole" placeholder="Mechanical Engineer">
+          </div>
+
+          <div class="form-field">
+            <label>Phone</label>
+            <input type="text" id="bcPhone" placeholder="718-555-1234">
+          </div>
+
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" id="bcEmail" placeholder="rvelez@email.com">
+          </div>
+
+          <div class="form-field">
+            <label>Address</label>
+            <input type="text" id="bcAddress" placeholder="Queens, NY">
+          </div>
+
+          <button type="button" id="generateBusinessCardBtn" class="cta-btn">
+            Generate Business Card
+          </button>
+
+          <button type="button" id="downloadBusinessCardBtn" class="cta-btn" style="display:none;">
+            Download Image
+          </button>
+
+          <div id="businessCardResult" style="margin-top:16px;"></div>
+        </div>
+
+        <div id="formsTableWrap"></div>
+
+        <!-- Signup List-->
+        <div id="signupResponsesPanel" style="display:none;"></div>
+
+
+      </div>
+
+    </div>
+    
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- 1) Initialize Firebase -->
+  <script type="module" src="firebaseConfig.js?v=5"></script>
+  <script type="module" src="uploadDocuments.js?v=11"></script>
+  <script src="accordion.js?v=1"></script>
+  <!-- <script src="listasScript.js?v=24"></script> -->
+  
+  <!-- <script src="listasStarsScript.js?v=4"></script> -->
+  <!-- script src="listaDateScript.js?v=1"></script> -->
+  <!-- <script type="module" src="uploadHeader.js"></script> --> <!-- V61 -->
+  <!-- <script type="module" src="uploadFooter.js"></script> -->
+  <script type="module" src="saveToFirestore.js?v=16"></script>
+  <script type="module" src="saveForms.js?v=3"></script>
+  <script type="module" src="loadFromFirestore.js?v=47"></script>
+  <script type="module" src="shareEmailLists.js?v=2"></script>
+  <script src="showSavedLists.js?v=21"></script>
+  
+  <!-- NEW: Wire "My Documents" and PDF viewer -->
+  <script src="docPdfViewer.js?v=2"></script>
+ <!-- NEW: Wire "My Accont"  -->
+<!-- <script src="closePanels.js?v=6"></script>-->
+<!-- <script src="sidebarNav.js?v=12"></script> -->
+<!-- <script src="dashboardPanel.js?v=7"></script> -->
+<script type="module" src="userAccount.js?v=3"></script>
+<!-- Buy button -->
+<script type="module" src="./billing.js?v=1"></script>
+<script src="searchBox.js?v=1"></script>
+<script type="module" src="publicSearch.js?v=3"></script>
+<script type="module" src="myAccount.js?v=5"></script>
+<script type="module" src="savePreviewPdfToDocuments.js?v=2"></script>
+<script src="formsCrypto.js?v=1"></script>
+<script type="module" src="vault.js?v=4"></script>
+<script src="forms.js?v=13"></script> <!-- V75 -->
+<script src="businessCardFormScript.js?v=2"></script>
+<script type="module" src="loadForms.js?v=3"></script> <!-- V75 -->
+<script type="module" src="shareList.js?v=3"></script> <!-- V66 -->
+<script type="module" src="inboxScript.js?v=5"></script> <!-- V109 -->
+<script type="module" src="signupResponses.js?v=5"></script> <!-- v123 -->
+<!-- forward to email.html -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dashboardEmailBtn = document.getElementById("dashboardEmailBtn");
+
+    if (dashboardEmailBtn) {
+      dashboardEmailBtn.addEventListener("click", function () {
+        window.location.href = "email.html";
+      });
+    }
+  });
+</script>
+<!-- link to my account from email.html-->
+<script>
+  window.addEventListener("load", () => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("panel") === "account") {
+      window.openMyAccountPanel();
+    }
+  });
+</script>
+
+<div id="toastMessage" class="toast-message"></div>
+<footer class="page-footer">
+  <p>
+    &copy; lysty.co. All rights reserved. |
+    <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> |
+    <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+  </p>
+</footer>
+
+</main>
+</body>
+</html>

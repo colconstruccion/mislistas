@@ -87,9 +87,11 @@ function initAccountPanel() {
     return;
   }
 
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (!user) return;
+
     wireAccountPanel(auth, app, user);
+    await updateAvatarPlan(auth, app, user);
   });
 }
 
@@ -97,4 +99,48 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initAccountPanel);
 } else {
   initAccountPanel();
+}
+
+async function updateAvatarPlan(auth, app, user) {
+  const tooltip = document.getElementById("avatarPlanTooltip");
+  if (!tooltip) return;
+
+  try {
+    // 🔥 Get admin claim
+    const tokenResult = await user.getIdTokenResult(true);
+    const isAdmin = tokenResult.claims.admin === true;
+
+    // 🔥 Get plan from Firestore
+    const db = window._firebase?.db;
+    if (!db) return;
+
+    const { doc, getDoc } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
+    );
+
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    const data = snap.exists() ? snap.data() : {};
+
+    const plan = data.plan || "free";
+
+    // 🔥 Decide label
+    let label = "FREE";
+
+    if (plan === "paid") {
+      label = "PAID";
+    }
+
+    if (isAdmin) {
+      label = "ADMIN";
+    }
+
+    tooltip.textContent = label;
+
+    // optional color classes
+    tooltip.className = "avatar-tooltip " + label.toLowerCase();
+
+  } catch (err) {
+    console.error("updateAvatarPlan error:", err);
+  }
 }

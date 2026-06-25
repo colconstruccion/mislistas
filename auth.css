@@ -54,3 +54,280 @@
   text-decoration: underline;
 }
 
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-tooltip {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.avatar-wrapper:hover .avatar-tooltip {
+  opacity: 1;
+}
+
+.avatar-tooltip.free {
+  background: #555;
+}
+
+.avatar-tooltip.paid {
+  background: #0a7cff;
+}
+
+.avatar-tooltip.admin {
+  background: #d97706;
+}
+
+.dashboard-priority-section {
+  margin-top: 28px;
+  padding: 8px 0 0;
+}
+
+.dashboard-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.dashboard-section-accent {
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: #10b981;
+  margin-bottom: 10px;
+}
+
+.dashboard-section-title {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dashboard-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 0.95rem;
+}
+
+.priority-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+}
+
+.priority-card,
+.priority-create-card {
+  min-height: 190px;
+  border-radius: 18px;
+  background: #f4f7fb;
+  padding: 20px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.priority-card {
+  border: 1px solid #edf1f7;
+}
+
+.priority-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.priority-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.priority-star-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+}
+
+.priority-star-btn .material-icons {
+  font-size: 22px;
+}
+
+.priority-star-btn.active {
+  color: #f59e0b;
+}
+
+.priority-card-title {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+}
+
+.priority-card-meta {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #64748b;
+}
+
+.priority-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #eef2ff;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.priority-card-footer {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priority-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.priority-create-card {
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+}
+
+.priority-create-card .material-icons {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.priority-create-card span,
+.priority-create-card strong {
+  color: #94a3b8;
+}
+
+.saved-list-delete-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: #a33;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saved-list-delete-btn:hover {
+  background: #f8d7da;
+  color: #900;
+  transform: scale(1.1);
+}
+
+.saved-list-delete-btn svg {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+}
+
+.priority-card-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.priority-card-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.priority-card-clickable:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-section-title {
+    font-size: 1.5rem;
+  }
+}
+
+.inbox-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin-top: 20px;
+}
+
+.inbox-table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.inbox-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.inbox-table button {
+  background: #ff7a00;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.inbox-table button:hover {
+  opacity: 0.9;
+}
+

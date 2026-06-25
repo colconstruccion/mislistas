@@ -116,6 +116,28 @@
       </div>
       <button type="submit" class="login-btn">Login</button>
     </form>
+
+    <!-- Login with Gmail-->
+    <div style="margin: 1rem 0; color:#777; font-size:0.85rem;">or</div>
+
+      <button type="button" id="showGoogleLoginBox" class="login-btn">
+        Login with Gmail
+      </button>
+
+      <div id="googleLoginBox" hidden style="margin-top:1rem; text-align:left;">
+        <label for="googleLoginEmail" style="display:block; font-size:0.9rem; color:#555; margin-bottom:0.3rem;">
+          Gmail account
+        </label>
+        <input
+          type="email"
+          id="googleLoginEmail"
+          placeholder="yourname@gmail.com"
+          style="width:100%; padding:0.7rem; border:1px solid #ddd; border-radius:8px; font-size:1rem;"
+        >
+        <button type="button" id="googleLoginBtn" class="login-btn" style="margin-top:0.75rem;">
+          Continue with Google
+        </button>
+    </div>
     <div class="login-footer">
       <p>Don’t have an account? <a href="signup.html">Sign Up</a></p>
       <p style="margin-top:0.5rem;">
@@ -135,6 +157,7 @@
   <!-- Firebase + scripts -->
   <script type="module" src="firebaseConfig.js"></script>
   <script type="module" src="login.js"></script>
+  <script type="module" src="googleLogin.js"></script>
   <script type="module" src="passwordReset.js"></script>
 
 </body>

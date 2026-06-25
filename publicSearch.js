@@ -64,12 +64,15 @@ function renderResult(msgEl, data) {
   viewLink.target = "_blank";
   viewLink.rel = "noopener";
   viewLink.textContent = "View";
+  viewLink.className = "search-result-link";
+
 
   const downloadLink = document.createElement("a");
   downloadLink.href = url;
   downloadLink.target = "_blank";
   downloadLink.rel = "noopener";
   downloadLink.textContent = "Download";
+  downloadLink.className = "search-result-link";
   // Note: download attribute may be ignored for cross-origin URLs, but it doesn’t hurt.
   downloadLink.setAttribute("download", "");
 
@@ -151,3 +154,111 @@ window.searchPublicDocument = async function (rawId) {
     showMessage(msgEl, "Search failed. Please try again.", true);
   }
 };
+
+function renderListResult(msgEl, data, listId) {
+  clearResult(msgEl);
+
+  const title = data.title || `List ${listId}`;
+  const items = Array.isArray(data.items) ? data.items : [];
+  const headerImageUrl = data.headerImageUrl || "";
+  const openUrl = `/list/${listId}`;
+
+  const wrap = document.createElement("div");
+  wrap.className = "search-result-card search-result-list-card";
+
+  if (headerImageUrl) {
+    const img = document.createElement("img");
+    img.src = headerImageUrl;
+    img.alt = title;
+    img.className = "search-result-thumb";
+    wrap.appendChild(img);
+  }
+
+  const body = document.createElement("div");
+  body.className = "search-result-body";
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "search-result-title";
+  titleEl.textContent = title;
+
+  const meta = document.createElement("div");
+  meta.className = "search-result-meta";
+  meta.textContent = `Shared list found • ${items.length} item${items.length === 1 ? "" : "s"}`;
+
+  body.appendChild(titleEl);
+  body.appendChild(meta);
+
+  if (items.length) {
+    const previewList = document.createElement("ul");
+    previewList.className = "search-result-preview";
+
+    items.slice(0, 3).forEach((item) => {
+      const li = document.createElement("li");
+
+      if (typeof item === "string") {
+        li.textContent = item;
+      } else if (item && typeof item === "object") {
+        li.textContent =
+          item.text ||
+          item.value ||
+          item.label ||
+          item.content ||
+          "Untitled item";
+      } else {
+        li.textContent = "Untitled item";
+      }
+
+      previewList.appendChild(li);
+    });
+
+    body.appendChild(previewList);
+  }
+
+  const openLink = document.createElement("a");
+  openLink.href = openUrl;
+  openLink.className = "search-result-action";
+  openLink.textContent = "Open Shared List";
+
+  body.appendChild(openLink);
+  wrap.appendChild(body);
+
+  msgEl.innerHTML = "";
+  msgEl.appendChild(wrap);
+}
+
+window.searchPublicList = async function (rawId) {
+  const msgEl = document.getElementById("searchListResultMsg");
+  if (!msgEl) return;
+
+  const id = (rawId || "").trim().toUpperCase();
+
+  if (!id) {
+    showMessage(msgEl, "Enter a list ID (e.g., 8TSY).", true);
+    return;
+  }
+
+  showMessage(msgEl, `Searching for "${id}"…`, false);
+
+  try {
+    const ref = doc(db, "publicLists", id);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      showMessage(msgEl, "This list does not exist or is not shared.", true);
+      return;
+    }
+
+    const data = snap.data() || {};
+
+    renderListResult(msgEl, data, id);
+
+  } catch (err) {
+    console.error("List search failed:", err);
+    showMessage(msgEl, "Search failed. Please try again.", true);
+  }
+};
+
+document.getElementById("searchPublicListBtn")?.addEventListener("click", () => {
+  const input = document.getElementById("publicListInput");
+  window.searchPublicList(input?.value);
+});

@@ -4,12 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>List Builder Workspace</title>
-  <link rel="stylesheet" href="listasStyle.css?v=1">
-  <link rel="stylesheet" href="checkBoxes.css">
+  <link rel="stylesheet" href="listasStyle.css?v=18">
+  <link rel="stylesheet" href="listasStyle2.css?v=4">
+  <link rel="stylesheet" href="checkBoxes.css?v=3">
   <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
   <link rel="stylesheet" href="uploadFooter.css">
   <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
-  <link rel="stylesheet" href="auth.css"> <!--V13-->
+  <link rel="stylesheet" href="auth.css?v=5"> <!--V13-->
+  <link rel="stylesheet" href="forms.css?v=3"> <!-- V75 -->
   <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
@@ -32,69 +34,190 @@
   <div id="auth-loading" style="text-align:center; padding:1rem;">Loading…</div>
 
   <div class="layout" id="appLayout">
-    <aside class="sidebar">
-      <div class="logo-container">
-        <a href="lysty.co/auth.html">
-          <img src="images/logo_lysty.jpeg" alt="Lysty Logo" class="logo-image" />
+    <aside class="sidebar app-sidebar">
+  <div class="sidebar-brand">
+        <a href="index.html" class="sidebar-brand-link">
+          <div class="sidebar-brand-icon">
+            <span class="material-icons">description</span>
+          </div>
+
+          <div class="sidebar-brand-text">
+            <div class="sidebar-logo-title">Lysty</div>
+            <!-- <div class="sidebar-logo-subtitle">EDITORIAL CURATOR</div> -->
+          </div>
         </a>
       </div>
-      
-      <button id="logoutBtn" class="login-btn" style="max-width:200px">Logout</button>
-      <!-- <a class="toggle-link" onclick="openWorkspace()">My Temp lists</a> --> <!-- Removed v28-->
-      <a class="toggle-link" onclick="toggleSavedLists()">My Saved Lists</a>
 
-      <!-- Upload / view documents -->
-      <a class="toggle-link" id="loadDocLink">Upload document</a>
-      <a class="toggle-link" id="myDocsLink">My Documents</a>
-      <a class="toggle-link" id="searchDocsLink">Search Documents</a>
-      <a class="toggle-link" id="createListsLink">Create Lists</a>
-      
-      <div id="createListsMenu" style="display:none;">
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-nav-item active" id="dashboardLink">
+          <span class="material-icons sidebar-nav-icon">grid_view</span>
+          <span>Dashboard</span>
+        </a>
 
-        <a class="toggle-link sub" data-target="one-column-list">One Column Lists</a>
-        <ul id="one-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option" data-count="5" data-columns="1">List 5 items</a></li>
-          <li><a href="#" class="option" data-count="10" data-columns="1">List 10 items</a></li>
-          <li><a href="#" class="option" data-count="15" data-columns="1">List 15 items</a></li>
-        </ul>
+        <a href="#" class="sidebar-nav-item" id="myDocsLink">
+          <span class="material-icons sidebar-nav-icon">description</span>
+          <span>Documents</span>
+        </a>
 
-        <a class="toggle-link sub" data-target="two-column-list">Two Column Lists</a>
-        <ul id="two-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option" data-count="5" data-columns="2">5 rows</a></li>
-          <li><a href="#" class="option" data-count="10" data-columns="2">10 rows</a></li>
-          <li><a href="#" class="option" data-count="15" data-columns="2">15 rows</a></li>
-        </ul>
+        <a href="#" class="sidebar-nav-item" id="createListsLink">
+          <span class="material-icons sidebar-nav-icon">list_alt</span>
+          <span>Lists</span>
+        </a>
 
-        
-        <a class="toggle-link sub" data-target="three-column-list">Three Column Lists</a>
-        <ul id="three-column-list" class="nested" style="display:none;">
-          <li><a href="#" class="option-3col" data-count="5" data-columns="3">5 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="10" data-columns="3">10 rows</a></li>
-          <li><a href="#" class="option-3col" data-count="15" data-columns="3">15 rows</a></li>
-        </ul>
+        <!--<a href="#" class="sidebar-nav-item" id="myInboxLink">
+          <span class="material-icons sidebar-nav-icon">inbox</span>
+          <span>Inbox</span> 
+        </a> -->
 
-      </div>
-      <a class="toggle-link" id="mergePdfLink" href="merge-pdf.html">Merge PDFs</a>
-      <a class="toggle-link" id="myAccountLink">My Account</a>
-      <button type="button" onclick="buyPoints100()">Buy 100 Points ($10)</button>
-      <div id="billingPanel" style="margin-top:10px; padding:10px; border:1px solid #ddd; border-radius:10px; font-size:0.95rem;">
-        <div><strong>Plan:</strong> <span id="planLabel">—</span></div>
-        <div><strong>Points:</strong> <span id="pointsLabel">—</span></div>
-      </div>
+        <!-- <a href="#" class="sidebar-nav-item" id="myFormsLink">
+          <span class="material-icons sidebar-nav-icon">article</span>
+          <span>Forms</span>
+        </a> --.
+
+        <!-- <a href="merge-pdf.html" class="sidebar-nav-item" id="mergePdfLink">
+          <span class="material-icons sidebar-nav-icon">picture_as_pdf</span>
+          <span>Merge PDF</span>
+        </a> -->
+      </nav>
+
+      <div class="sidebar-section-label">PREFERENCES</div>
+
+      <nav class="sidebar-nav sidebar-nav-bottom">
+        <a href="#" class="sidebar-nav-item" id="myAccountLink">
+          <span class="material-icons sidebar-nav-icon">person_outline</span>
+          <span>Account</span>
+        </a>
+
+        <button id="logoutBtn" class="sidebar-nav-item sidebar-logout-btn" type="button">
+          <span class="material-icons sidebar-nav-icon">logout</span>
+          <span>Log Out</span>
+        </button>
+      </nav>
 
     </aside>
 
     <div class="main">
-      <div id="search-box" class="search-box">
-        <h3>Search Document by ID</h3>
-        <div class="search-row">
-          <input id="publicIdInput" type="text" placeholder="Enter ID (e.g., B3KM)" maxlength="6" />
-          <button id="searchPublicDocBtn" type="button">Search</button>
+      <div id="dashBoard" class="dashboard-panel" style="display:none;">
+        <div class="dashboard-topbar">
+          <div class="dashboard-search-block">
+            <div class="dashboard-search-wrap">
+              <span class="material-icons dashboard-search-icon">search</span>
+
+              <input
+                id="publicIdInput"
+                type="text"
+                class="dashboard-search-input"
+                placeholder="Search your files"
+                maxlength="6"
+              />
+
+              <button id="searchPublicDocBtn" type="button" class="dashboard-search-btn">
+                Search
+              </button>
+            </div>
+
+            <div id="searchResultMsg" class="dashboard-search-msg"></div>
+          </div>
+
+          <div class="dashboard-top-actions">
+            <button type="button" id="dashboardBuyPointsBtn" class="dashboard-buy-btn" onclick="buyPoints100()">
+              <span class="material-icons">shopping_cart</span>
+              <span>Buy 100 Points</span>
+            </button>
+
+            <button type="button" class="dashboard-icon-btn" aria-label="Notifications">
+              <span class="material-icons">notifications</span>
+            </button>
+
+            <div class="avatar-wrapper">
+              <button type="button" class="dashboard-avatar-btn" aria-label="Account">
+                <span class="material-icons">account_circle</span>
+              </button>
+
+              <div id="avatarPlanTooltip" class="avatar-tooltip">FREE</div>
+            </div>
+          </div>
         </div>
-        <div id="searchResultMsg" class="search-msg"></div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-welcome-card">
+            <div class="dashboard-welcome-content">
+              <h2 class="dashboard-title">Welcome back, Editor.</h2>
+
+              <p class="dashboard-subtitle">
+                Continue your curation or start a new collaborative project from scratch.
+              </p>
+
+              <div class="dashboard-cta-row">
+                <button type="button" id="dashboardUploadBtn" class="dashboard-primary-btn">
+                  <span class="material-icons">upload_file</span>
+                  <span>Upload File</span>
+                </button>
+
+                <button type="button" id="dashboardCreateListBtn" class="dashboard-secondary-btn">
+                  <span class="material-icons">playlist_add</span>
+                  <span>Create New List</span>
+                </button>
+
+                <button type="button" id="dashboardEmailBtn" class="dashboard-secondary-btn">
+                  <span class="material-icons">mail</span>
+                  <span>Email</span>
+                </button>
+
+                <button type="button" id="dashboardAppsBtn" class="dashboard-secondary-btn">
+                  <span class="material-icons">dynamic_form</span>
+                  <span>Forms</span>
+                </button>
+
+              </div>
+            </div>
+
+            <div class="dashboard-illustration" aria-hidden="true">
+              <div class="dashboard-book-shape"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-balance-card">
+            <div class="dashboard-balance-head">
+              <div class="dashboard-balance-icon">
+                <span class="material-icons">deployed_code</span>
+              </div>
+
+              <div id="dashboardPlanBadge" class="dashboard-plan-badge">PREMIUM PLAN</div>
+            </div>
+
+            <div class="dashboard-balance-label">Your Balance</div>
+
+            <div class="dashboard-balance-value">
+              <span id="dashboardPointsValue">0</span>
+              <span class="dashboard-balance-unit">Points</span>
+            </div>
+
+            <button type="button" class="dashboard-balance-btn" onclick="buyPoints100()">
+              Buy 100 Points ($10)
+            </button>
+          </div>
+        </div>
+        <div class="dashboard-priority-section" id="priorityListSection">
+        <div class="dashboard-section-head">
+          <div>
+            <div class="dashboard-section-accent"></div>
+            <h2 class="dashboard-section-title">My Priority Lists</h2>
+          </div>
+
+          <a href="#" id="viewAllPriorityLists" class="dashboard-section-link">
+            View All Lists
+            <span class="material-icons">arrow_forward</span>
+          </a>
+          </div>
+
+          <div id="priorityList" class="priority-list-grid">
+            <!-- Priority cards will be inserted here by JS -->
+          </div>
+        </div>
       </div>
 
-      <div id="savedListsView" data-open="0" style="display:none;"></div>
+      <div id="savedListsView" style="display:none;"></div>
       <div class="form-container" id="formContainer">
         <h2>Create a List</h2>
         <form id="listForm">
@@ -140,58 +263,231 @@
 
         </form>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <button type="button" id="toggleCheckboxesBtn">Checkboxes</button>
-          <button type="button" id="toggleNoteBoxBtn">Note Box</button>
-          <button type="button" onclick="addRow()">Add Row</button>
-          <button type="button" onclick="deleteRow()">Delete Row</button>
+        <div class="editor-controls">
+          <button type="button" id="toggleCheckboxesBtn" class="icon-btn" title="Toggle checkboxes">
+            <span class="material-icons">check_box</span>
+          </button>
+
+          <button type="button" id="toggleNoteBoxBtn" class="icon-btn" title="Toggle note box">
+            <span class="material-icons">sticky_note_2</span>
+          </button>
+
+          <button type="button" id="addRowBtn" class="icon-btn" onclick="addRow()" title="Add row">
+            <span class="material-icons">add</span>
+          </button>
+
+          <button type="button" id="deleteRowBtn" class="icon-btn" onclick="deleteRow()" title="Delete row">
+            <span class="material-icons">remove</span>
+          </button>
+
+          <button type="button" id="addColumnBtn" class="icon-btn" onclick="addColumn()" title="Add column">
+            <span class="material-icons">view_column</span>
+          </button>
+
+          <button type="button" id="deleteColumnBtn" class="icon-btn" onclick="deleteColumn()" title="Delete column">
+            <span class="material-icons">view_stream</span>
+          </button>
+
+          <button type="button" id="toggleLinksBtn" class="icon-btn" title="Toggle links">
+            <span class="material-icons">link</span>
+          </button>
+
+          <button type="button" id="toggleStarsBtn" class="icon-btn" title="Toggle stars">
+            <span class="material-icons">star</span>
+          </button>
+
+          <button type="button" id="toggleCalendarBtn" class="icon-btn" title="Toggle date column">
+            <span class="material-icons">calendar_month</span>
+          </button>
         </div>
 
+        <div class="editor-controls  editor-actions">
 
-        <div style="display: flex; gap: 10px;">
-          <button type="button" id="saveAsCopyBtn">Save as Copy</button>
-          <button type="button" id="saveCloudBtn">Save to Cloud</button>
+          <button type="button" id="saveAsCopyBtn" class="icon-btn" title="Save as Copy">
+            <span class="material-icons">content_copy</span>
+          </button>
 
-          <!-- Upload Header Button V6 -->
+          <button type="button" id="saveCloudBtn" class="icon-btn" title="Save">
+            <span class="material-icons">save</span>
+          </button>
+
+          <!-- hidden inputs -->
           <input type="file" id="headerImageInput" accept="image/*" style="display: none;" />
-          <button type="button" id="uploadHeaderBtn">Upload Header</button>
-          <!-- Upload footer V7-->
+
+          <button type="button" id="uploadHeaderBtn" class="icon-btn" title="Upload Header">
+            <span class="material-icons">image</span>
+          </button>
+
           <input type="file" id="footerImageInput" accept="image/*" style="display: none;" />
-          <button type="button" id="uploadFooterBtn">Add Footer</button> 
-          <button type="button" onclick="window.print()">Print List</button>
+
+          <button type="button" id="uploadFooterBtn" class="icon-btn" title="Add Footer">
+            <span class="material-icons">image</span>
+          </button>
+
+          <button type="button" id="savePreviewPdfBtn" class="icon-btn" title="Save as PDF">
+            <span class="material-icons">picture_as_pdf</span>
+          </button>
+
+          <button type="button" onclick="window.print()" class="icon-btn" title="Print">
+            <span class="material-icons">print</span>
+          </button>
+
+          <button type="button" id="toggleSignupListBtn" class="icon-btn" title="Signup List">
+            <span class="material-icons">contact_mail</span>
+          </button>
+
         </div>
       </div>
 
       <!-- Document Upload Panel (hidden by default) -->
       <div id="docUploadPanel" style="display:none; margin: 14px 0; padding: 12px; border: 1px dashed #ccc; border-radius: 8px;">
         
-        <h3 style="margin-top:0;">Upload a document</h3>
+        <h3 style="margin-top:0;">Upload a PDF document or an Image</h3>
 
         <form id="docUploadForm">
-              <label for="docTitle">Title (optional)</label>
-              <input type="text" id="docTitle" name="docTitle" placeholder="Document title">
+          <label for="docTitle">Title (optional)</label>
+          <input type="text" id="docTitle" name="docTitle" placeholder="Document title">
 
-              <label for="docFile" style="display:block; margin-top:8px;">Select file (.pdf, .doc, .docx)</label>
-              <input type="file" id="docFile" accept=".pdf,.doc,.docx" required>
+          <label for="docFile" style="display:block; margin-top:8px;">Select file (.pdf, .jpg, .jpeg, .png, .svg)</label>
+          <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png,.svg" required>
 
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <button type="submit" id="docUploadBtn">Upload</button>
-                <button type="button" id="docUploadCancelBtn">Cancel</button>
-              </div>
+          <p id="docUploadHint" class="doc-upload-hint">
+            Free accounts can upload up to 60MB per file. Paid accounts can upload up to 120MB per file.
+          </p>
+
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button type="submit" id="docUploadBtn">Upload</button>
+            <button type="button" id="docUploadCancelBtn">Cancel</button>
+          </div>
         </form>
 
         <div id="docUploadStatus" style="margin-top:8px; font-size:0.95rem;"></div>
-        
       </div>
-      <!-- Document list (hidden by default) -->
-      <div id="documentList" style="display:block; margin: 20px 0;"></div>
 
+      <!-- Document share panel (hidden by default) -->
+      <div id="shareDocPanel" style="display:none; margin:14px 0; padding:12px; border:1px solid #ddd; border-radius:8px; background:#fff; max-width:560px;">
+        <h3 style="margin-top:0;">Share Document by Email</h3>
+
+        <form id="shareDocForm">
+          <input type="hidden" id="shareDocId" />
+          <input type="hidden" id="sharePublicId" />
+
+          <label for="shareDocTitle">Document</label>
+          <input
+            type="text"
+            id="shareDocTitle"
+            readonly
+            class="share-input-large"
+          >
+
+          <label for="shareRecipientEmail" style="display:block; margin-top:8px;">
+            Recipient Email
+          </label>
+          <input
+            type="email"
+            id="shareRecipientEmail"
+            placeholder="Enter email address"
+            class="share-input-large"
+          >
+
+          <div id="shareEmailListsContainer">
+            <h4>Saved Email Lists</h4>
+
+            <div id="shareDocEmailListsOptions">
+              Loading...
+            </div>
+          </div>
+
+          <label for="shareEmailMessage" style="display:block; margin-top:8px;">
+            Message (optional)
+          </label>
+          <textarea
+            id="shareEmailMessage"
+            rows="4"
+            placeholder="Add a short message"
+            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:15px;"
+          ></textarea>
+
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button type="submit" id="sendShareEmailBtn">Send Email</button>
+            <button type="button" id="shareDocCancelBtn">Cancel</button>
+          </div>
+        </form>
+
+        <div id="shareDocStatus" style="margin-top:8px; font-size:0.95rem;"></div>
+      </div>
+
+      <!-- List share panel (hidden by default) -->
+      <div id="shareListEmailPanel" style="display:none; margin:14px 0; padding:12px; border:1px solid #ddd; border-radius:8px; background:#fff; max-width:560px;">
+        <h3 style="margin-top:0;">Share List by Email</h3>
+
+        <form id="shareListEmailForm">
+          <input type="hidden" id="shareListId" />
+          <input type="hidden" id="shareListPublicId" />
+
+          <label for="shareListTitle">List</label>
+          <input
+            type="text"
+            id="shareListTitle"
+            readonly
+            class="share-input-large"
+          >
+
+          <label for="shareListRecipientEmail" style="display:block; margin-top:8px;">
+            Recipient Email
+          </label>
+          <input
+            type="email"
+            id="shareListRecipientEmail"
+            placeholder="Enter email address"
+            class="share-input-large"
+          >
+
+          <div id="shareListEmailListsContainer">
+            <h4>Saved Email Lists</h4>
+
+            <div id="shareListEmailListsOptions">
+              Loading...
+            </div>
+          </div>
+
+          <label for="shareListEmailMessage" style="display:block; margin-top:8px;">
+            Message (optional)
+          </label>
+          <textarea
+            id="shareListEmailMessage"
+            rows="4"
+            placeholder="Add a short message"
+            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:15px;"
+          ></textarea>
+
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button type="submit" id="sendShareListEmailBtn">Send Email</button>
+            <button type="button" id="shareListEmailCancelBtn">Cancel</button>
+          </div>
+        </form>
+
+        <div id="shareListEmailStatus" style="margin-top:8px; font-size:0.95rem;"></div>
+      </div>
+      
+      <!-- Document list (hidden by default) -->
+      <div id="documentList" style="display:none; margin: 20px 0;"></div>
+
+      <!-- List Preview -->
       <div class="preview-container" id="preview-container">
         <h2 id="livePreviewHeader">Live Preview</h2>
         <h3 id="previewTitle">Your list title...</h3>
         <ul class="preview" id="previewItems"></ul>
         <div id="notePreview" style="margin-top: 20px; font-size: 16px; color: #555;"></div>
         
+      </div>
+
+      <!-- Inbox Panel -->
+      <div id="inboxPanel" style="display:none; margin:20px 0;">
+        <h2>My Inbox</h2>
+        <div id="inboxList">
+        
+        </div>
       </div>
             <!-- PDF Viewer Panel -->
       <div id="pdfViewerPanel" style="display:none; margin: 14px 0;">
@@ -229,238 +525,75 @@
     </div>
     
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- 1) Initialize Firebase -->
-
   <script type="module" src="firebaseConfig.js?v=5"></script>
-  <script type="module" src="uploadDocuments.js?v=2"></script>
+  <script type="module" src="uploadDocuments.js?v=11"></script>
   <script src="accordion.js?v=1"></script>
-  <script src="listasScript.js?v=1"></script>
-  <script src="uploadHeader.js"></script> <!-- V6-->
-  <script src="uploadFooter.js"></script>
-  <script type="module" src="saveToFirestore.js?v=6"></script>
-  <script type="module" src="loadFromFirestore.js?v=8"></script>
-  <script src="showSavedLists.js?v=1"></script>
-
-  <script type="module">
-  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-  const { auth } = window._firebase;
-  const db = getFirestore();
-
-  async function ensureUserProfile(user) {
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-
-    if (!snap.exists()) {
-      await setDoc(ref, {
-        email: user.email ?? "",
-        displayName: user.displayName ?? "",
-
-        role: "user",
-        plan: "free",
-
-        pointsBalance: 0,
-        usage: { listCount: 0, docCount: 0 },
-
-        limits: { freeLists: 10, freeDocs: 10 },
-        costs: { listPoints: 10, docPoints: 10 },
-
-        companyId: null,
-
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-    }
-  }
-
-
-  const protectedEl = document.getElementById('protected');
-  const loadingEl = document.getElementById('auth-loading');
-  const appLayout = document.getElementById('appLayout');
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = 'login.html';
-      return;
-    }
-
-    if (!user.emailVerified) {
-      await user.reload(); // refresh from server
-
-      if (!user.emailVerified) {
-        await signOut(auth);
-        window.location.href = "login.html";
-        return;
-      }
-    }
-
-
-    // ✅ STEP 1B — ensure user profile exists
-    await ensureUserProfile(user);
-    //console.log("ensureUserProfile ran for:", user.uid);
-
-    if (loadingEl) loadingEl.remove?.();
-    if (protectedEl) protectedEl.hidden = false;
-    if (appLayout) appLayout.style.display = '';
-
-    // ✅ Auto-load documents on login
-      const documentList = document.getElementById('documentList');
-      if (documentList) documentList.style.display = 'block';
-
-      if (window.loadUserDocuments) {
-        await window.loadUserDocuments();
-      }
-  });
-
-  // 🔹 Logout handler
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'login.html';
-      sessionStorage.removeItem('currentListId');
-    });
-  }
-  </script>
-
-
-  <!-- NEW: Wire "My Documents" and PDF viewer -->
-  <script>
-    (function () {
-      const myDocsLink = document.getElementById('myDocsLink');
-      const documentList = document.getElementById('documentList');
-      const formContainer = document.getElementById('formContainer');
-
-      if (myDocsLink) {
-        myDocsLink.addEventListener('click', async () => {
-          const isOpen = documentList.style.display === 'block';
-
-          if (isOpen) {
-            documentList.style.display = 'none';
-            formContainer.style.display = 'block';
-            return;
-          }
-
-          // open list
-          formContainer.style.display = 'none';
-          documentList.style.display = 'block';
-
-          if (window.loadUserDocuments) {
-            await window.loadUserDocuments();
-          }
-        });
-      }
-
-      window.openPdf = function (url) {
-        const panel = document.getElementById('pdfViewerPanel');
-        const frame = document.getElementById('pdfFrame');
-
-        // Hide document list when viewing a PDF
-        const docList = document.getElementById('documentList');
-        if (docList) docList.style.display = 'none';
-
-        if (!panel || !frame) {
-          window.open(url, "_blank");
-          return;
-        }
-
-        panel.style.display = 'block';
-        frame.src = url;
-
-        // Optional: hide the form while viewing PDF
-        const formContainer = document.getElementById('formContainer');
-        if (formContainer) formContainer.style.display = 'none';
-      };
-
-
-      window.closePdfViewer = function () {
-        const panel = document.getElementById('pdfViewerPanel');
-        const frame = document.getElementById('pdfFrame');
-        if (panel) panel.style.display = 'none';
-        if (frame) frame.src = '';
-
-        // Show document list again
-        const docList = document.getElementById('documentList');
-        if (docList) docList.style.display = 'block';
-
-        // Restore the main form
-        const formContainer = document.getElementById('formContainer');
-        if (formContainer) formContainer.style.display = 'block';
-      };
-
-    })();
-
-    window.showToast = function showToast(message) {
-        const toast = document.getElementById("toastMessage");
-        if (!toast) return;
-
-        toast.textContent = message;
-        toast.classList.add("show");
-
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 2000);
-      };
-
-      const searchDocsLink = document.getElementById('searchDocsLink');
-      const searchBox = document.getElementById('search-box');
-
-      if (searchDocsLink && searchBox) {
-        searchDocsLink.addEventListener('click', () => {
-          const isOpen = searchBox.style.display === 'block';
-          searchBox.style.display = isOpen ? 'none' : 'block';
-        });
-      }
-  </script>
+  <script src="listasScript.js?v=24"></script>
   
-
+  <script src="listasStarsScript.js?v=4"></script> 
+  <script src="listaDateScript.js?v=1"></script>
+  <script type="module" src="uploadHeader.js"></script> <!-- V61 -->
+  <script type="module" src="uploadFooter.js"></script>
+  <script type="module" src="saveToFirestore.js?v=16"></script>
+  <script type="module" src="saveForms.js?v=3"></script>
+  <script type="module" src="loadFromFirestore.js?v=47"></script>
+  <script type="module" src="shareEmailLists.js?v=2"></script>
+  <script src="showSavedLists.js?v=21"></script>
+  
+  <!-- NEW: Wire "My Documents" and PDF viewer -->
+  <script src="docPdfViewer.js?v=2"></script>
  <!-- NEW: Wire "My Accont"  -->
-<script>
-(function () {
-  const myAccountLink = document.getElementById('myAccountLink');
-  const myAccountPanel = document.getElementById('myAccountPanel');
-
-  const formContainer = document.getElementById('formContainer');
-  const documentList = document.getElementById('documentList');
-  const savedListsView = document.getElementById('savedListsView');
-  const pdfViewerPanel = document.getElementById('pdfViewerPanel');
-
-  if (!myAccountLink || !myAccountPanel) return;
-
-  myAccountLink.addEventListener('click', () => {
-    const isOpen = myAccountPanel.style.display === 'block';
-
-    // Hide everything else
-    if (formContainer) formContainer.style.display = 'none';
-    if (documentList) documentList.style.display = 'none';
-    if (savedListsView) savedListsView.style.display = 'none';
-    if (pdfViewerPanel) pdfViewerPanel.style.display = 'none';
-    if (myAccountPanel) myAccountPanel.style.display = 'none';
-
-    // Toggle account panel
-    myAccountPanel.style.display = isOpen ? 'none' : 'block';
-
-    // Restore editor if closing
-    if (isOpen && formContainer) {
-      formContainer.style.display = 'block';
-    }
-  });
-})();
-</script>
-
+<script src="closePanels.js?v=6"></script>
+<script src="sidebarNav.js?v=12"></script>
+<script src="dashboardPanel.js?v=7"></script>
+<script type="module" src="userAccount.js?v=3"></script>
 <!-- Buy button -->
 <script type="module" src="./billing.js?v=1"></script>
 <script src="searchBox.js?v=1"></script>
 <script type="module" src="publicSearch.js?v=3"></script>
-<script type="module" src="myAccount.js?v=2"></script>
+<script type="module" src="myAccount.js?v=5"></script>
+<script type="module" src="savePreviewPdfToDocuments.js?v=2"></script>
+<script src="formsCrypto.js?v=1"></script>
+<script type="module" src="vault.js?v=4"></script>
+<script src="forms.js?v=12"></script> <!-- V75 -->
+<script src="businessCardFormScript.js?v=2"></script>
+<script type="module" src="loadForms.js?v=3"></script> <!-- V75 -->
+<script type="module" src="shareList.js?v=3"></script> <!-- V66 -->
+<script type="module" src="inboxScript.js?v=5"></script> <!-- V109 -->
+<script type="module" src="signupResponses.js?v=2"></script> <!-- v123 -->
+<!-- forward to email.html -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dashboardEmailBtn = document.getElementById("dashboardEmailBtn");
+    const dashboardAppsBtn =  document.getElementById("dashboardAppsBtn");
+
+    if (dashboardEmailBtn) {
+      dashboardEmailBtn.addEventListener("click", function () {
+        window.location.href = "email.html";
+      });
+    }
+
+    if (dashboardAppsBtn) {
+      dashboardAppsBtn.addEventListener("click", function () {
+        window.location.href = "forms.html";
+      });
+    }
+  });
+</script>
+<!-- link to my account from email.html-->
+<script>
+  window.addEventListener("load", () => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("panel") === "account") {
+      window.openMyAccountPanel();
+    }
+  });
+</script>
+
 <div id="toastMessage" class="toast-message"></div>
 <footer class="page-footer">
   <p>

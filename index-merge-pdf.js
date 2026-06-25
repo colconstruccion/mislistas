@@ -1,23 +1,11 @@
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-functions.js";
-
 const pdfFilesInput = document.getElementById("pdfFilesInput");
 const dropZone = document.getElementById("dropZone");
 const mergeBtn = document.getElementById("mergePdfBtn");
 const downloadBtn = document.getElementById("downloadMergedPdf");
-const saveMergedPdfBtn = document.getElementById("saveMergedPdfBtn");
-const goToDocumentsBtn = document.getElementById("goToDocumentsBtn");
 const statusText = document.getElementById("mergeStatus");
 const selectedFilesList = document.getElementById("selectedFilesList");
 
-const { app, auth, storage } = window._firebase || {};
-const functions = app ? getFunctions(app) : null;
-const createDocumentPaid = functions ? httpsCallable(functions, "createDocumentPaid") : null;
-const finalizeDocumentUpload = functions ? httpsCallable(functions, "finalizeDocumentUpload") : null;
-
 let mergedUrl = null;
-let mergedBlob = null;
-let mergedFileName = "merged.pdf";
 let selectedFiles = [];
 let dragStartIndex = null;
 
@@ -45,22 +33,9 @@ function resetDownloadLink() {
     mergedUrl = null;
   }
 
-  mergedBlob = null;
-  mergedFileName = "merged.pdf";
-
   if (downloadBtn) {
     downloadBtn.href = "#";
     downloadBtn.style.display = "none";
-  }
-
-  if (saveMergedPdfBtn) {
-    saveMergedPdfBtn.style.display = "none";
-    saveMergedPdfBtn.disabled = false;
-    saveMergedPdfBtn.textContent = "Save to My Documents";
-  }
-
-  if (goToDocumentsBtn) {
-    goToDocumentsBtn.style.display = "none";
   }
 }
 
@@ -214,11 +189,7 @@ function renderSelectedFiles() {
       event.preventDefault();
 
       const targetIndex = Number(row.dataset.index);
-      if (
-        Number.isNaN(targetIndex) ||
-        dragStartIndex === null ||
-        dragStartIndex === targetIndex
-      ) {
+      if (Number.isNaN(targetIndex) || dragStartIndex === null || dragStartIndex === targetIndex) {
         clearDropMarkers();
         return;
       }
@@ -336,33 +307,6 @@ function addFiles(fileList) {
   setStatus(`${selectedFiles.length} PDF files selected.`);
 }
 
-function buildMergedFileName(files) {
-  const firstFile = files?.[0];
-
-  let baseName = firstFile?.name
-    ? firstFile.name.replace(/\.pdf$/i, "")
-    : "merged-file";
-
-  // Remove an existing trailing "-merged"
-  baseName = baseName.replace(/-merged$/i, "");
-
-  // Trim spaces
-  baseName = baseName.trim();
-
-  // Replace spaces with hyphens
-  baseName = baseName.replace(/\s+/g, "-");
-
-  // Remove filename-unsafe characters except underscore, dash, and dot
-  baseName = baseName.replace(/[^\w.-]+/g, "");
-
-  // Fallback if name becomes empty
-  if (!baseName) {
-    baseName = "merged-file";
-  }
-
-  return `${baseName}-merged.pdf`;
-}
-
 async function mergePDFs() {
   try {
     if (selectedFiles.length < 2) {
@@ -386,124 +330,19 @@ async function mergePDFs() {
     }
 
     const mergedBytes = await mergedPdf.save();
-    mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
+    const blob = new Blob([mergedBytes], { type: "application/pdf" });
 
-    mergedFileName = buildMergedFileName(selectedFiles);
-
-    mergedUrl = URL.createObjectURL(mergedBlob);
+    mergedUrl = URL.createObjectURL(blob);
 
     if (downloadBtn) {
       downloadBtn.href = mergedUrl;
-      downloadBtn.download = mergedFileName;
       downloadBtn.style.display = "inline-flex";
-    }
-
-    if (saveMergedPdfBtn) {
-      saveMergedPdfBtn.style.display = "inline-flex";
-      saveMergedPdfBtn.disabled = false;
-      saveMergedPdfBtn.textContent = "Save to My Documents";
     }
 
     setStatus("Merged PDF ready.");
   } catch (err) {
     console.error("PDF merge error:", err);
     setStatus("Error merging PDFs.");
-  }
-}
-
-async function saveMergedPdfToMyDocuments() {
-  try {
-    const user = auth?.currentUser;
-
-    if (!user) {
-      setStatus("Please sign in to save to My Documents.");
-      window.location.href = "login.html";
-      return;
-    }
-
-    if (!storage || !createDocumentPaid || !finalizeDocumentUpload) {
-      setStatus("Firebase is not ready on this page.");
-      return;
-    }
-
-    if (!mergedBlob) {
-      setStatus("Merge a PDF first before saving.");
-      return;
-    }
-
-    if (saveMergedPdfBtn) {
-      saveMergedPdfBtn.disabled = true;
-      saveMergedPdfBtn.textContent = "Saving...";
-    }
-
-    setStatus("Saving merged PDF to My Documents...");
-
-    if (goToDocumentsBtn) {
-      goToDocumentsBtn.style.display = "inline-flex";
-    }
-
-    const title = mergedFileName.replace(/\.pdf$/i, "");
-
-    const createRes = await createDocumentPaid({
-      title,
-      filename: mergedFileName,
-      size: mergedBlob.size,
-      contentType: "application/pdf"
-    });
-
-    const docId = createRes?.data?.docId;
-    const storagePath = createRes?.data?.storagePath;
-
-    if (!docId || !storagePath) {
-      throw new Error("Server did not return docId/storagePath.");
-    }
-
-    const fileRef = ref(storage, storagePath);
-    await uploadBytes(fileRef, mergedBlob, {
-      contentType: "application/pdf"
-    });
-
-    const url = await getDownloadURL(fileRef);
-
-    await finalizeDocumentUpload({
-      docId,
-      downloadURL: url
-    });
-
-    if (typeof window.loadUserDocuments === "function") {
-      await window.loadUserDocuments();
-    }
-
-    if (saveMergedPdfBtn) {
-      saveMergedPdfBtn.disabled = false;
-      saveMergedPdfBtn.textContent = "Saved";
-    }
-
-    setStatus("Merged PDF saved to My Documents.");
-  } catch (err) {
-    console.error("Save merged PDF error:", err);
-
-    const code = err?.code || "";
-    const serverMsg = err?.message || err?.details?.message || "";
-
-    let msg = "Could not save merged PDF to My Documents.";
-
-    if (code === "functions/resource-exhausted") {
-      msg = "You’ve used your 10 free documents. Please buy points to upload more.";
-    } else if (code === "functions/invalid-argument") {
-      msg = serverMsg || "Invalid merged PDF upload.";
-    } else if (code === "functions/unauthenticated") {
-      msg = "Please sign in to save to My Documents.";
-    } else if (serverMsg) {
-      msg = serverMsg;
-    }
-
-    if (saveMergedPdfBtn) {
-      saveMergedPdfBtn.disabled = false;
-      saveMergedPdfBtn.textContent = "Save to My Documents";
-    }
-
-    setStatus(msg);
   }
 }
 
@@ -533,10 +372,6 @@ if (dropZone) {
 
 if (mergeBtn) {
   mergeBtn.addEventListener("click", mergePDFs);
-}
-
-if (saveMergedPdfBtn) {
-  saveMergedPdfBtn.addEventListener("click", saveMergedPdfToMyDocuments);
 }
 
 renderSelectedFiles();

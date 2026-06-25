@@ -51,7 +51,7 @@
         const items = Array.isArray(listObj.items) ? listObj.items : [];
 
         html += `
-          <div class="saved-list-card"
+          <div class="saved-list-card" 
               style="border:1px solid #ccc; border-radius:8px; padding:12px; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
               <div>
@@ -60,39 +60,54 @@
                   ${typeof listObj.count === 'number' ? `${listObj.count} item(s)` : `${(items||[]).length} item(s)`}
                   ${listObj.createdAt ? ` · ${listObj.createdAt}` : ""}
                   ${listObj.id ? ` · ID: ${listObj.id}` : ""}
+                  ${listObj.visible && listObj.publicId ? ` · Share code: ${listObj.publicId}` : ""}
                 </div>
               </div>
 
-              <button type="button"
-                title="Delete this list"
-                aria-label="Delete this list"
-                onclick="deleteListById('${listObj.id}')"
-                style="
-                  width:30px;
-                  height:30px;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                  background:transparent;
-                  border:none;
-                  border-radius:50%;
-                  color:#a33;
-                  cursor:pointer;
-                  transition:all 0.2s ease;">
-                <svg xmlns='http://www.w3.org/2000/svg'
+              <div style="display:flex; gap:6px; align-items:center;">
+
+                <!-- ⭐ PRIORITY STAR -->
+                <button type="button"
+                  title="${listObj.priority ? 'Remove from priority' : 'Add to priority'}"
+                  onclick="togglePriorityList('${listObj.id}')"
+                  style="
+                    width:30px;
+                    height:30px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:transparent;
+                    border:none;
+                    cursor:pointer;
+                    color:${listObj.priority ? '#f59e0b' : '#bbb'};
+                  ">
+                  <span class="material-icons">
+                    ${listObj.priority ? 'star' : 'star_border'}
+                  </span>
+                </button>
+
+                <!-- DELETE BUTTON -->
+                <button type="button"
+                  class="saved-list-delete-btn"
+                  title="Delete this list"
+                  onclick="deleteListById('${listObj.id}', this)">
+                  
+                  <svg xmlns='http://www.w3.org/2000/svg'
                     viewBox='0 0 24 24'
-                    fill='currentColor'
-                    width='16'
-                    height='16'
-                    style='min-width:16px; min-height:16px;'>
-                  <path d='M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6Z'/>
-                </svg>
-              </button>
-              
+                    fill='currentColor'>
+                    <path d='M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6Z'/>
+                  </svg>
+
+                </button>
+
+              </div>
             </div>
 
             <ul style="margin-top:8px; padding-left:20px; font-size:14px; color:#444;">
-              ${items.slice(0,5).map(it => `<li>${it || ""}</li>`).join("")}
+              ${items.slice(0,5).map(it => {
+                const text = typeof it === "string" ? it : (it?.text || "");
+                return `<li>${text}</li>`;
+              }).join("")}
               ${items.length > 5 ? `<li>… (${items.length} items total)</li>` : ""}
             </ul>
 
@@ -100,11 +115,43 @@
               ? `<div style="margin-top:8px; font-size:13px; color:#666;"><strong>Note:</strong> ${note}</div>`
               : ""}
 
-            <button type="button"
-              style="margin-top:10px; font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#f0f0f0; color:#222; font-weight:600; cursor:pointer;"
-              onclick="openListById('${listObj.id}')">
-              Open in editor
-            </button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+              <button type="button"
+                style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#f0f0f0; color:#222; font-weight:600; cursor:pointer;"
+                onclick="openListById('${listObj.id}')">
+                Open in editor
+              </button>
+
+              <button type="button"
+                style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid ${listObj.visible ? '#a33' : '#2b6'}; background:${listObj.visible ? '#fff5f5' : '#f3fff7'}; color:${listObj.visible ? '#a33' : '#166534'}; font-weight:600; cursor:pointer;"
+                onclick="toggleShareList('${listObj.id}')">
+                ${listObj.visible ? 'Unshare' : 'Share'}
+              </button>
+
+              ${
+                listObj.visible && listObj.publicId
+                  ? `
+                    <button type="button"
+                      style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #333; background:#fafafa; color:#222; font-weight:600; cursor:pointer;"
+                      onclick="copyListShareLink('${listObj.publicId}')">
+                      Copy link
+                    </button>
+
+                    <button type="button"
+                      style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #1d4ed8; background:#eff6ff; color:#1d4ed8; font-weight:600; cursor:pointer;"
+                      onclick="openSharedList('${listObj.publicId}')">
+                      Open shared list
+                    </button>
+
+                    <button type="button"
+                      style="font-size:13px; padding:6px 10px; border-radius:6px; border:1px solid #f97316; background:#fff7ed; color:#c2410c; font-weight:600; cursor:pointer;"
+                      onclick="openShareListEmailForm('${listObj.id}', '${String(title).replace(/'/g, "\\'")}', '${listObj.publicId}')">
+                      Email List
+                    </button>
+                  `
+                  : ""
+              }
+            </div>
           </div>
         `;
 
@@ -157,25 +204,137 @@
   }
 
   // Ensure data exists before showing; fetch if empty, then render.
-  function ensureSavedLists() {
-    const hasData = Array.isArray(window.allUserLists) && window.allUserLists.length > 0;
-
+  async function ensureSavedLists() {
     const container = getSavedContainer();
-    if (container) container.style.display = 'block'; // just show the panel
+    if (!container) return;
 
-    if (hasData) {
-      showSavedLists();
-      return;
+    // ✅ If already visible, do nothing
+    if (container.style.display === 'block') return;
+
+    container.style.display = 'block';
+    container.innerHTML = "<p>Loading lists...</p>";
+
+    const hasData =
+      Array.isArray(window.allUserLists) &&
+      window.allUserLists.length > 0;
+
+    if (!hasData && typeof window.loadSavedLists === "function") {
+      await window.loadSavedLists("workspace");
     }
 
-    // If we don't have data yet, fetch from Firestore first.
-    if (typeof window.loadSavedLists === "function") {
-      // This will fill window.allUserLists; when finished you can click "My Saved Lists" again
-      window.loadSavedLists("workspace");
-    } else {
-      showSavedLists();
-    }
+    showSavedLists();
+    renderPriorityLists(window.allUserLists || []);
   }
+
+  window.togglePriorityList = async function (listId) {
+    try {
+      const { auth, db } = window._firebase || {};
+
+      if (!auth || !db) {
+        alert("Firebase not ready.");
+        return;
+      }
+
+      // 🔥 Wait for auth to be ready
+      const user = await new Promise((resolve) => {
+        const unsub = auth.onAuthStateChanged((u) => {
+          unsub();
+          resolve(u);
+        });
+      });
+
+      if (!user) {
+        alert("Please sign in first.");
+        return;
+      }
+
+      const { doc, getDoc, updateDoc, serverTimestamp } =
+        await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+
+      const listRef = doc(db, "users", user.uid, "lists", listId);
+      const snap = await getDoc(listRef);
+
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+      const current = data.priority === true;
+
+      await updateDoc(listRef, {
+        priority: !current,
+        updatedAt: serverTimestamp()
+      });
+
+      // ✅ update local cache instantly
+      const lists = window.allUserLists || [];
+      const i = lists.findIndex(l => l.id === listId);
+      if (i !== -1) {
+        lists[i].priority = !current;
+      }
+
+      showSavedLists();
+      renderPriorityLists(window.allUserLists || []);
+
+    } catch (err) {
+      console.error("togglePriorityList error:", err);
+      alert("Error updating priority.");
+    }
+  };
+
+  window.renderPriorityLists = function (allLists = []) {
+    const wrap = document.getElementById("priorityList");
+    if (!wrap) return;
+
+    const priority = allLists.filter(l => l.priority === true);
+
+    let html = "";
+
+    priority.slice(0, 3).forEach(list => {
+      const count = Array.isArray(list.items) ? list.items.length : 0;
+
+      html += `
+      <div
+        class="priority-card priority-card-clickable"
+        role="button"
+        tabindex="0"
+        onclick="openListById('${list.id}')"
+        onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openListById('${list.id}'); }"
+      >
+        <div class="priority-card-top">
+          <div class="priority-card-icon">
+            <span class="material-icons">bookmark</span>
+          </div>
+
+          <button
+            type="button"
+            class="priority-star-btn active"
+            title="Remove from priority"
+            onclick="event.stopPropagation(); togglePriorityList('${list.id}')"
+          >
+            <span class="material-icons">star</span>
+          </button>
+        </div>
+
+        <h3 class="priority-card-title">
+          ${list.title || "Untitled"}
+        </h3>
+
+        <p class="priority-card-meta">
+          ${count} items
+        </p>
+      </div>
+    `;
+    });
+
+    html += `
+      <div class="priority-create-card"
+        onclick="document.getElementById('dashboardCreateListBtn')?.click()">
+        <span class="material-icons">add</span>
+        <div>Create List</div>
+      </div>
+    `;
+
+    wrap.innerHTML = html;
+  };
 
   // Expose to global (onclick="")
   window.showSavedLists     = showSavedLists;

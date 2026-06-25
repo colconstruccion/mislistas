@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>List Builder Workspace</title>
+  <link rel="stylesheet" href="listasStyle.css?v=18">
+  <link rel="stylesheet" href="listasStyle2.css?v=4">
+  <link rel="stylesheet" href="checkBoxes.css?v=3">
+  <link rel="stylesheet" href="uploadHeader.css"> <!--V6-->
+  <link rel="stylesheet" href="uploadFooter.css">
+  <link rel="stylesheet" href="logoStyle.css"> <!-- V8 -->
+  <link rel="stylesheet" href="auth.css?v=5"> <!--V13-->
+  <link rel="stylesheet" href="email.css?v=8">
+  <link rel="stylesheet" href="forms.css?v=3"> <!-- V75 -->
+  <meta name='impact-site-verification' value='34afe4e0-e835-4573-b804-2511dad74106'> <!--V11 Impact affiliate marketing-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .saved-list-card button[title="Delete this list"]:hover {
+        background:#f8d7da;
+        color:#900;
+        transform:scale(1.15);
+      }
+
+  </style>
+  <script>
+  const userLang = navigator.language || navigator.userLanguage;
+
+  </script>
+
+</head>
+
+<body class="theme-orange">
+  <main id="protected" hidden>
+  <div id="auth-loading" style="text-align:center; padding:1rem;">Loading…</div>
+
+  <div class="layout" id="appLayout">
+    <aside class="sidebar app-sidebar">
+  <div class="sidebar-brand">
+        <a href="index.html" class="sidebar-brand-link">
+          <div class="sidebar-brand-icon">
+            <span class="material-icons">description</span>
+          </div>
+
+          <div class="sidebar-brand-text">
+            <div class="sidebar-logo-title">Lysty</div>
+            <!-- <div class="sidebar-logo-subtitle">EDITORIAL CURATOR</div> -->
+          </div>
+        </a>
+      </div>
+
+     <nav class="sidebar-nav">
+        <a href="auth.html?panel=dashboard" class="sidebar-nav-item">
+          <span class="material-icons sidebar-nav-icon">grid_view</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" id="createEmailListLink">
+          <span class="material-icons sidebar-nav-icon">description</span>
+          <span>Create Email List</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item" id="savedEmailListsLink">
+          <span class="material-icons sidebar-nav-icon">list_alt</span>
+          <span>Saved Email Lists</span>
+        </a>
+
+        <a href="#" class="sidebar-nav-item active" id="myInboxLink">
+          <span class="material-icons sidebar-nav-icon">inbox</span>
+          <span>Inbox</span>
+        </a>
+
+        <!-- <a href="#" class="sidebar-nav-item" id="writeEmailLink">
+          <span class="material-icons sidebar-nav-icon">article</span>
+          <span>Write Email</span>
+        </a> -->
+
+      </nav>
+
+      <div class="sidebar-section-label">PREFERENCES</div>
+
+      <nav class="sidebar-nav sidebar-nav-bottom">
+        <a href="auth.html?panel=account" class="sidebar-nav-item">
+          <span class="material-icons sidebar-nav-icon">person_outline</span>
+          <span>Account</span>
+        </a>
+
+        <button id="logoutBtn" class="sidebar-nav-item sidebar-logout-btn" type="button">
+          <span class="material-icons sidebar-nav-icon">logout</span>
+          <span>Log Out</span>
+        </button>
+      </nav>
+
+    </aside>
+
+    <div class="main">
+      
+      <!-- Inbox Panel -->
+      <div id="inboxPanel" style="margin:20px 0;">
+        <h2>My Inbox</h2>
+        <div id="inboxList">
+        
+        </div>
+      </div>
+
+      <section id="emailPanel" class="email-panel" style="display:none;">
+          
+        <div class="email-workspace">
+
+          <div id="emailListForm">
+            <label>Email List Name</label>
+            <input type="text" id="emailListName" placeholder="Customers, Parents, Students">
+
+            <label>Email Addresses</label>
+            <textarea id="emailListRawInput" placeholder="Paste emails separated by commas, semicolons, or new lines"></textarea>
+
+            <button id="cleanEmailsBtn" type="button">Clean Emails</button>
+            
+            <button id="saveEmailListBtn" type="button" disabled>
+              Save Personal Email List
+            </button>
+
+            <button id="saveCleanAndRolesBtn" type="button" disabled>
+              Save Personal + Generic Emails List
+            </button>
+
+
+            <div id="emailValidationResult"></div>
+          </div>
+
+          <div class="email-results">
+
+            <div class="email-result-card">
+              <h3>
+                Valid Emails
+                <span id="validCount">0</span>
+              </h3>
+              <div id="validEmails"></div>
+            </div>
+
+            <div class="email-result-card">
+              <h3>
+                Role-Based Emails
+                <span id="roleCount">0</span>
+              </h3>
+              <div id="roleEmails"></div>
+            </div>
+
+            <div class="email-result-card">
+              <h3>
+                Invalid Emails
+                <span id="invalidCount">0</span>
+              </h3>
+              <div id="invalidEmails"></div>
+            </div>
+
+            <div class="email-result-card">
+              <h3>
+                Duplicate Emails
+                <span id="duplicateCount">0</span>
+              </h3>
+              <div id="duplicateEmails"></div>
+            </div>
+          
+          </div>
+
+        </div>
+      
+      </section>
+
+      <section id="savedEmailListsPanel" class="email-panel" style="display:none;">
+        <h2>Saved Email Lists</h2>
+
+        <div id="savedEmailListsTableWrap">
+          <p>Loading saved email lists...</p>
+        </div>
+      </section>
+
+      <section id="openSavedListPanel" class="email-panel" style="display:none;">
+        <button id="backToSavedListsBtn" type="button">
+          ← Back to Saved Email Lists
+        </button>
+
+        <h2 id="openedEmailListTitle">Email List</h2>
+
+        <div class="opened-list-summary">
+          Personal: <strong id="openedPersonalCount">0</strong>
+          Generic: <strong id="openedRoleCount">0</strong>
+
+          <button id="addPersonalEmailBtn" type="button">
+            + Personal Email
+          </button>
+
+          <button id="addRoleEmailBtn" type="button">
+            + Generic Email
+          </button>
+        </div>
+
+        <div class="opened-list-toolbar">
+
+          <button id="saveOpenedEmailListBtn" type="button">
+            Save Changes
+          </button>
+
+        </div>
+
+        <h3>Personal Emails</h3>
+        <div id="personalEmailsTableWrap"></div>
+
+        <h3>Generic Emails</h3>
+        <div id="roleEmailsTableWrap"></div>
+
+        <div class="opened-list-toolbar">
+
+          <button id="saveOpenedEmailListBtnBottom" type="button">
+            Save Changes
+          </button>
+
+        </div>
+      </section>
+      
+      <div id="writeEmailPanel" class="email-panel" style="display:none;">
+        <h2>Write Email</h2>
+
+        <form id="writeEmailForm">
+          <label>TO</label>
+          <input type="email" id="emailTo" required placeholder="recipient@email.com">
+
+          <label>CC</label>
+          <input type="email" id="emailCc" placeholder="optional@email.com">
+
+          <label>Subject</label>
+          <input type="text" id="emailSubject" required placeholder="Email subject">
+
+          <label>Message</label>
+          <textarea id="emailMessage" required placeholder="Write your message..."></textarea>
+
+          <button type="submit" id="sendTextEmailBtn">Send Email</button>
+          <p id="writeEmailStatus"></p>
+        </form>
+      </div>
+
+    </div>
+    
+  </div>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Start email-->
+  <script src="cleanEmails.js?v=6"></script>
+  <script type="module" src="savePersonalEmails.js?v=3"></script>
+  <script type="module" src="inboxScript.js?v=5"></script> <!-- V109 -->
+  <script type="module" src="closePanels2.js?v=4"></script>
+  <script type="module" src="savedLists.js?v=5"></script>
+  <script type="module" src="openSavedList.js?v=9"></script>
+  <script type="module" src="writeEmail.js?v=2"></script>
+  <!--  Initialize Firebase -->
+  <script type="module" src="firebaseConfig.js?v=5"></script>
+  <script type="module" src="uploadDocuments.js?v=11"></script>
+  <script src="accordion.js?v=1"></script>
+  <!-- <script src="listasScript.js?v=21"></script>
+  
+  <script src="listasStarsScript.js?v=4"></script> 
+  <script src="listaDateScript.js?v=1"></script>--> 
+  <!--<script type="module" src="uploadHeader.js"></script> --> <!-- V61 -->
+  <!-- <script type="module" src="uploadFooter.js"></script>
+  <script type="module" src="saveToFirestore.js?v=15"></script>
+  <script type="module" src="saveForms.js?v=3"></script>
+  <script type="module" src="loadFromFirestore.js?v=41"></script>
+  <script src="showSavedLists.js?v=21"></script> -->
+  
+  <!-- NEW: Wire "My Documents" and PDF viewer -->
+  <script src="docPdfViewer.js?v=2"></script>
+ <!-- NEW: Wire "My Accont"  -->
+ <!-- <script src="closePanels.js?v=5"></script> -->
+ <!-- <script src="sidebarNav.js?v=11"></script> -->
+<script src="dashboardPanel.js?v=7"></script>
+<script type="module" src="userAccount.js?v=3"></script>
+<!-- Buy button -->
+<script type="module" src="./billing.js?v=1"></script>
+<script src="searchBox.js?v=1"></script>
+<script type="module" src="publicSearch.js?v=3"></script>
+<script type="module" src="myAccount.js?v=5"></script>
+<script type="module" src="savePreviewPdfToDocuments.js?v=2"></script>
+<script src="formsCrypto.js?v=1"></script>
+<script type="module" src="vault.js?v=4"></script>
+<script src="forms.js?v=12"></script> <!-- V75 -->
+<script src="businessCardFormScript.js?v=2"></script>
+<script type="module" src="loadForms.js?v=3"></script> <!-- V75 -->
+<script type="module" src="shareList.js?v=3"></script> <!-- V66 -->
+<div id="toastMessage" class="toast-message"></div>
+<footer class="page-footer">
+  <p>
+    &copy; lysty.co. All rights reserved. |
+    <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> |
+    <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+  </p>
+</footer>
+
+</main>
+</body>
+</html>

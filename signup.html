@@ -136,6 +136,28 @@
 
       <button type="submit" class="signup-btn">Sign Up</button>
     </form>
+
+    <!-- Gmail Sign Up-->
+    <div style="margin: 1rem 0; color:#777; font-size:0.85rem;">or</div>
+
+      <button type="button" id="showGoogleSignupBox" class="signup-btn">
+        Sign up with Gmail
+      </button>
+
+      <div id="googleSignupBox" hidden style="margin-top:1rem; text-align:left;">
+        <label for="googleSignupEmail" style="display:block; font-size:0.9rem; color:#555; margin-bottom:0.3rem;">
+          Gmail account
+        </label>
+        <input
+          type="email"
+          id="googleSignupEmail"
+          placeholder="yourname@gmail.com"
+          style="width:100%; padding:0.7rem; border:1px solid #ddd; border-radius:8px; font-size:1rem;"
+        >
+        <button type="button" id="googleSignupBtn" class="signup-btn" style="margin-top:0.75rem;">
+          Continue with Google
+        </button>
+    </div>
     <div class="signup-footer">
       <p>Already have an account? <a href="login.html">Login</a></p>
     </div>
@@ -144,6 +166,7 @@
   <script type="module" src="firebaseConfig.js"></script>
   <!-- 2) Handle signup -->
   <script type="module" src="signup.js"></script>
+  <script type="module" src="googleSignup.js"></script>
 
 </body>
 </html>
